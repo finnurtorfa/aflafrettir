@@ -15,3 +15,15 @@ LandingURL
         for i in query_urls:
           print i
 
+QueryLandingURL
+---------
+
+*  The QueryLandingURL class takes in a dictionary of URL's and fetches the HTML of the url.
+
+        html_responses = QueryLandingURL({'url':'www.example.com'})
+
+* Now it is possible to to iterate over the html\_responses like so:
+
+        for i in html_responses:
+          print i
+

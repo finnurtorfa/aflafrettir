@@ -1,7 +1,7 @@
 #!/usr/bin/python
 # -*- coding: utf-8 -*-
 # 
-# File: landings.py
+# File: LandingURL.py
 # Author: Finnur Smári Torfason
 # Date: 11.12.2012
 # About:
@@ -10,9 +10,14 @@
 #   The LandingURL class takes as a parameter 2 date objects and returns the URL
 #   that will be queried
 
-import httplib2
 from urllib import urlencode
 
+###################################################
+# Class: LandingURL
+# About: The class takes in a object when instantiated
+#        This object is a list of 2 dates, which are
+#        used to form a query_url
+###################################################
 class LandingURL(object):
   
   def __init__(self, date_list):
@@ -54,13 +59,20 @@ class LandingURL(object):
   def __iter__(self):
     for i in self.harbours:
       result = {}
-      result['url'] = self._request_urls(i)
+      result[i] = self._request_urls(i)
       yield result
 
+###################################################
+# Main body
+###################################################
 if __name__ == '__main__': # If run on it's own
   dates = ['01.12.2012', '11.12.2012']
   #dates = ['01.12.2012']
+  
   landings = LandingURL(dates)
-  print landings
+  url_dict = {}
+  
   for i in landings:
-    print i
+    url_dict.update(i)
+
+  print url_dict
