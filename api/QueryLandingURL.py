@@ -14,6 +14,12 @@ import urllib2, socket
 
 socket.setdefaulttimeout(10) # 10 sec timeout
 
+###################################################
+# Class: QueryLandingURL
+# About: The class takes in a dictionary of urls
+#        which the class uses to fetch the HTML
+#        content from these urls
+###################################################
 class QueryLandingURL(object):
   
   def __init__(self, url_list):
@@ -27,7 +33,7 @@ class QueryLandingURL(object):
     except(urllib2.URLError, socket.timeout):
       return {
           'error':'-1', 
-          'content':''
+          'content':self.url_list[url]
           }
 
     return {

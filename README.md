@@ -27,3 +27,14 @@ QueryLandingURL
         for i in html_responses:
           print i
 
+ParseHTML
+---------
+
+*  The ParseHTML class takes in a dictionary containing a HTML content and an error code. The error code states whether or not the HTML content had been retrieved. An object of the class can be made like so:
+
+        info = ParseHTML(html_cont)
+
+*  And then it is possible to iterate over the info like so:
+
+        for i in info:
+          print i
