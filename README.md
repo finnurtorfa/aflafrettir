@@ -38,3 +38,15 @@ ParseHTML
 
         for i in info:
           print i
+
+GroupLandingInfo
+---------
+
+*  The GroupLandingInfo class groups the landing entries by their Gear and if there are multiple entries per ShipID it adds the catch up to give a total catch for that Ship and returns a simplified lists. Given a list of dictionaries with landing information the class can be made like so:
+
+        group_list = GroupLandingInfo(landingList)
+
+*  Then it is possible to iterate over the group\_list like so:
+
+        for g in group_list:
+          print g

@@ -32,7 +32,13 @@ class ParseHTML(object):
     for tr in landingTable.findAll('tr')[1:]:
       for i in range(1,5):
         for td in tr.findAll('td')[i]:
-          self.row.update({self.fieldType[i-1]:td})
+          if i is 1:
+            self.row.update({self.fieldType[i-1]:int(td)})
+          elif i is 4:
+            td = td.replace('.','')
+            self.row.update({self.fieldType[i-1]:int(td)})
+          else:
+            self.row.update({self.fieldType[i-1]:td})
       result.append(self.row)
       self.row = dict()
 
