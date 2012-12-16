@@ -14,9 +14,6 @@ from urllib import urlencode
 
 ###################################################
 # Class: LandingURL
-# About: The class takes in a object when instantiated
-#        This object is a list of 2 dates, which are
-#        used to form a query_url
 ###################################################
 class LandingURL(object):
   

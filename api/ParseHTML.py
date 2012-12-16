@@ -15,8 +15,6 @@ from QueryLandingURL import QueryLandingURL
 
 ###################################################
 # Class: ParseHTML
-# About: ParseHTML takes in a html_code and fetches
-#        the relevent landing information from it
 ###################################################
 class ParseHTML(object):
 

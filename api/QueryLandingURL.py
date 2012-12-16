@@ -16,9 +16,6 @@ socket.setdefaulttimeout(10) # 10 sec timeout
 
 ###################################################
 # Class: QueryLandingURL
-# About: The class takes in a dictionary of urls
-#        which the class uses to fetch the HTML
-#        content from these urls
 ###################################################
 class QueryLandingURL(object):
   
