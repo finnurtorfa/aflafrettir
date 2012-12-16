@@ -25,12 +25,11 @@ class TotalCatch(object):
     self.unique = {i['ShipID']:i['ShipID'] for i in self.landingList}.values()
 
   def _calc_total_catch(self, id_list):
-    totalCatch = 0
-    for i in id_list:
-      totalCatch = totalCatch + i['Catch']
+    
+    totalCatch = sum(i['Catch'] for i in id_list)
+    id_list[0]['Catch'] = totalCatch
 
-    tmp_dict = {'Gear':i['Gear'], 'ShipID':i['ShipID'], 'Name':i['Name'], 'Catch':totalCatch}
-    return tmp_dict
+    return id_list[0]
     
   def __iter__(self):
     result = []
