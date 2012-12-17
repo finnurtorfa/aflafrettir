@@ -50,3 +50,15 @@ TotalCatch
 
         for c in total_catch:
           print c
+
+GroupLandingInfo
+---------
+
+*  The GroupLandingInfo takes in a list of dictionaries containing the landing info and groups all the landings by gear.
+
+        groups = GroupLandingInfo(landingList)
+
+*  Then it is possible to iterate over the groups like so:
+        
+        for g in groups:
+          print g
