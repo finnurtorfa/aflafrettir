@@ -1,7 +1,7 @@
 #!/usr/bin/python
 # -*- coding: utf-8 -*-
 # 
-# File: SortLandingInfo.py
+# File: GroupLandingInfo.py
 # Author: Finnur Smári Torfason
 # Date: 15.12.2012
 # About:

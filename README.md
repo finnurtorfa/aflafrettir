@@ -3,6 +3,42 @@ Aflafrettir
 
 Aflafrettir is an API for fetching landing information from Fiskistofa(Directorate of Fisheries in Iceland).  
 
+Preparation
+---------
+
+To clone the repository:
+
+        git clone https://github.com/finnurtorfa/aflafrettir.git
+
+To start working on the code it is a good idea to have *virtualenv* and *virtualenvwrapper* installed. Then do
+
+        mkvirtualenv aflafrettir
+
+To work on the aflafrettir virtual environment issue a call
+
+        workon aflafrettir
+
+And to leave the virtual environment call
+      
+        deactivate
+
+To be able to run the code with python it is necessary to install the dependencies. It is a good idea to use *pip* for that. To install the dependencies only for the aflafrettir virtual environment issue the following call while working on that particular environment
+
+        pip install -r requirements.txt
+
+To get wxPython to work with the virtual environment install wxpython as a regular user. On my system I do:
+    
+        pacman -S wxpython
+
+Then go to your $VIRTUAL\_ENV/aflafrettir/lib/python2.7/site-packages/ folder and make the following symlinks:
+
+        ln -s /usr/lib/python2.7/site-packages/wxversion.py wxversion.py
+        ln -s /usr/lib/python2.7/site-packages/wxPython_common-2.8.12.1-py2.7.egg-info wxPython_common-2.8.12.1-py2.7.egg-info
+        ln -s /usr/lib/python2.7/site-packages/wx.pth wx.pth
+        ln -s /usr/lib/python2.7/site-packages/wx-2.8-gtk2-unicode wx-2.8-gtk2-unicode
+
+Depending on your system and version python and wxPython the symlinks could vary.
+
 LandingURL
 ---------
 
