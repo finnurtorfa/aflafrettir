@@ -1,10 +1,11 @@
 #!/usr/bin/python
 # -*- coding: utf-8 -*-
 #
-# File: gui.py
+# File: aflafrettir.py
 # Author: Finnur Smári Torfason
-# Date: 23/11/2011  
-# Main fall fyrir aflalista
+# Date: 19/12/2012  
+# Abouth:
+#   Main program for the aflafrettir program
 #
 import gui.gui as gui
 

@@ -28,13 +28,14 @@ class QueryLandingURL(object):
       content = unicode(content.read(),
           content.headers['content-type'].split('charset=')[-1])
     except(urllib2.URLError, socket.timeout):
+      print "URLError or Timeout"
       return {
-          'error':'-1', 
+          'error':-1, 
           'content':self.url_list[url]
           }
 
     return {
-        'error':'0', 
+        'error':0, 
         'content':content
         }
 

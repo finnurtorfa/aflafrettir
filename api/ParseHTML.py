@@ -26,7 +26,11 @@ class ParseHTML(object):
   def _get_landing_info(self):
     result = []
     landingHTML = BeautifulSoup(self.html)
-    landingTable = landingHTML.findAll('table')[2]
+    try:
+      landingTable = landingHTML.findAll('table')[2]
+    except(IndexError):
+      return {'error':-1}
+
     for tr in landingTable.findAll('tr')[1:]:
       for i in range(1,5):
         for td in tr.findAll('td')[i]:
@@ -44,7 +48,8 @@ class ParseHTML(object):
 
   def __iter__(self):
     for info in self._get_landing_info():
-      yield info
+      if 'error' not in info:
+        yield info
 
 if __name__ == '__main__': # If run on it's own
   

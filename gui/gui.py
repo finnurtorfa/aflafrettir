@@ -9,7 +9,7 @@
 #   API to gather data and manipulate it.
 
 import wx
-from api.LandingURL import LandingURL
+from utils.CalculateList import CalculateList as cl
 
 class AflafrettirGUI(wx.Frame):
 
@@ -52,12 +52,13 @@ class AflafrettirGUI(wx.Frame):
   def OnGatherInfo(self, event):
     date1 = self.page1.date1.GetValue().Format("%d.%m.%Y")
     date2 = self.page1.date2.GetValue().Format("%d.%m.%Y")
+
+    the_list = cl(date1, date2)
     
-    landings = LandingURL([date1, date2])
-
-    for l in landings:
-      print l
-
+    url_list = the_list.get_landing_url()
+    landing_list = the_list.get_data_from_html(url_list)
+    print landing_list
+    
 class AflafrettirMainPage(wx.Panel):
   def __init__(self, parent):
     wx.Panel.__init__(self, parent, wx.ID_ANY)
