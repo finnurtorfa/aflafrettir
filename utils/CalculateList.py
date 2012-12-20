@@ -10,7 +10,9 @@
 #   The CalculateList class calculates the list of landings
 
 import logging
-from AflafrettirAPI import LandingURL, QueryLandingURL, ParseHTML, GroupLandingInfo, TotalCatch
+from AflafrettirAPI import *
+#from AflafrettirAPI import LandingURL, QueryLandingURL, ParseHTML
+#from AflafrettirAPI import GroupLandingInfo, TotalCatch, ExcelListOutput
 from utils.event import MessageEvent
 from wx import PostEvent
 
@@ -36,13 +38,19 @@ class CalculateList(object):
     
     for h in html:
       PostEvent(self._notify_window, MessageEvent('Sæki upplýsingar um' +
-        ' landanir í/á %s\n' % h['harbour'], 1))
-      logging.info("Fetching data for harbour of %s", h['harbour'])
+        ' landanir í/á %s\n' % h['Harbour'], 1))
+      logging.info("Fetching data for harbour of %s", h['Harbour'])
       table = ParseHTML(h)
       for t in table:
         landing_list.append(t)
 
     return landing_list
+
+  def save_data(self, landingList, filename, date1, date2):
+    totalList = {'Group':'Heild', 'Landings':landingList}
+    
+    excel = ExcelListOutput(totalList, filename, date1, date2)
+    excel.save_excel()
 
   def calc_total_catch(self, landing_list):
     PostEvent(self._notify_window, MessageEvent('Reikna út heildarafla\n', 1))

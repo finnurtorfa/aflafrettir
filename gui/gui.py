@@ -16,10 +16,11 @@ from threading import Thread
 EVT_RESULT_ID = 104
 
 class calcThread(Thread):
-  def __init__(self, notify_window, date1, date2):
+  def __init__(self, notify_window, filename, date1, date2):
     Thread.__init__(self)
     
     self._notify_window = notify_window
+    self.filename = filename
     self.date1 = date1
     self.date2 = date2
     self.start()
@@ -35,6 +36,10 @@ class calcThread(Thread):
     landing_list = the_list.get_data_from_html(url_list)
 
     landing_list = the_list.calc_total_catch(landing_list)
+
+    wx.PostEvent(self._notify_window, MessageEvent('Útbý excel skjal %s' % self.filename,
+        1))
+    the_list.save_data(landing_list, self.filename, self.date1, self.date2)
     
     later = datetime.datetime.now()
     est = later - now
@@ -84,7 +89,7 @@ class AflafrettirGUI(wx.Frame):
     date1 = self.page1.date1.GetValue().Format("%d.%m.%Y")
     date2 = self.page1.date2.GetValue().Format("%d.%m.%Y")
 
-    calcThread(self, date1, date2)
+    calcThread(self, 'Hey.xls', date1, date2)
 
   def EVT_RESULT(self, win, func):
     win.Connect(-1, -1, EVT_RESULT_ID, func)

@@ -42,7 +42,7 @@ class QueryLandingURL(object):
   def __iter__(self):
     for url in self.url_list:
       result = self._get_html_content(url)
-      result['harbour'] = url
+      result['Harbour'] = url
       yield result
 
 
