@@ -11,6 +11,8 @@
 
 import logging
 from AflafrettirAPI import LandingURL, QueryLandingURL, ParseHTML, GroupLandingInfo, TotalCatch
+from utils.event import MessageEvent
+from wx import PostEvent
 
 class CalculateList(object):
   def __init__(self, notify_window, date1, date2):
@@ -19,6 +21,8 @@ class CalculateList(object):
     self.landing_urls = LandingURL(self.date_list)
 
   def get_landing_url(self):
+    PostEvent(self._notify_window, MessageEvent('Útbý vefslóðir vegna' +
+      ' fyrirspurna\n', 1))
     landing_url = {}
     for url in self.landing_urls:
       landing_url.update(url)
@@ -31,6 +35,8 @@ class CalculateList(object):
     html = QueryLandingURL(url_dict)
     
     for h in html:
+      PostEvent(self._notify_window, MessageEvent('Sæki upplýsingar um' +
+        ' landanir í/á %s\n' % h['harbour'], 1))
       logging.info("Fetching data for harbour of %s", h['harbour'])
       table = ParseHTML(h)
       for t in table:
@@ -39,6 +45,7 @@ class CalculateList(object):
     return landing_list
 
   def calc_total_catch(self, landing_list):
+    PostEvent(self._notify_window, MessageEvent('Reikna út heildarafla\n', 1))
     groups = GroupLandingInfo(landing_list)
     landing_list = []
     for g in groups:

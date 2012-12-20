@@ -10,7 +10,10 @@
 
 import wx, logging, datetime
 from utils.CalculateList import CalculateList as cl
+from utils.event import MessageEvent
 from threading import Thread
+
+EVT_RESULT_ID = 104
 
 class calcThread(Thread):
   def __init__(self, notify_window, date1, date2):
@@ -22,16 +25,21 @@ class calcThread(Thread):
     self.start()
 
   def run(self):
-    print "running"
     now = datetime.datetime.now()
+    wx.PostEvent(self._notify_window, MessageEvent('Byrja að reikna lista' +
+      ' klukkan %s\n' % now.strftime('%H:%M:%S'), 1))
+    
     the_list = cl(self._notify_window, self.date1, self.date2)
     
     url_list = the_list.get_landing_url()
     landing_list = the_list.get_data_from_html(url_list)
 
     landing_list = the_list.calc_total_catch(landing_list)
-    print landing_list
-    print datetime.datetime.now()-now
+    
+    later = datetime.datetime.now()
+    est = later - now
+    wx.PostEvent(self._notify_window, MessageEvent('Klára að reikna lista' +
+      ' klukkan %s\n' % later.strftime('%H:%M:%S'), 1))
  
 class AflafrettirGUI(wx.Frame):
 
@@ -63,6 +71,7 @@ class AflafrettirGUI(wx.Frame):
     # Event bindings
     self.Bind(wx.EVT_MENU, self.OnQuit, id=101)
     self.Bind(wx.EVT_BUTTON, self.OnGatherInfo, id=201)
+    self.EVT_RESULT(self, self.postMsg)
 
     # Create the menubar and a statusbar
     self.SetMenuBar(menu)
@@ -76,7 +85,13 @@ class AflafrettirGUI(wx.Frame):
     date2 = self.page1.date2.GetValue().Format("%d.%m.%Y")
 
     calcThread(self, date1, date2)
-   
+
+  def EVT_RESULT(self, win, func):
+    win.Connect(-1, -1, EVT_RESULT_ID, func)
+
+  def postMsg(self, e):
+    self.page1.msgBox.AppendText(str(e.data))
+
 class AflafrettirMainPage(wx.Panel):
   def __init__(self, parent):
     wx.Panel.__init__(self, parent, wx.ID_ANY)

@@ -26,14 +26,15 @@ class TotalCatch(object):
 
   def _calc_total_catch(self, id_list):
 
-    id_list[0]['harbour'] = self.get_harbours(id_list)
+    id_list[0]['harbour'] = self.get_unique_values(id_list, 'harbour')
+    id_list[0]['Gear'] = self.get_unique_values(id_list, 'Gear')
     id_list[0]['Catch'] =  sum(i['Catch'] for i in id_list)
     id_list[0]['Number'] = len(id_list)
 
     return id_list[0]
   
-  def get_harbours(self, id_list):
-    unique = {i['harbour']:i['harbour'] for i in id_list}.values()
+  def get_unique_values(self, id_list, key):
+    unique = {i[key]:i[key] for i in id_list}.values()
     return ', '.join(unique)
 
 
