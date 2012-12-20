@@ -13,7 +13,8 @@ import logging
 from AflafrettirAPI import LandingURL, QueryLandingURL, ParseHTML, GroupLandingInfo, TotalCatch
 
 class CalculateList(object):
-  def __init__(self, date1, date2):
+  def __init__(self, notify_window, date1, date2):
+    self._notify_window = notify_window
     self.date_list = [date1, date2]
     self.landing_urls = LandingURL(self.date_list)
 

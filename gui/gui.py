@@ -8,9 +8,31 @@
 #   GUI class for the application. The GUI will use the Aflafrettir web scraping
 #   API to gather data and manipulate it.
 
-import wx, logging
+import wx, logging, datetime
 from utils.CalculateList import CalculateList as cl
+from threading import Thread
 
+class calcThread(Thread):
+  def __init__(self, notify_window, date1, date2):
+    Thread.__init__(self)
+    
+    self._notify_window = notify_window
+    self.date1 = date1
+    self.date2 = date2
+    self.start()
+
+  def run(self):
+    print "running"
+    now = datetime.datetime.now()
+    the_list = cl(self._notify_window, self.date1, self.date2)
+    
+    url_list = the_list.get_landing_url()
+    landing_list = the_list.get_data_from_html(url_list)
+
+    landing_list = the_list.calc_total_catch(landing_list)
+    print landing_list
+    print datetime.datetime.now()-now
+ 
 class AflafrettirGUI(wx.Frame):
 
   def __init__(self, parent, id, title):
@@ -53,14 +75,8 @@ class AflafrettirGUI(wx.Frame):
     date1 = self.page1.date1.GetValue().Format("%d.%m.%Y")
     date2 = self.page1.date2.GetValue().Format("%d.%m.%Y")
 
-    the_list = cl(date1, date2)
-    
-    url_list = the_list.get_landing_url()
-    landing_list = the_list.get_data_from_html(url_list)
-
-    landing_list = the_list.calc_total_catch(landing_list)
-    print landing_list
-    
+    calcThread(self, date1, date2)
+   
 class AflafrettirMainPage(wx.Panel):
   def __init__(self, parent):
     wx.Panel.__init__(self, parent, wx.ID_ANY)
