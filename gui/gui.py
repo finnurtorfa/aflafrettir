@@ -89,8 +89,8 @@ class AflafrettirApp(wx.App):
     return val
 
 def main():
-  app = AflafrettirApp(0)
-  app.MainLoop()
+    app = AflafrettirApp(0)
+    app.MainLoop()
 
 if __name__ == '__main__':
  main() 

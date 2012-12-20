@@ -10,6 +10,7 @@
 #   The ParseHTML class takes in a HTML content of the website and pulls the
 #   necessary data to form a list
 
+import logging
 from BeautifulSoup import BeautifulSoup
 from QueryLandingURL import QueryLandingURL
 
@@ -30,7 +31,8 @@ class ParseHTML(object):
     try:
       landingTable = landingHTML.findAll('table')[2]
     except(IndexError):
-      return {'error':-1}
+      logging.exception('There appears to be no landing information on this page, continue')
+      return {'error':1}
 
     for tr in landingTable.findAll('tr')[1:]:
       for i in range(1,5):

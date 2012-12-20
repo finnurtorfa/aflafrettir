@@ -10,11 +10,7 @@
 #   The CalculateList class calculates the list of landings
 
 import logging
-from api.LandingURL import LandingURL
-from api.QueryLandingURL import QueryLandingURL
-from api.ParseHTML import ParseHTML
-from api.GroupLandingInfo import GroupLandingInfo
-from api.TotalCatch import TotalCatch
+from AflafrettirAPI import LandingURL, QueryLandingURL, ParseHTML, GroupLandingInfo, TotalCatch
 
 class CalculateList(object):
   def __init__(self, date1, date2):
@@ -34,7 +30,7 @@ class CalculateList(object):
     html = QueryLandingURL(url_dict)
     
     for h in html:
-      logging.info("Fetching data for harbour")
+      logging.info("Fetching data for harbour of %s", h['harbour'])
       table = ParseHTML(h)
       for t in table:
         landing_list.append(t)

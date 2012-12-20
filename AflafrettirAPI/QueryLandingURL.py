@@ -10,7 +10,7 @@
 #   The QueryLandingURL class takes as a parameter a url object and returns the
 #   HTML code representing the queried URL
 
-import urllib2, socket
+import urllib2, socket, logging
 
 socket.setdefaulttimeout(10) # 10 sec timeout
 
@@ -27,8 +27,8 @@ class QueryLandingURL(object):
       content = urllib2.urlopen(self.url_list[url])
       content = unicode(content.read(),
           content.headers['content-type'].split('charset=')[-1])
-    except(urllib2.URLError, socket.timeout):
-      print "URLError or Timeout"
+    except(urllib2.URLError, socket.timeout), e:
+      logging.exception('%s', e.args)
       return {
           'error':-1, 
           'content':self.url_list[url]
