@@ -44,7 +44,7 @@ class LandingURL(object):
         'Vopnafjörður':'125', 'Borgarfjörður Eystri':'129', 'Seyðisfjörður':'131', 'Mjóifjörður':'133', 
         'Neskaupstaður':'135', 'Eskifjörður':'137', 'Reyðarfjörður':'139', 'Fáskrúðsfjörður':'141', 
         'Stöðvarfjörður':'143', 'Breiðdalsvík':'145', 'Djúpivogur':'147', 'Hornafjörður':'149', 
-        'Ýmsir staðir':'150'}
+        'Ýmsir staðir':'150', 'Noregur':'163', 'Færeyjar':'167'}
 
   def _request_urls(self, i):
     self.query_params.update({'hofn':self.harbours[i]})

@@ -8,7 +8,7 @@
 #   GUI class for the application. The GUI will use the Aflafrettir web scraping
 #   API to gather data and manipulate it.
 
-import wx, logging, datetime
+import wx, logging, datetime, os.path
 from utils.CalculateList import CalculateList as cl
 from utils.event import MessageEvent
 from threading import Thread
@@ -37,8 +37,7 @@ class calcThread(Thread):
 
     landing_list = the_list.calc_total_catch(landing_list)
 
-    wx.PostEvent(self._notify_window, MessageEvent('Útbý excel skjal %s' % self.filename,
-        1))
+    wx.PostEvent(self._notify_window, MessageEvent('Útbý excel skjal\n', 1))
     the_list.save_data(landing_list, self.filename, self.date1, self.date2)
     
     later = datetime.datetime.now()
@@ -50,7 +49,12 @@ class AflafrettirGUI(wx.Frame):
 
   def __init__(self, parent, id, title):
     wx.Frame.__init__(self, parent, id, title, size=(400, 370))
+    
     self.Show()
+
+    # Some basic settings
+    self.dirname = os.path.join(os.path.dirname(__file__), '..')
+    self.filename = ''
 
     menu = wx.MenuBar() # A new menubar
 
@@ -88,8 +92,27 @@ class AflafrettirGUI(wx.Frame):
   def OnGatherInfo(self, event):
     date1 = self.page1.date1.GetValue().Format("%d.%m.%Y")
     date2 = self.page1.date2.GetValue().Format("%d.%m.%Y")
+    
+    if date1 > date2:
+      tmp = date1
+      date1 = date2
+      date2 = tmp
+    elif date1 == date2:
+      wx.PostEvent(self, MessageEvent('Viðvörun:' +
+        'Dagsetningarnar eru þær sömu\n', 1))
+      return
 
-    calcThread(self, 'Hey.xls', date1, date2)
+    dlg = wx.FileDialog(self, 'Choose a file', self.dirname, '', '*.*', 
+        wx.FD_SAVE | wx.FD_OVERWRITE_PROMPT)
+
+    if dlg.ShowModal() == wx.ID_OK:
+      self.dirname = dlg.GetDirectory()
+      self.filename = dlg.GetFilename()
+      
+      filename = os.path.join(self.dirname, self.filename)
+      calcThread(self, filename, date1, date2)
+
+    dlg.Destroy()
 
   def EVT_RESULT(self, win, func):
     win.Connect(-1, -1, EVT_RESULT_ID, func)

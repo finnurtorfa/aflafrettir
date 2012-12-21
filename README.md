@@ -98,3 +98,14 @@ GroupLandingInfo
         
         for g in groups:
           print g
+
+ExcelListOutput
+---------
+
+*  The ExcelListOutput takes in a landing list and can output the said list in an Excel format.
+
+        excel = ExcelListOutput(landingList)
+
+*  The class method save\_excel() takes care of the operation of putting the list in excel format and can be called like this:
+
+        excel.save_excel()
