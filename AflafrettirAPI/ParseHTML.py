@@ -58,7 +58,7 @@ class ParseHTML(object):
     else:
       select = html.findAll('select')[0]
     for o in select.findAll('option'):
-      result.update({o.string:o.get('value')})
+      result.update({o.string.encode('utf-8'):o.get('value').encode('utf-8')})
     if harbours:
       result.update({'Færeyjar':'167'})
       result.update({'Noregur':'163'})

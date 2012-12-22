@@ -16,10 +16,8 @@ from wx import PostEvent
 
 class CalculateList(object):
   def __init__(self, notify_window, date1, date2):
-    self.harbours, self.species = self.get_lists()
     self._notify_window = notify_window
     self.date_list = [date1, date2]
-    self.landing_urls = LandingURL(self.date_list, self.harbours)
 
   def get_lists(self):
     list_urls =[
@@ -39,8 +37,22 @@ class CalculateList(object):
   def get_landing_url(self):
     msg = 'Útbý vefslóðir vegna fyrirspurna'
     PostEvent(self._notify_window, MessageEvent(msg, 1))
+    
     landing_url = {}
-    for url in self.landing_urls:
+    
+    q_url = '/veidar/aflaupplysingar/landanir-eftir-hofnum/landanir.jsp?'
+    q_p = {'magn':'Samantekt', 'dagurFra':self.date_list[0], 'dagurTil':self.date_list[1]}
+    n_p = 'hofn'
+    
+    q_url2 = '/veidar/aflaupplysingar/afliallartegundir/aflastodulisti_okvb.jsp?'
+    q_p2 = {'p_fra':self.date_list[0], 'p_til':self.date_list[1]}
+    n_p2 = 'p_fteg'
+    
+    harbours, species = self.get_lists()
+    h_urls= LandingURL(harbours, q_url, q_p, n_p)
+    s_urls= LandingURL(species, q_url2, q_p2, n_p2)
+
+    for url in h_urls:
       landing_url.update(url)
 
     return landing_url
