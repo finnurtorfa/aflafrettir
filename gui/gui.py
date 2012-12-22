@@ -27,8 +27,8 @@ class calcThread(Thread):
 
   def run(self):
     now = datetime.datetime.now()
-    wx.PostEvent(self._notify_window, MessageEvent('Byrja að reikna lista' +
-      ' klukkan %s\n' % now.strftime('%H:%M:%S'), 1))
+    msg = 'Byrja að reikna lista klukkan %s\n' % now.strftime('%H:%M:%S')
+    wx.PostEvent(self._notify_window, MessageEvent(msg, 1))
     
     the_list = cl(self._notify_window, self.date1, self.date2)
     
@@ -41,9 +41,8 @@ class calcThread(Thread):
     the_list.save_data(landing_list, self.filename, self.date1, self.date2)
     
     later = datetime.datetime.now()
-    est = later - now
-    wx.PostEvent(self._notify_window, MessageEvent('Klára að reikna lista' +
-      ' klukkan %s\n' % later.strftime('%H:%M:%S'), 1))
+    msg = 'Klára að reikna lista klukkan %s\n' % later.strftime('%H:%M:%S')
+    wx.PostEvent(self._notify_window, MessageEvent(msg, 1))
  
 class AflafrettirGUI(wx.Frame):
 
@@ -98,8 +97,8 @@ class AflafrettirGUI(wx.Frame):
       date1 = date2
       date2 = tmp
     elif date1 == date2:
-      wx.PostEvent(self, MessageEvent('Viðvörun:' +
-        'Dagsetningarnar eru þær sömu\n', 1))
+      msg = 'Viðvörun: Dagsetningar þær sömu\n'
+      wx.PostEvent(self, MessageEvent(msg, 1))
       return
 
     dlg = wx.FileDialog(self, 'Choose a file', self.dirname, '', '*.*', 
@@ -118,7 +117,7 @@ class AflafrettirGUI(wx.Frame):
     win.Connect(-1, -1, EVT_RESULT_ID, func)
 
   def postMsg(self, e):
-    self.page1.msgBox.AppendText(str(e.data))
+    self.page1.msgBox.AppendText(e.data)
 
 class AflafrettirMainPage(wx.Panel):
   def __init__(self, parent):
@@ -148,8 +147,8 @@ class AflafrettirApp(wx.App):
     return val
 
 def main():
-    app = AflafrettirApp(0)
-    app.MainLoop()
+  app = AflafrettirApp(0)
+  app.MainLoop()
 
 if __name__ == '__main__':
  main() 

@@ -50,6 +50,21 @@ class ParseHTML(object):
     
     return result
 
+  def get_list(self, harbours=False):
+    result = {}
+    html = BeautifulSoup(self.html)
+    if harbours:
+      select = html.findAll('select')[1]
+    else:
+      select = html.findAll('select')[0]
+    for o in select.findAll('option'):
+      result.update({o.string:o.get('value')})
+    if harbours:
+      result.update({'Færeyjar':'167'})
+      result.update({'Noregur':'163'})
+
+    return result
+
   def __iter__(self):
     for info in self._get_landing_info():
       if 'error' not in info:
@@ -57,16 +72,26 @@ class ParseHTML(object):
 
 if __name__ == '__main__': # If run on it's own
   
-  url = {
-      'url':'http://www.fiskistofa.is/veidar/aflaupplysingar/landanir-eftir-hofnum/landanir.jsp?dagurFra=01.12.2012&hofn=1&dagurTil=11.12.2012&magn=Samantekt',
-      }
-  landingList = []
+#  url = {
+#      'url':'http://www.fiskistofa.is/veidar/aflaupplysingar/landanir-eftir-hofnum/landanir.jsp?dagurFra=01.12.2012&hofn=1&dagurTil=11.12.2012&magn=Samantekt',
+#      }
+#  landingList = []
+#  html = QueryLandingURL(url)
+#
+#  for i in html:
+#    #print i
+#    table = ParseHTML(i)
+#    for j in table:
+#      landingList.append(j)
+#
+#  print landingList
+
+  url = {'url':'http://www.fiskistofa.is/veidar/aflaupplysingar/afliallartegundir/aflastodulisti_okvb.jsp'}
+  url2 = {'url':'http://www.fiskistofa.is/veidar/aflaupplysingar/landanir-eftir-hofnum/landanir.jsp'}
+
   html = QueryLandingURL(url)
-
+  html2 = QueryLandingURL(url2)
   for i in html:
-    #print i
-    table = ParseHTML(i)
-    for j in table:
-      landingList.append(j)
-
-  print landingList
+    ParseHTML(i).get_fish_list()
+  for i in html2:
+    ParseHTML(i).get_fish_list(True)

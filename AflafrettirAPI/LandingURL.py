@@ -11,13 +11,15 @@
 #   that will be queried
 
 from urllib import urlencode
+from ParseHTML import ParseHTML
+from QueryLandingURL import QueryLandingURL
 
 ###################################################
 # Class: LandingURL
 ###################################################
 class LandingURL(object):
   
-  def __init__(self, date_list):
+  def __init__(self, date_list, harbours):
     
     if len(date_list) is not 2: #If for some reason only 1 date object
       print "The length of the object passed to the LandingURL class must be 2...\nExiting!"
@@ -30,21 +32,22 @@ class LandingURL(object):
         'dagurFra':date_list[0],
         'dagurTil':date_list[1],
         }
-    self.harbours = {'Vestmannaeyjar':'1', 'Þorlákshöfn':'11', 'Grindavík':'13', 'Sandgerði':'17',
-        'Keflavík':'21', 'Vogar':'25', 'Hafnarfjörður':'27', 'Kópavogur':'31', 'Reykjavík':'33', 
-        'Akranes':'35', 'Hvalseyjar':'36', 'Arnarstapi':'38', 'Rif':'42', 'Ólafsvík':'43', 
-        'Grundarfjörður':'45', 'Stykkishólmur':'47', 'Brjánslækur ':'55', 'Haukabergsvaðall':'56', 
-        'Patreksfjörður':'57', 'Tálknafjörður':'59', 'Bíldudalur':'61', 'Þingeyri':'63', 
-        'Flateyri':'65', 'Suðureyri':'67', 'Bolungarvík':'69', 'Ísafjörður':'73', 'Súðavík':'75', 
-        'Norðurfjörður ':'77', 'Drangsnes':'79', 'Hólmavík':'81', 'Hvammstangi':'83', 'Blönduós':'85', 
-        'Skagaströnd':'87', 'Sauðárkrókur':'89', 'Hofsós':'91', 'Haganesvík':'92', 'Siglufjörður':'93', 
-        'Ólafsfjörður':'95', 'Grímsey':'97', 'Hrísey':'99', 'Dalvík':'101', 'Árskógssandur':'103', 
-        'Hauganes':'104', 'Hjalteyri':'105', 'Akureyri':'107', 'Grenivík':'111', 'Húsavík':'115', 
-        'Kópasker':'117', 'Raufarhöfn':'119', 'Þórshöfn':'121', 'Bakkafjörður':'123', 
-        'Vopnafjörður':'125', 'Borgarfjörður Eystri':'129', 'Seyðisfjörður':'131', 'Mjóifjörður':'133', 
-        'Neskaupstaður':'135', 'Eskifjörður':'137', 'Reyðarfjörður':'139', 'Fáskrúðsfjörður':'141', 
-        'Stöðvarfjörður':'143', 'Breiðdalsvík':'145', 'Djúpivogur':'147', 'Hornafjörður':'149', 
-        'Ýmsir staðir':'150', 'Noregur':'163', 'Færeyjar':'167'}
+    self.harbours = harbours
+#    {'Vestmannaeyjar':'1', 'Þorlákshöfn':'11', 'Grindavík':'13', 'Sandgerði':'17',
+#        'Keflavík':'21', 'Vogar':'25', 'Hafnarfjörður':'27', 'Kópavogur':'31', 'Reykjavík':'33', 
+#        'Akranes':'35', 'Hvalseyjar':'36', 'Arnarstapi':'38', 'Rif':'42', 'Ólafsvík':'43', 
+#        'Grundarfjörður':'45', 'Stykkishólmur':'47', 'Brjánslækur ':'55', 'Haukabergsvaðall':'56', 
+#        'Patreksfjörður':'57', 'Tálknafjörður':'59', 'Bíldudalur':'61', 'Þingeyri':'63', 
+#        'Flateyri':'65', 'Suðureyri':'67', 'Bolungarvík':'69', 'Ísafjörður':'73', 'Súðavík':'75', 
+#        'Norðurfjörður ':'77', 'Drangsnes':'79', 'Hólmavík':'81', 'Hvammstangi':'83', 'Blönduós':'85', 
+#        'Skagaströnd':'87', 'Sauðárkrókur':'89', 'Hofsós':'91', 'Haganesvík':'92', 'Siglufjörður':'93', 
+#        'Ólafsfjörður':'95', 'Grímsey':'97', 'Hrísey':'99', 'Dalvík':'101', 'Árskógssandur':'103', 
+#        'Hauganes':'104', 'Hjalteyri':'105', 'Akureyri':'107', 'Grenivík':'111', 'Húsavík':'115', 
+#        'Kópasker':'117', 'Raufarhöfn':'119', 'Þórshöfn':'121', 'Bakkafjörður':'123', 
+#        'Vopnafjörður':'125', 'Borgarfjörður Eystri':'129', 'Seyðisfjörður':'131', 'Mjóifjörður':'133', 
+#        'Neskaupstaður':'135', 'Eskifjörður':'137', 'Reyðarfjörður':'139', 'Fáskrúðsfjörður':'141', 
+#        'Stöðvarfjörður':'143', 'Breiðdalsvík':'145', 'Djúpivogur':'147', 'Hornafjörður':'149', 
+#        'Ýmsir staðir':'150', 'Noregur':'163', 'Færeyjar':'167'}
 
   def _request_urls(self, i):
     self.query_params.update({'hofn':self.harbours[i]})

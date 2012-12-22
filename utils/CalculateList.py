@@ -1,5 +1,5 @@
 #!/usr/bin/python
-# -*- coding: utf-8 -*-
+# -*- coding: cp1252 -*-
 # 
 # File: LandingURL.py
 # Author: Finnur Smári Torfason
@@ -11,20 +11,34 @@
 
 import logging
 from AflafrettirAPI import *
-#from AflafrettirAPI import LandingURL, QueryLandingURL, ParseHTML
-#from AflafrettirAPI import GroupLandingInfo, TotalCatch, ExcelListOutput
 from utils.event import MessageEvent
 from wx import PostEvent
 
 class CalculateList(object):
   def __init__(self, notify_window, date1, date2):
+    self.harbours, self.species = self.get_lists()
     self._notify_window = notify_window
     self.date_list = [date1, date2]
-    self.landing_urls = LandingURL(self.date_list)
+    self.landing_urls = LandingURL(self.date_list, self.harbours)
+
+  def get_lists(self):
+    list_urls =[
+        {'harbour':'http://www.fiskistofa.is/veidar/aflaupplysingar/landanir-eftir-hofnum/landanir.jsp'},
+        {'species':'http://www.fiskistofa.is/veidar/aflaupplysingar/afliallartegundir/aflastodulisti_okvb.jsp'}
+        ]
+    harbours = QueryLandingURL(list_urls[0])
+    species = QueryLandingURL(list_urls[1])
+    for h in harbours:
+      harbour_list = ParseHTML(h).get_list(True)
+    for s in species:
+      species_list = ParseHTML(s).get_list()
+
+    return (harbour_list, species_list)
+ 
 
   def get_landing_url(self):
-    PostEvent(self._notify_window, MessageEvent('Útbý vefslóðir vegna' +
-      ' fyrirspurna\n', 1))
+    msg = 'Útbý vefslóðir vegna fyrirspurna'
+    PostEvent(self._notify_window, MessageEvent(msg, 1))
     landing_url = {}
     for url in self.landing_urls:
       landing_url.update(url)
@@ -37,8 +51,8 @@ class CalculateList(object):
     html = QueryLandingURL(url_dict)
     
     for h in html:
-      PostEvent(self._notify_window, MessageEvent('Sæki upplýsingar um' +
-        ' landanir í/á %s\n' % h['Harbour'], 1))
+      msg = 'Sæki upplýsingar um landanir í/á %s\n' % str(h['Harbour'])
+      PostEvent(self._notify_window, MessageEvent(msg, 1))
       logging.info("Fetching data for harbour of %s", h['Harbour'])
       table = ParseHTML(h)
       for t in table:
