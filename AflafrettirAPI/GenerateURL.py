@@ -12,6 +12,19 @@
   docstring. It returns a dictionary with a URL that can be used to query the
   database of the website of Directorate of Fisheries in Iceland in a desired
   way.
+
+  Example use of the class:
+
+    # Initialization parameters
+    base_url ='http://www.fiskistofa.is/veidar/aflaupplysingar/landanir-eftir-hofnum/landanir.jsp?'
+    query_param = {'magn':'Samantekt','dagurFra':'01.01.2012,'dagurTil':'02.02.2012'}
+    new_param = 'hofn'
+
+    urls = GenerateURL(base_url, query_params, new_param)
+
+    # Iterate over the GenerateURL object to get the query_urls
+    for u in urls:
+      print u
 """
 from urllib import urlencode
 from ParseHTML import ParseHTML
@@ -25,13 +38,16 @@ class GenerateURL(object):
   def __init__(self, base_url, query_params, new_param, species=False):
     """
     Initialize function. To Initialize the GenerateURL object upon creation
-    Input:
-      base_url: The base URL for querying
+    Args:
+      self:         The instance attributes of the GenerateURL object
+      base_url:     The base URL for querying
       query_params: The HTTP GET parameters
-      new_param: An extra query_param that is appended to the query_params when
-        it's value is known
-      species: A boolean variable used to distinguish between types of queries,
-        as explained in the _reques_urls() function
+      new_param:    An extra query_param that is appended to the query_params
+                    when it's value is known
+      species:      A boolean variable used to distinguish between types of
+                    queries, as explained in the _reques_urls() function
+    Returns:
+      None
     """
     self.base_url = base_url
     self.query_params = query_params
@@ -47,6 +63,11 @@ class GenerateURL(object):
     database for landings per harbours
     If self.species is False, this function returns a url for querying the
     database for how much each ship has caught of each species.
+    Args:
+      self: The instance attributes of the GenerateURL object
+      i:    A dictionary key from the self.param_dict
+    Returns:
+      url: An URL 
     """
     self.query_params.update({self.new_param:self.param_dict[i]})
     url = self.base_url + urlencode(self.query_params)
@@ -62,18 +83,25 @@ class GenerateURL(object):
     available
     If self.species is False, then this function returns a dictionary of
     harbours and their id's.
+    Args:
+      self: The instance attributes of the GenerateURL object
+    Returns: 
+      result: A dictionary containing the species, or harbours and their id's
     """
-    key = 'None'
-    html = QueryURL({'url':self.base_url}, key)
-    for h in html:
-      result = ParseHTML(h, key).get_list(self.species)
-
+    html = QueryURL({'url':self.base_url}).get_html_content(self.base_url, 0.5)
+    html.update({'name':self.base_url})
+    result = ParseHTML(html).get_list(self.species)
+    
     return result
  
   def __iter__(self):
     """
     Iterate over the param_dict dictionary to yield a complete request URL to
     query later.
+    Args:
+      self: The instance attributes of the GenerateURL object
+    Yields:
+      result: A dictionary containing the species, or harbours and their id's
     """
     for i in self.param_dict:
       result = {}
@@ -108,7 +136,7 @@ if __name__ == '__main__':
     species.update(i)
 
   print harbours
- print species
+  print species
 
 # Authorship information
 __author__ = 'Finnur Smári Torfason'
@@ -119,5 +147,4 @@ __license__ = 'GPL'
 __version__ = '0.1'
 __maintainer__ = 'Finnur Smári Torfason'
 __email__ = 'finnurtorfa@gmail.com'
-__status__ 'Development'
-
+__status__ = 'Development'

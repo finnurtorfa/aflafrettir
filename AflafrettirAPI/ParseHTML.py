@@ -19,8 +19,8 @@ from QueryURL import QueryURL
 ###################################################
 class ParseHTML(object):
 
-  def __init__(self, html_dict, key):
-    self.harbour = html_dict[key]
+  def __init__(self, html_dict):
+    self.name = html_dict['name']
     self.html = html_dict['content']
     self.fieldType = ['ShipID', 'Name', 'Gear', 'Catch']
     self.row = dict()
@@ -44,7 +44,7 @@ class ParseHTML(object):
             self.row.update({self.fieldType[i-1]:int(td)})
           else:
             self.row.update({self.fieldType[i-1]:td})
-      self.row['Harbour'] = self.harbour
+      self.row['Harbour'] = self.name
       result.append(self.row)
       self.row = dict()
     
