@@ -24,12 +24,13 @@ class CalculateList(object):
         {'harbour':'http://www.fiskistofa.is/veidar/aflaupplysingar/landanir-eftir-hofnum/landanir.jsp'},
         {'species':'http://www.fiskistofa.is/veidar/aflaupplysingar/afliallartegundir/aflastodulisti_okvb.jsp'}
         ]
-    harbours = QueryLandingURL(list_urls[0])
-    species = QueryLandingURL(list_urls[1])
+    key = 'None'
+    harbours = QueryLandingURL(list_urls[0], key)
+    species = QueryLandingURL(list_urls[1], key)
     for h in harbours:
-      harbour_list = ParseHTML(h).get_list(True)
+      harbour_list = ParseHTML(h, key).get_list(True)
     for s in species:
-      species_list = ParseHTML(s).get_list()
+      species_list = ParseHTML(s,key).get_list()
 
     return (harbour_list, species_list)
  
@@ -38,7 +39,8 @@ class CalculateList(object):
     msg = 'Útbý vefslóðir vegna fyrirspurna'
     PostEvent(self._notify_window, MessageEvent(msg, 1))
     
-    landing_url = {}
+    harbour_url = {}
+    species_url = {}
     
     q_url = '/veidar/aflaupplysingar/landanir-eftir-hofnum/landanir.jsp?'
     q_p = {'magn':'Samantekt', 'dagurFra':self.date_list[0], 'dagurTil':self.date_list[1]}
@@ -53,20 +55,23 @@ class CalculateList(object):
     s_urls= LandingURL(species, q_url2, q_p2, n_p2)
 
     for url in h_urls:
-      landing_url.update(url)
+      harbour_url.update(url)
 
-    return landing_url
+    for url in s_urls:
+      species_url.update(url)
 
-  def get_data_from_html(self, url_dict):
+    return (harbour_url, species_url)
+
+  def get_data_from_html(self, url_dict, new_key, species=False):
     html_dict = {}
     landing_list = []
-    html = QueryLandingURL(url_dict)
+    html = QueryLandingURL(url_dict, new_key)
     
     for h in html:
       msg = 'Sæki upplýsingar um landanir í/á %s\n' % str(h['Harbour'])
       PostEvent(self._notify_window, MessageEvent(msg, 1))
       logging.info("Fetching data for harbour of %s", h['Harbour'])
-      table = ParseHTML(h)
+      table = ParseHTML(h, new_key)
       for t in table:
         landing_list.append(t)
 

@@ -12,15 +12,15 @@
 
 import logging
 from BeautifulSoup import BeautifulSoup
-from QueryLandingURL import QueryLandingURL
+from QueryURL import QueryURL
 
 ###################################################
 # Class: ParseHTML
 ###################################################
 class ParseHTML(object):
 
-  def __init__(self, html_dict):
-    self.harbour = html_dict['Harbour']
+  def __init__(self, html_dict, key):
+    self.harbour = html_dict[key]
     self.html = html_dict['content']
     self.fieldType = ['ShipID', 'Name', 'Gear', 'Catch']
     self.row = dict()
@@ -50,16 +50,16 @@ class ParseHTML(object):
     
     return result
 
-  def get_list(self, harbours=False):
+  def get_list(self, species=False):
     result = {}
     html = BeautifulSoup(self.html)
-    if harbours:
-      select = html.findAll('select')[1]
-    else:
+    if species:
       select = html.findAll('select')[0]
+    else:
+      select = html.findAll('select')[1]
     for o in select.findAll('option'):
       result.update({o.string.encode('utf-8'):o.get('value').encode('utf-8')})
-    if harbours:
+    if not species:
       result.update({'Færeyjar':'167'})
       result.update({'Noregur':'163'})
 
@@ -72,7 +72,6 @@ class ParseHTML(object):
 
 if __name__ == '__main__': # If run on it's own
   
-#  url = {
 #      'url':'http://www.fiskistofa.is/veidar/aflaupplysingar/landanir-eftir-hofnum/landanir.jsp?dagurFra=01.12.2012&hofn=1&dagurTil=11.12.2012&magn=Samantekt',
 #      }
 #  landingList = []

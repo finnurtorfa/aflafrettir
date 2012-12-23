@@ -17,10 +17,11 @@ socket.setdefaulttimeout(10) # 10 sec timeout
 ###################################################
 # Class: QueryLandingURL
 ###################################################
-class QueryLandingURL(object):
+class QueryURL(object):
   
-  def __init__(self, url_list):
+  def __init__(self, url_list, new_key):
     self.url_list = url_list
+    self.new_key = new_key
     
   def _get_html_content(self, url):
     try:
@@ -42,7 +43,7 @@ class QueryLandingURL(object):
   def __iter__(self):
     for url in self.url_list:
       result = self._get_html_content(url)
-      result['Harbour'] = url
+      result[self.new_key] = url
       yield result
 
 
