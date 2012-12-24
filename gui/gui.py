@@ -32,7 +32,7 @@ class calcThread(Thread):
     
     the_list = cl(self._notify_window, self.date1, self.date2)
     
-    h_list, s_list = the_list.get_landing_url()
+    h_list, s_list = the_list.get_lists([self.date1, self.date2])
     landing_list = the_list.get_data_from_html(h_list, 'Harbour')
 
     landing_list = the_list.calc_total_catch(landing_list)

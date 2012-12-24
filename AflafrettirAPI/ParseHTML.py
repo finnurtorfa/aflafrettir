@@ -75,7 +75,7 @@ if __name__ == '__main__': # If run on it's own
 #      'url':'http://www.fiskistofa.is/veidar/aflaupplysingar/landanir-eftir-hofnum/landanir.jsp?dagurFra=01.12.2012&hofn=1&dagurTil=11.12.2012&magn=Samantekt',
 #      }
 #  landingList = []
-#  html = QueryLandingURL(url)
+#  html = QueryURL(url)
 #
 #  for i in html:
 #    #print i
@@ -88,8 +88,8 @@ if __name__ == '__main__': # If run on it's own
   url = {'url':'http://www.fiskistofa.is/veidar/aflaupplysingar/afliallartegundir/aflastodulisti_okvb.jsp'}
   url2 = {'url':'http://www.fiskistofa.is/veidar/aflaupplysingar/landanir-eftir-hofnum/landanir.jsp'}
 
-  html = QueryLandingURL(url)
-  html2 = QueryLandingURL(url2)
+  html = QueryURL(url)
+  html2 = QueryURL(url2)
   for i in html:
     ParseHTML(i).get_fish_list()
   for i in html2:

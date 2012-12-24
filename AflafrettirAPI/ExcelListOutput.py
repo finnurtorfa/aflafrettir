@@ -11,7 +11,7 @@
 #   containing landing info and sorts the list in descending order by the catch.
 #   Then it puts the list in an excel(.xls) format.
 
-from QueryLandingURL import QueryLandingURL
+from QueryURL import QueryURL
 from ParseHTML import ParseHTML
 from TotalCatch import TotalCatch
 import xlwt
@@ -68,7 +68,7 @@ if __name__ == '__main__': # If run on it's own
       'url1':'http://www.fiskistofa.is/veidar/aflaupplysingar/landanir-eftir-hofnum/landanir.jsp?dagurFra=01.12.2012&hofn=149&dagurTil=11.12.2012&magn=Samantekt',
       }
   landingList = []
-  html = QueryLandingURL(url)
+  html = QueryURL(url)
 
   for i in html:
     table = ParseHTML(i)

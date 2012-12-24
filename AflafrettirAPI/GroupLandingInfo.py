@@ -10,7 +10,7 @@
 #   The GroupLandingInfo class takes as a parameter a list of dictionaries containing
 #   the info for the landings. Then it group the list into gears.
 
-from QueryLandingURL import QueryLandingURL
+from QueryURL import QueryURL
 from ParseHTML import ParseHTML
 from TotalCatch import TotalCatch
 
@@ -51,7 +51,7 @@ if __name__ == '__main__': # If run on it's own
       'url3':'http://www.fiskistofa.is/veidar/aflaupplysingar/landanir-eftir-hofnum/landanir.jsp?dagurFra=01.12.2011&hofn=1&dagurTil=11.12.2012&magn=Samantekt',
       }
   landingList = []
-  html = QueryLandingURL(url)
+  html = QueryURL(url)
 
   for i in html:
     table = ParseHTML(i)

@@ -11,7 +11,7 @@
 #   the info for the landings. Then it calculates the total catch for all the
 #   unique ShipID's in the list. 
 
-from QueryLandingURL import QueryLandingURL
+from QueryURL import QueryURL
 from ParseHTML import ParseHTML
 
 

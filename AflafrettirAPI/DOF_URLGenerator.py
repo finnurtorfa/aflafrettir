@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 """ 
 Class: DOF_URLGenerator.py
-=========
+---------
 
 *  The DOF_URLGenerator class is used by the Aflafrettir API, a web scraping API. The
 API is used to gather information on landings from the website of Directorate

@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 """
 Class: QueryURL
-=========
+---------
 
 *  The QueryURL class is used by the Aflafrettir API, a web scraping API. The API is used to gather information on landings from the website of Directorate of Fisheries in Iceland.
 
@@ -56,7 +56,7 @@ class QueryURL(object):
         result = {'error':0, 'content':content}
         break
       except (urllib2.URLError, socket.timeout), e:
-        logging.exception('Attempt %d failed while fetching %s\n%s',attempt, url, e.args)
+        logging.exception('Attempt %d failed while fetching %s\n%s',attempts, url, e.args)
         time.sleep(timeout)
         result = {'error':-1, 'content':url}
 

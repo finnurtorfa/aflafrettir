@@ -10,29 +10,41 @@
 #   The CalculateList class calculates the list of landings
 
 import logging
-from AflafrettirAPI import *
-from utils.event import MessageEvent
 from wx import PostEvent
+from utils.event import MessageEvent
+from AflafrettirAPI import *
 
 class CalculateList(object):
   def __init__(self, notify_window, date1, date2):
     self._notify_window = notify_window
     self.date_list = [date1, date2]
 
-  def get_lists(self):
-    list_urls =[
-        {'harbour':'http://www.fiskistofa.is/veidar/aflaupplysingar/landanir-eftir-hofnum/landanir.jsp'},
-        {'species':'http://www.fiskistofa.is/veidar/aflaupplysingar/afliallartegundir/aflastodulisti_okvb.jsp'}
+  def get_lists(self, date_list):
+    msg = 'Útbý vefslóðir vegna fyrirspurna\n'
+    PostEvent(self._notify_window, MessageEvent(msg, 1))
+    
+    q_urls =[
+        'http://www.fiskistofa.is/veidar/aflaupplysingar/landanir-eftir-hofnum/landanir.jsp?',
+        'http://www.fiskistofa.is/veidar/aflaupplysingar/afliallartegundir/aflastodulisti_okvb.jsp?'
         ]
-    key = 'None'
-    harbours = QueryLandingURL(list_urls[0], key)
-    species = QueryLandingURL(list_urls[1], key)
-    for h in harbours:
-      harbour_list = ParseHTML(h, key).get_list(True)
-    for s in species:
-      species_list = ParseHTML(s,key).get_list()
+    q_params = [
+        {'magn':'Samantekt', 'dagurFra':date_list[0], 'dagurTil':date_list[1]},
+        {'p_fra':date_list[0], 'p_til':date_list[1]}
+        ]
+    n_params = ['hofn', 'p_fteg']
 
-    return (harbour_list, species_list)
+    harbours = DOF_URLGenerator(q_urls[0], q_params[0], n_params[0])
+    species = DOF_URLGenerator(q_urls[1], q_params[1], n_params[1], True)
+
+    h_urls = {}
+    s_urls = {}
+ 
+    for h in harbours:
+      h_urls.update(h)
+    for s in species:
+      s_urls.update(s)
+
+    return (h_urls, s_urls)
  
 
   def get_landing_url(self):
@@ -65,13 +77,13 @@ class CalculateList(object):
   def get_data_from_html(self, url_dict, new_key, species=False):
     html_dict = {}
     landing_list = []
-    html = QueryLandingURL(url_dict, new_key)
+    html = QueryURL(url_dict)
     
     for h in html:
-      msg = 'Sæki upplýsingar um landanir í/á %s\n' % str(h['Harbour'])
+      msg = 'Sæki upplýsingar vegna %s\n' % str(h['name'])
       PostEvent(self._notify_window, MessageEvent(msg, 1))
-      logging.info("Fetching data for harbour of %s", h['Harbour'])
-      table = ParseHTML(h, new_key)
+      logging.info("Fetching data for %s", h['name'])
+      table = ParseHTML(h)
       for t in table:
         landing_list.append(t)
 

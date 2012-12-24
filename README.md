@@ -39,17 +39,31 @@ Then go to your $VIRTUAL\_ENV/aflafrettir/lib/python2.7/site-packages/ folder an
 
 Depending on your system and version python and wxPython the symlinks could vary.
 
-LandingURL
+Class: DOF_URLGenerator.py
 ---------
 
-*  The LandingURL class takes in a list with 2 date objects, and can be created with:
+*  The DOF_URLGenerator class is used by the Aflafrettir API, a web scraping API. The
+API is used to gather information on landings from the website of Directorate
+of Fisheries in Iceland.
+
+*  The DOF_URLGenerator class is initialized with a base_url, query_params, new_param
+and an optional parameter called species, as described by the __init__
+docstring. It returns a dictionary with a URL that can be used to query the
+database of the website of Directorate of Fisheries in Iceland in a desired
+way.
+
+*  Example use of the class:
         
-        query_urls = LandingURL([date1, date2]) # date format: dd.mm.yyyy
+        # Initialization parameters
+        base_url ='http://www.fiskistofa.is/veidar/aflaupplysingar/landanir-eftir-hofnum/landanir.jsp?'
+        query_param = {'magn':'Samantekt','dagurFra':'01.01.2012,'dagurTil':'02.02.2012'}
+        new_param = 'hofn'
 
-*  Now it is possible to iterate over the query\_urls objects like so
+        urls = DOF_URLGenerator(base_url, query_params, new_param)
 
-        for i in query_urls:
-          print i
+        # Iterate over the DOF_URLGenerator object to get the query_urls
+        for u in urls:
+          print u
 
 QueryLandingURL
 ---------
