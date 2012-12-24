@@ -1,51 +1,49 @@
 #!/usr/bin/python
 # -*- coding: utf-8 -*-
 """ 
-  File: GenerateURL.py
+Class: DOF_URLGenerator.py
+=========
 
-  The GenerateURL class is used by the Aflafrettir API, a web scraping API. The
-  API is used to gather information on landings from the website of Directorate
-  of Fisheries in Iceland.
+*  The DOF_URLGenerator class is used by the Aflafrettir API, a web scraping API. The
+API is used to gather information on landings from the website of Directorate
+of Fisheries in Iceland.
 
-  The GenerateURL class is initialized with a base_url, query_params, new_param
-  and an optional parameter called species, as described by the __init__
-  docstring. It returns a dictionary with a URL that can be used to query the
-  database of the website of Directorate of Fisheries in Iceland in a desired
-  way.
+*  The DOF_URLGenerator class is initialized with a base_url, query_params, new_param
+and an optional parameter called species, as described by the __init__
+docstring. It returns a dictionary with a URL that can be used to query the
+database of the website of Directorate of Fisheries in Iceland in a desired
+way.
 
-  Example use of the class:
+*  Example use of the class:
+        
+        # Initialization parameters
+        base_url ='http://www.fiskistofa.is/veidar/aflaupplysingar/landanir-eftir-hofnum/landanir.jsp?'
+        query_param = {'magn':'Samantekt','dagurFra':'01.01.2012,'dagurTil':'02.02.2012'}
+        new_param = 'hofn'
 
-    # Initialization parameters
-    base_url ='http://www.fiskistofa.is/veidar/aflaupplysingar/landanir-eftir-hofnum/landanir.jsp?'
-    query_param = {'magn':'Samantekt','dagurFra':'01.01.2012,'dagurTil':'02.02.2012'}
-    new_param = 'hofn'
+        urls = DOF_URLGenerator(base_url, query_params, new_param)
 
-    urls = GenerateURL(base_url, query_params, new_param)
-
-    # Iterate over the GenerateURL object to get the query_urls
-    for u in urls:
-      print u
+        # Iterate over the DOF_URLGenerator object to get the query_urls
+        for u in urls:
+          print u
 """
 from urllib import urlencode
 from ParseHTML import ParseHTML
 from QueryURL import QueryURL
 
-class GenerateURL(object):
-  """
-  class: GenerateURL
-  """
+class DOF_URLGenerator(object):
   
   def __init__(self, base_url, query_params, new_param, species=False):
     """
-    Initialize function. To Initialize the GenerateURL object upon creation
     Args:
-      self:         The instance attributes of the GenerateURL object
+      self:         The instance attributes of the DOF_URLGenerator object
       base_url:     The base URL for querying
       query_params: The HTTP GET parameters
       new_param:    An extra query_param that is appended to the query_params
                     when it's value is known
       species:      A boolean variable used to distinguish between types of
-                    queries, as explained in the _reques_urls() function
+                    queries, as explained in the _reques_urls() function.
+                    Optional
     Returns:
       None
     """
@@ -57,14 +55,8 @@ class GenerateURL(object):
 
   def _request_urls(self, i):
     """
-    This function returns the query url used to query the database of
-    Directorate of Fisheries in Iceland.
-    If self.species is True, this function returns a url for querying the
-    database for landings per harbours
-    If self.species is False, this function returns a url for querying the
-    database for how much each ship has caught of each species.
     Args:
-      self: The instance attributes of the GenerateURL object
+      self: The instance attributes of the DOF_URLGenerator object
       i:    A dictionary key from the self.param_dict
     Returns:
       url: An URL 
@@ -77,14 +69,8 @@ class GenerateURL(object):
   
   def get_params(self):
     """
-    This function fetches the query parameters from the website of Directorate
-    of Fisheries in Iceland. 
-    If self.species is True, then this function returns a dictionary of species
-    available
-    If self.species is False, then this function returns a dictionary of
-    harbours and their id's.
     Args:
-      self: The instance attributes of the GenerateURL object
+      self: The instance attributes of the DOF_URLGenerator object
     Returns: 
       result: A dictionary containing the species, or harbours and their id's
     """
@@ -96,10 +82,8 @@ class GenerateURL(object):
  
   def __iter__(self):
     """
-    Iterate over the param_dict dictionary to yield a complete request URL to
-    query later.
     Args:
-      self: The instance attributes of the GenerateURL object
+      self: The instance attributes of the DOF_URLGenerator object
     Yields:
       result: A dictionary containing the species, or harbours and their id's
     """
@@ -110,10 +94,6 @@ class GenerateURL(object):
       yield result
 
 if __name__ == '__main__':
-  """
-  For testing purposes. This part of the program is only run if the class is
-  called explicitly
-  """
   dates = ['01.12.2012', '11.12.2012']
   
   q_url ='http://www.fiskistofa.is/veidar/aflaupplysingar/landanir-eftir-hofnum/landanir.jsp?'
@@ -124,8 +104,8 @@ if __name__ == '__main__':
   q_p2 = {'p_fra':dates[0], 'p_til':dates[1]}
   n_p2 = 'p_fteg'
 
-  urls = GenerateURL(q_url, q_p, n_p)
-  urls2 = GenerateURL(q_url2, q_p2, n_p2, True)
+  urls = DOF_URLGenerator(q_url, q_p, n_p)
+  urls2 = DOF_URLGenerator(q_url2, q_p2, n_p2, True)
   
   harbours = {}
   species = {}
