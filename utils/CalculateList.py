@@ -45,34 +45,6 @@ class CalculateList(object):
       s_urls.update(s)
 
     return (h_urls, s_urls)
- 
-
-  def get_landing_url(self):
-    msg = 'Útbý vefslóðir vegna fyrirspurna'
-    PostEvent(self._notify_window, MessageEvent(msg, 1))
-    
-    harbour_url = {}
-    species_url = {}
-    
-    q_url = '/veidar/aflaupplysingar/landanir-eftir-hofnum/landanir.jsp?'
-    q_p = {'magn':'Samantekt', 'dagurFra':self.date_list[0], 'dagurTil':self.date_list[1]}
-    n_p = 'hofn'
-    
-    q_url2 = '/veidar/aflaupplysingar/afliallartegundir/aflastodulisti_okvb.jsp?'
-    q_p2 = {'p_fra':self.date_list[0], 'p_til':self.date_list[1]}
-    n_p2 = 'p_fteg'
-    
-    harbours, species = self.get_lists()
-    h_urls= LandingURL(harbours, q_url, q_p, n_p)
-    s_urls= LandingURL(species, q_url2, q_p2, n_p2)
-
-    for url in h_urls:
-      harbour_url.update(url)
-
-    for url in s_urls:
-      species_url.update(url)
-
-    return (harbour_url, species_url)
 
   def get_data_from_html(self, url_dict, new_key, species=False):
     html_dict = {}

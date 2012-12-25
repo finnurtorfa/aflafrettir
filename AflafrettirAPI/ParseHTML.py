@@ -1,56 +1,97 @@
 #!/usr/bin/python
 # -*- coding: utf-8 -*-
-# 
-# File: ParseHTML.py
-# Author: Finnur Smári Torfason
-# Date: 11.12.2012
-# About:
-#   Class for gathering landing information from the web page of the Directorate
-#   of Fisheries in Iceland.
-#   The ParseHTML class takes in a HTML content of the website and pulls the
-#   necessary data to form a list
+""" 
+Class: ParseHTML.py
+---------
+
+*  The ParseHTML class is used by the Aflafrettir API, a web scraping API. The
+API is used to gather information on landings from the website of Directorate
+of Fisheries in Iceland.
+
+*  The ParseHTML class is initialized with a html_dict, tbl_row_no,
+fields, field_range, as described by
+the __init__ docstring. It returns a dictionary with all the values of the html
+page that was given as a input.
+
+*  Example use of the class:
+        
+        # Initialization parameters
+        url = {'url':'http://www.fiskistofa.is/veidar/aflaupplysingar/afliallartegundir/aflastodulisti_okvb.jsp?p_fteg=Ýsa+2&p_fra=01.12.2012&p_til=22.12.2012'}
+          
+          html = QueryURL(url)
+          for h in html:
+            info = ParseHTML(h, [1, 2], ['ShipID', 'Name', 'Gear', 'Catch'], range(0,4))
+            for i in info:
+              print i
+"""
 
 import logging
 from BeautifulSoup import BeautifulSoup
 from QueryURL import QueryURL
 
-###################################################
-# Class: ParseHTML
-###################################################
 class ParseHTML(object):
 
-  def __init__(self, html_dict):
+  def __init__(self, html_dict, tbl_row_no, fields, field_range):
+    """
+    Args:
+      self:         The instance attributes of the ParseHTML object
+      html_dict:    A Dictionary containing the html code and other necessary info
+      tbl_row_no:   A list with the table number and row number where the data is
+                  contained.
+      fields:       Name of the fields of interest
+      field_range:  Range over which the fields of interest are located.
+    Returns:
+      None
+    """
     self.name = html_dict['name']
     self.html = html_dict['content']
-    self.fieldType = ['ShipID', 'Name', 'Gear', 'Catch']
-    self.row = dict()
+    self.tbl_row_no = tbl_row_no
+    self.fields = fields 
+    self.field_range = field_range
     
   def _get_landing_info(self):
+    """
+    Args:
+      self:   The instance attributes of the ParseHTML object
+    Returns:
+      result: A dictionary with the fields of interest as keys, and the
+               corresponding value
+    """
     result = []
-    landingHTML = BeautifulSoup(self.html)
+    row = {}
+    html = BeautifulSoup(self.html)
+    
     try:
-      landingTable = landingHTML.findAll('table')[2]
+      table = html.findAll('table')[self.tbl_row_no[0]]
     except(IndexError):
-      logging.exception('There appears to be no landing information on this page, continue')
+      logging.exception('There appears to be no info of interest on this page, continue')
       return {'error':1}
 
-    for tr in landingTable.findAll('tr')[1:]:
-      for i in range(1,5):
+    for tr in table.findAll('tr')[self.tbl_row_no[1]:]:
+      for index, i in enumerate(self.field_range):
         for td in tr.findAll('td')[i]:
-          if i is 1:
-            self.row.update({self.fieldType[i-1]:int(td)})
-          elif i is 4:
-            td = td.replace('.','')
-            self.row.update({self.fieldType[i-1]:int(td)})
+          td = td.replace('.', '').strip()
+          if index == 0:
+            row.update({self.fields[index]:int(td)})
+          elif index == 3:
+            row.update({self.fields[index]:int(td)})
           else:
-            self.row.update({self.fieldType[i-1]:td})
-      self.row['Harbour'] = self.name
-      result.append(self.row)
-      self.row = dict()
+            row.update({self.fields[index]:td})
+      row['name-key'] = self.name
+      result.append(row)
+      row = {}
     
     return result
 
   def get_list(self, species=False):
+    """
+    Args:
+      self:    The instance attributes of the ParseHTML object
+      species: A boolean expression that determines wether the returned object
+               should be harbours or species.
+    Returns:
+      result:  A dictionary of harbours or species and their accompanying values
+    """
     result = {}
     html = BeautifulSoup(self.html)
     if species:
@@ -66,31 +107,41 @@ class ParseHTML(object):
     return result
 
   def __iter__(self):
+    """
+    Args:
+      self: The instance attributes of the ParseHTML object
+    Yields:
+      info: A dictionary with the fields of interest as keys, and the
+            corresponding value
+    """
     for info in self._get_landing_info():
       if 'error' not in info:
         yield info
 
 if __name__ == '__main__': # If run on it's own
   
-#      'url':'http://www.fiskistofa.is/veidar/aflaupplysingar/landanir-eftir-hofnum/landanir.jsp?dagurFra=01.12.2012&hofn=1&dagurTil=11.12.2012&magn=Samantekt',
-#      }
-#  landingList = []
-#  html = QueryURL(url)
-#
-#  for i in html:
-#    #print i
-#    table = ParseHTML(i)
-#    for j in table:
-#      landingList.append(j)
-#
-#  print landingList
-
-  url = {'url':'http://www.fiskistofa.is/veidar/aflaupplysingar/afliallartegundir/aflastodulisti_okvb.jsp'}
-  url2 = {'url':'http://www.fiskistofa.is/veidar/aflaupplysingar/landanir-eftir-hofnum/landanir.jsp'}
+  url = {'url':'http://www.fiskistofa.is/veidar/aflaupplysingar/landanir-eftir-hofnum/landanir.jsp?dagurFra=01.12.2012&hofn=1&dagurTil=11.12.2012&magn=Samantekt'}
+  url2 = {'url':'http://www.fiskistofa.is/veidar/aflaupplysingar/afliallartegundir/aflastodulisti_okvb.jsp?p_fteg=Ýsa+2&p_fra=01.12.2012&p_til=22.12.2012'}
 
   html = QueryURL(url)
   html2 = QueryURL(url2)
   for i in html:
-    ParseHTML(i).get_fish_list()
+    info = ParseHTML(i, [2, 1], ['ShipID', 'Name', 'Gear', 'Catch'], range(1,5))
+    for j in info:
+      print j
+
   for i in html2:
-    ParseHTML(i).get_fish_list(True)
+    info = ParseHTML(i, [1, 2], ['ShipID', 'Name', 'Category', 'Catch'], range(0,4))
+    for j in info:
+      print j
+
+#Authorship information
+__author__ = 'Finnur Smári Torfason'
+__copyright__ = 'Copyright 2012, www.aflafrettir.com'
+__credits__ = ['Finnur Smári Torfason', 'Gísli Reynisson']
+
+__license__ = 'GPL'
+__version__ = '0.1'
+__maintainer__ = 'Finnur Smári Torfason'
+__email__ = 'finnurtorfa@gmail.com'
+__status__ = 'Development'

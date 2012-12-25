@@ -39,15 +39,15 @@ Then go to your $VIRTUAL\_ENV/aflafrettir/lib/python2.7/site-packages/ folder an
 
 Depending on your system and version python and wxPython the symlinks could vary.
 
-Class: DOF_URLGenerator.py
+Class: DOF\_URLGenerator.py
 ---------
 
-*  The DOF_URLGenerator class is used by the Aflafrettir API, a web scraping API. The
+*  The DOF\_URLGenerator class is used by the Aflafrettir API, a web scraping API. The
 API is used to gather information on landings from the website of Directorate
 of Fisheries in Iceland.
 
-*  The DOF_URLGenerator class is initialized with a base_url, query_params, new_param
-and an optional parameter called species, as described by the __init__
+*  The DOF\_URLGenerator class is initialized with a base\_url, query\_params, new\_param
+and an optional parameter called species, as described by the \_\_init\_\_
 docstring. It returns a dictionary with a URL that can be used to query the
 database of the website of Directorate of Fisheries in Iceland in a desired
 way.
@@ -65,21 +65,49 @@ way.
         for u in urls:
           print u
 
-QueryLandingURL
+Class: QueryURL
 ---------
 
-*  The QueryLandingURL class takes in a dictionary of URL's and fetches the HTML of the url.
+*  The QueryURL class is used by the Aflafrettir API, a web scraping API. The API is used to gather information on landings from the website of Directorate of Fisheries in Iceland.
 
-        html_responses = QueryLandingURL({'url':'www.example.com'})
+*  The QueryURL class is initialized with a url\_list and returns a html document
+corresponding to each of the url's in the url\_list.
 
-* Now it is possible to to iterate over the html\_responses like so:
+*  Example use of the class:
 
-        for i in html_responses:
+        # Initialization parameters
+        url = {
+        'url':'www.fiskistofa.is',
+        'url1':'http://www.fiskistofa.is/veidar/aflaupplysingar/afliallartegundir/aflastodulisti_okvb.jsp?'
+        }
+        
+        html = QueryURL(url)
+        for i in html:
           print i
 
-ParseHTML
+
+Class: ParseHTML
 ---------
 
+*  The ParseHTML class is used by the Aflafrettir API, a web scraping API. The
+API is used to gather information on landings from the website of Directorate
+of Fisheries in Iceland.
+
+*  The ParseHTML class is initialized with a html\_dict, tbl\_row\_no,
+fields, field\_range, as described by
+the \_\_init\_\_ docstring. It returns a dictionary with all the values of the html
+page that was given as a input.
+
+*  Example use of the class:
+        
+        # Initialization parameters
+        url = {'url':'http://www.fiskistofa.is/veidar/aflaupplysingar/afliallartegundir/aflastodulisti_okvb.jsp?p_fteg=Ýsa+2&p_fra=01.12.2012&p_til=22.12.2012'}
+          
+          html = QueryURL(url)
+          for h in html:
+            info = ParseHTML(h, [1, 2], ['ShipID', 'Name', 'Gear', 'Catch'], range(0,4))
+            for i in info:
+              print i
 *  The ParseHTML class takes in a dictionary containing a HTML content and an error code. The error code states whether or not the HTML content had been retrieved. An object of the class can be made like so:
 
         info = ParseHTML(html_cont)
