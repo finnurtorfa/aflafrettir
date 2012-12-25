@@ -26,7 +26,7 @@ class TotalCatch(object):
 
   def _calc_total_catch(self, id_list):
 
-    id_list[0]['Harbour'] = self.get_unique_values(id_list, 'Harbour')
+    id_list[0]['name-key'] = self.get_unique_values(id_list, 'name-key')
     id_list[0]['Gear'] = self.get_unique_values(id_list, 'Gear')
     catch = [i['Catch'] for i in id_list]
     id_list[0]['Catch'] =  float(sum(catch))/1000

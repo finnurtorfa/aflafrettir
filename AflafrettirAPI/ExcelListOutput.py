@@ -33,7 +33,7 @@ class ExcelListOutput(object):
         num_format_str='#,##0') 
     self.item = ['Skipaskrárnúmer', 'Nafn', 'Fjöldi', 'Heildarafli', 
         'Mesti afli', 'Höfn', 'Veiðarfæri']
-    self.key = ['ShipID', 'Name', 'Number', 'Catch', 'Most', 'Harbour', 'Gear']
+    self.key = ['ShipID', 'Name', 'Number', 'Catch', 'Most', 'name-key', 'Gear']
     self.filename = filename
     self.date1 = date1
     self.date2 = date2

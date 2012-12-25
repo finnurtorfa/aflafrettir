@@ -46,8 +46,7 @@ class CalculateList(object):
 
     return (h_urls, s_urls)
 
-  def get_data_from_html(self, url_dict, new_key, species=False):
-    html_dict = {}
+  def get_data_from_html(self, url_dict, tbl_row_no, fields, field_range):
     landing_list = []
     html = QueryURL(url_dict)
     
@@ -55,7 +54,7 @@ class CalculateList(object):
       msg = 'Sæki upplýsingar vegna %s\n' % str(h['name'])
       PostEvent(self._notify_window, MessageEvent(msg, 1))
       logging.info("Fetching data for %s", h['name'])
-      table = ParseHTML(h)
+      table = ParseHTML(h, tbl_row_no, fields, field_range)
       for t in table:
         landing_list.append(t)
 

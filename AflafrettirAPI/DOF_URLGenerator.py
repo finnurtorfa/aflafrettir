@@ -76,8 +76,7 @@ class DOF_URLGenerator(object):
     """
     html = QueryURL({'url':self.base_url}).get_html_content(self.base_url, 0.5)
     html.update({'name':self.base_url})
-    result = ParseHTML(html).get_list(self.species)
-    
+    result = ParseHTML(html, 'Null', 'Null', 'Null').get_list(self.species)
     return result
  
   def __iter__(self):

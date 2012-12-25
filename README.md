@@ -10,23 +10,24 @@ To clone the repository:
 
         git clone https://github.com/finnurtorfa/aflafrettir.git
 
-To start working on the code it is a good idea to have *virtualenv* and *virtualenvwrapper* installed. Then do
+To start working on the code it is a good idea to have *virtualenv* and *virtualenvwrapper* installed. To create a virtualenvironment issue the following call in terminal:
 
         mkvirtualenv aflafrettir
 
-To work on the aflafrettir virtual environment issue a call
+To work on the aflafrettir virtual environment issue a call:
 
         workon aflafrettir
 
-And to leave the virtual environment call
+And to leave the virtual environment call:
       
         deactivate
 
-To be able to run the code with python it is necessary to install the dependencies. It is a good idea to use *pip* for that. To install the dependencies only for the aflafrettir virtual environment issue the following call while working on that particular environment
-
+To be able to run the code with python it is necessary to install some 3rd party libraries. It is a good idea to use *pip* for that. To install the dependencies only for the aflafrettir virtual environment issue the following call while working on that particular environment:
+        
+        workon aflafrettir
         pip install -r requirements.txt
 
-To get wxPython to work with the virtual environment install wxpython as a regular user. On my system I do:
+Unfortunately wxPython can not be installed via *pip*, so to get wxPython to work with the virtual environment install wxpython. On my system I do, as a root:
     
         pacman -S wxpython
 
@@ -42,15 +43,9 @@ Depending on your system and version python and wxPython the symlinks could vary
 Class: DOF\_URLGenerator.py
 ---------
 
-*  The DOF\_URLGenerator class is used by the Aflafrettir API, a web scraping API. The
-API is used to gather information on landings from the website of Directorate
-of Fisheries in Iceland.
+*  The DOF\_URLGenerator class is used by the Aflafrettir API, a web scraping API. The API is used to gather information on landings from the website of Directorate of Fisheries in Iceland.
 
-*  The DOF\_URLGenerator class is initialized with a base\_url, query\_params, new\_param
-and an optional parameter called species, as described by the \_\_init\_\_
-docstring. It returns a dictionary with a URL that can be used to query the
-database of the website of Directorate of Fisheries in Iceland in a desired
-way.
+*  The DOF\_URLGenerator class is initialized with a base\_url, query\_params, new\_param and an optional parameter called species, as described by the \_\_init\_\_ docstring. It returns a dictionary with a URL that can be used to query the database of the website of Directorate of Fisheries in Iceland in a desired way.
 
 *  Example use of the class:
         
@@ -70,8 +65,7 @@ Class: QueryURL
 
 *  The QueryURL class is used by the Aflafrettir API, a web scraping API. The API is used to gather information on landings from the website of Directorate of Fisheries in Iceland.
 
-*  The QueryURL class is initialized with a url\_list and returns a html document
-corresponding to each of the url's in the url\_list.
+*  The QueryURL class is initialized with a url\_list and returns a html document corresponding to each of the url's in the url\_list.
 
 *  Example use of the class:
 
@@ -89,14 +83,9 @@ corresponding to each of the url's in the url\_list.
 Class: ParseHTML
 ---------
 
-*  The ParseHTML class is used by the Aflafrettir API, a web scraping API. The
-API is used to gather information on landings from the website of Directorate
-of Fisheries in Iceland.
+*  The ParseHTML class is used by the Aflafrettir API, a web scraping API. The API is used to gather information on landings from the website of Directorate of Fisheries in Iceland.
 
-*  The ParseHTML class is initialized with a html\_dict, tbl\_row\_no,
-fields, field\_range, as described by
-the \_\_init\_\_ docstring. It returns a dictionary with all the values of the html
-page that was given as a input.
+*  The ParseHTML class is initialized with a html\_dict, tbl\_row\_no, fields, field\_range, as described by the \_\_init\_\_ docstring. It returns a dictionary with all the values of the html page that was given as a input.
 
 *  Example use of the class:
         
