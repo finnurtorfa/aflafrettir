@@ -66,9 +66,13 @@ class CalculateList(object):
     excel = ExcelListOutput(totalList, filename, date1, date2)
     excel.save_excel()
 
-  def calc_total_catch(self, landing_list):
+  def calc_total_catch(self, harbour_list, species_list):
     PostEvent(self._notify_window, MessageEvent('Reikna út heildarafla\n', 1))
-    groups = GroupLandingInfo(landing_list)
+    groups = GroupLandingInfo(harbour_list)
+    
+    unique_gear = {i['Gear']:i['Gear'] for i in harbour_list}.values()
+    logging.info('List of gears: \n%s', unique_gear)
+
     landing_list = []
     for g in groups:
       for key in g:

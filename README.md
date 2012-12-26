@@ -92,19 +92,11 @@ Class: ParseHTML
         # Initialization parameters
         url = {'url':'http://www.fiskistofa.is/veidar/aflaupplysingar/afliallartegundir/aflastodulisti_okvb.jsp?p_fteg=Ýsa+2&p_fra=01.12.2012&p_til=22.12.2012'}
           
-          html = QueryURL(url)
-          for h in html:
-            info = ParseHTML(h, [1, 2], ['ShipID', 'Name', 'Gear', 'Catch'], range(0,4))
-            for i in info:
-              print i
-*  The ParseHTML class takes in a dictionary containing a HTML content and an error code. The error code states whether or not the HTML content had been retrieved. An object of the class can be made like so:
-
-        info = ParseHTML(html_cont)
-
-*  And then it is possible to iterate over the info like so:
-
-        for i in info:
-          print i
+        html = QueryURL(url)
+        for h in html:
+          info = ParseHTML(h, [1, 2], ['ShipID', 'Name', 'Gear', 'Catch'], range(0,4))
+          for i in info:
+            print i
 
 TotalCatch
 ---------

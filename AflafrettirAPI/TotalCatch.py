@@ -20,9 +20,12 @@ from ParseHTML import ParseHTML
 ###################################################
 class TotalCatch(object):
   
-  def __init__(self, landingList):
-    self.landingList = landingList
-    self.unique = {i['ShipID']:i['ShipID'] for i in self.landingList}.values()
+  def __init__(self, harbour_list):
+    self.harbour_list = harbour_list
+    self.unique_harbour = {i['ShipID']:i['ShipID'] for i in self.harbour_list}.values()
+#    self.unique_species = {i['ShipID']:i['ShipID'] for i in self.species_list}.values()
+#    print len(self.unique_harbour)
+#    print len(self.unique_species)
 
   def _calc_total_catch(self, id_list):
 
@@ -42,9 +45,9 @@ class TotalCatch(object):
 
   def __iter__(self):
     result = []
-    for uid in self.unique:
+    for uid in self.unique_harbour:
       result = self._calc_total_catch(
-          [dictio for dictio in self.landingList if dictio['ShipID'] in [uid]])
+          [dictio for dictio in self.harbour_list if dictio['ShipID'] in [uid]])
       yield result
         
       
@@ -56,15 +59,15 @@ if __name__ == '__main__': # If run on it's own
       'url':'http://www.fiskistofa.is/veidar/aflaupplysingar/landanir-eftir-hofnum/landanir.jsp?dagurFra=01.12.2012&hofn=1&dagurTil=11.12.2012&magn=Samantekt',
       'url1':'http://www.fiskistofa.is/veidar/aflaupplysingar/landanir-eftir-hofnum/landanir.jsp?dagurFra=01.12.2012&hofn=149&dagurTil=11.12.2012&magn=Samantekt',
       }
-  landingList = []
+  harbour_list = []
   html = QueryLandingURL(url)
 
   for i in html:
     table = ParseHTML(i)
     for j in table:
-      landingList.append(j)
+      harbour_list.append(j)
       #print j
 
-  lists = TotalCatch(landingList)
+  lists = TotalCatch(harbour_list)
   for i in lists:
     print i

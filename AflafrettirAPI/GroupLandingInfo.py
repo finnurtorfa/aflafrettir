@@ -20,12 +20,12 @@ class GroupLandingInfo(object):
     self.landings = landings
     self.gears = [u'LODN', u'SILD', u'FLOT', u'LOFL', u'SIFL', u'NET', u'SNET',
         u'GRSL', u'HUMA', u'LINA', u'RAEK', 'BOTN', 'DRAG', u'HAND', 'YMIS',
-        u'\xdeGIL', u'KRAB', u'HORP', u'SJOS']
+        u'\xdeGIL', u'KRAB', u'HORP', u'SJOS', u'IGPL', u'RMNT', u'KRAL']
     self.lists = {'Uppsjávarskip':[u'LODN', u'SILD', u'FLOT', u'LOFL', u'SIFL'],
         'Net':[u'NET', u'SNET', u'GRSL', ], 'Humar':[u'HUMA'], 'Lína':[u'LINA'],
         'Rækja':[u'RAEK'], 'Botnvörpungar':[u'BOTN'], 'Dragnót':[u'DRAG'],
         'Handfæri':[u'HAND'], 'Ýmislegt':[u'YMIS', u'\xdeGIL', u'KRAB', u'HORP',
-          u'SJOS']}
+          u'SJOS', u'IGPL', u'RMNT', u'KRAL']}
     self.sorting = {} 
     for l in self.lists: self.sorting[l] = []
 

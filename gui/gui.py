@@ -33,11 +33,12 @@ class calcThread(Thread):
     the_list = cl(self._notify_window, self.date1, self.date2)
     
     h_list, s_list = the_list.get_lists([self.date1, self.date2])
-    #info = ParseHTML(i, [1, 2], ['ShipID', 'Name', 'Category', 'Catch'], range(0,4))
-    landing_list = the_list.get_data_from_html(h_list, [2,1], ['ShipID', 'Name',
+    harbour_list = the_list.get_data_from_html(h_list, [2,1], ['ShipID', 'Name',
       'Gear', 'Catch'], range(1,5))
+    species_list = the_list.get_data_from_html(s_list, [1,2], ['ShipID', 'Name',
+      'Category', 'Catch'], range(0,4))
 
-    landing_list = the_list.calc_total_catch(landing_list)
+    landing_list = the_list.calc_total_catch(harbour_list, species_list)
 
     wx.PostEvent(self._notify_window, MessageEvent('Útbý excel skjal\n', 1))
     the_list.save_data(landing_list, self.filename, self.date1, self.date2)

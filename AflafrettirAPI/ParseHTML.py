@@ -69,14 +69,22 @@ class ParseHTML(object):
 
     for tr in table.findAll('tr')[self.tbl_row_no[1]:]:
       for index, i in enumerate(self.field_range):
-        for td in tr.findAll('td')[i]:
-          td = td.replace('.', '').strip()
-          if index == 0:
-            row.update({self.fields[index]:int(td)})
-          elif index == 3:
-            row.update({self.fields[index]:int(td)})
-          else:
-            row.update({self.fields[index]:td})
+        #print index, i
+        td = tr.findAll('td')[i].string
+#        if val is None:
+#          print "Hello None"
+#        for td in tr.findAll('td')[i]:
+          #print index, td
+        if index == 0:
+          if td is not None:
+            first = td
+          row.update({self.fields[index]:first.strip()})
+        elif index == len(self.fields)-1:
+          td = td.replace('.', '')
+          row.update({self.fields[index]:int(td)})
+        else:
+          row.update({self.fields[index]:td.strip()})
+      #Wrow.update({':first})
       row['name-key'] = self.name
       result.append(row)
       row = {}
@@ -121,12 +129,12 @@ class ParseHTML(object):
 if __name__ == '__main__': # If run on it's own
   
   url = {'url':'http://www.fiskistofa.is/veidar/aflaupplysingar/landanir-eftir-hofnum/landanir.jsp?dagurFra=01.12.2012&hofn=1&dagurTil=11.12.2012&magn=Samantekt'}
-  url2 = {'url':'http://www.fiskistofa.is/veidar/aflaupplysingar/afliallartegundir/aflastodulisti_okvb.jsp?p_fteg=Ýsa+2&p_fra=01.12.2012&p_til=25.12.2012'}
+  url2 = {'url':'http://www.fiskistofa.is/veidar/aflaupplysingar/afliallartegundir/aflastodulisti_okvb.jsp?p_fteg=Ýsa+2&p_fra=20.12.2012&p_til=25.12.2012'}
 
   html = QueryURL(url)
   html2 = QueryURL(url2)
   for i in html:
-    info = ParseHTML(i, [2, 1], ['ShipID', 'Name', 'Gear', 'Catch'], range(1,5))
+    info = ParseHTML(i, [2, 1], ['Date', 'ShipID', 'Name', 'Gear', 'Catch'], range(0,5))
     for j in info:
       print j
 
