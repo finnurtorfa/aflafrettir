@@ -1,45 +1,143 @@
 #!/usr/bin/python
 # -*- coding: utf-8 -*-
-# 
-# File: GroupLandingInfo.py
-# Author: Finnur Smári Torfason
-# Date: 15.12.2012
-# About:
-#   Class for gathering landing information from the web page of the Directorate
-#   of Fisheries in Iceland.
-#   The GroupLandingInfo class takes as a parameter a list of dictionaries containing
-#   the info for the landings. Then it group the list into gears.
+""" 
+Class: GroupLandingInfo
+---------
 
+*  The GroupLandingInfo class is used by the Aflafrettir API, a web scraping API. The
+API is used to gather information on landings from the website of Directorate
+of Fisheries in Iceland.
+
+*  The ParseHTML class is initialized with a landing_list as described by the
+the __init__ docstring. It returns a dictionary of groups of landings. If a ship
+appears in two or more lists, all of it's landings are placed in a common
+landing list for further processing later on.
+
+*  Example use of the class, given a list of landings from the ParseHTML class:
+        
+        groups = GroupLandingInfo(landingList)
+        groupList = {}
+        for g in groups:
+          groupList.update(g)
+"""
 from QueryURL import QueryURL
 from ParseHTML import ParseHTML
 from TotalCatch import TotalCatch
 
 class GroupLandingInfo(object):
 
-  def __init__(self, landings):
-    self.landings = landings
+  def __init__(self, landing_list):
+    """
+    Args:
+      self:         The instance attributes of the GroupLandingInfo object
+      landing_list: A list of dictionaries containing the info on landings
+    Return:
+      None
+   """
+    self.landing_list = landing_list
     self.gears = [u'LODN', u'SILD', u'FLOT', u'LOFL', u'SIFL', u'NET', u'SNET',
         u'GRSL', u'HUMA', u'LINA', u'RAEK', 'BOTN', 'DRAG', u'HAND', 'YMIS',
-        u'\xdeGIL', u'KRAB', u'HORP', u'SJOS']
-    self.lists = {'Uppsjávarskip':[u'LODN', u'SILD', u'FLOT', u'LOFL', u'SIFL'],
+        u'\xdeGIL', u'KRAB', u'HORP', u'SJOS', u'IGPL', u'RMNT', u'KRAL']
+    self.groups = {'Uppsjávarskip':[u'LODN', u'SILD', u'FLOT', u'LOFL', u'SIFL'],
         'Net':[u'NET', u'SNET', u'GRSL', ], 'Humar':[u'HUMA'], 'Lína':[u'LINA'],
         'Rækja':[u'RAEK'], 'Botnvörpungar':[u'BOTN'], 'Dragnót':[u'DRAG'],
         'Handfæri':[u'HAND'], 'Ýmislegt':[u'YMIS', u'\xdeGIL', u'KRAB', u'HORP',
-          u'SJOS']}
-    self.sorting = {} 
-    for l in self.lists: self.sorting[l] = []
+          u'SJOS', u'IGPL', u'RMNT', u'KRAL']}
+    self.common_id = []
+    self.common_landings = []
+    self.group_landings = {} 
 
-  def get_lists(self):
-    for g in self.gears:
-      gear_dict = {g:[dictio for dictio in self.landings if dictio['Gear'] in g]}
-      for l in self.lists:
-        if any([(v in self.lists[l] and gear_dict[g]) for v in gear_dict.keys()]):
-          self.sorting[l].extend(gear_dict[g])
+  def get_groups(self):
+    """
+    Args:
+      self: The instance attributes of the GroupLandingInfo object
+    Return:
+      None
+    """
+    self.group_landings = self.group_by_gear(self.gears, self.landing_list, self.groups)
+    self.common_id = self.get_unique_id_by_group(self.groups, self.group_landings)
+    self.common_landings, self.group_landings = self.get_common_landings(self.group_landings, self.common_id)
+    self.group_landings['Common'] = self.common_landings
+
+  def group_by_gear(self, gears, landing_list, groups):
+    """
+    Args:
+      self:           The instance attributes of the GroupLandingInfo object
+      gears:          A list of gears available
+      landing_list:   A list of dictionaries containing the info on landings
+      groups:         The list of gears grouped together
+    Return:
+      group_landings: The landing_list object split into groups.
+    """
+    group_landings = {}
+    for g in groups: group_landings[g] = []
+
+    for g in gears:
+      gear_dict = {g:[dictio for dictio in landing_list if dictio['Gear'] in g]}
+      for l in groups:
+        if any([(v in groups[l] and gear_dict[g]) for v in gear_dict.keys()]):
+          group_landings[l].extend(gear_dict[g])
+
+    return group_landings
+  
+  def get_unique_id_by_group(self, groups, group_landings):
+    """
+    Args: 
+      self:           The instance attributes of the GroupLandingInfo object
+      groups:         The list of gears grouped together
+      group_landings: The landing_list object split into groups.
+    Return:
+      common_id:      A list of id's that appear in more than one group of
+                      landings
+    """
+    common_id = []
+    unique_id = {}
+    for g in groups: unique_id[g] = []
+
+    for g in group_landings:
+      unique_id[g].extend(
+          {i['ShipID']:i['ShipID'] for i in group_landings[g]}.values())
+
+    for u_idx, u in enumerate(unique_id):
+      for uu_idx, uu in enumerate(unique_id):
+        if uu_idx > u_idx:
+          for uid in unique_id[u]:
+            if uid in unique_id[uu]:
+              common_id.append(uid)
+
+    return common_id
+
+  def get_common_landings(self, group_landings, common_id):
+    """
+    Args:
+      self:            The instance attributes of the GroupLandingInfo object
+      group_landings:  The landing_list object split into groups.
+      common_id:       A list of id's that appear in more than one group of
+                       landings
+    Return:
+      common_landings: A list of all the landings by the id's in common_id
+      group_landings:  The landing_list object split into groups. The
+                       common_landings have been removed from the list.
+    """
+    common_landings = []
+    for cid in common_id:
+      for g in group_landings:
+        common_landings.extend(
+            [x for x in self.group_landings[g] if (cid == x.get('ShipID'))])
+        group_landings[g] = [x for x in self.group_landings[g] if not (cid == x.get('ShipID'))]
+
+    return (common_landings, group_landings)
 
   def __iter__(self):
-    self.get_lists()
-    for s in self.sorting:
-      yield {s:self.sorting[s]}
+    """
+    Args:
+      self:  The instance attributes of the GroupLandingInfo object
+    Yield:
+             A dictionary containing the landings, grouped together
+    """
+    self.get_groups()
+    for s in self.group_landings:
+      yield {s:self.group_landings[s]}
       
 
 ###################################################
@@ -47,20 +145,21 @@ class GroupLandingInfo(object):
 ###################################################
 if __name__ == '__main__': # If run on it's own
   url = {
-      'url2':'http://www.fiskistofa.is/veidar/aflaupplysingar/landanir-eftir-hofnum/landanir.jsp?dagurFra=01.12.2011&hofn=149&dagurTil=11.12.2012&magn=Samantekt',
-      'url3':'http://www.fiskistofa.is/veidar/aflaupplysingar/landanir-eftir-hofnum/landanir.jsp?dagurFra=01.12.2011&hofn=1&dagurTil=11.12.2012&magn=Samantekt',
+      'url2':'http://www.fiskistofa.is/veidar/aflaupplysingar/landanir-eftir-hofnum/landanir.jsp?dagurFra=01.10.2012&hofn=149&dagurTil=26.12.2012&magn=Samantekt',
+      'url3':'http://www.fiskistofa.is/veidar/aflaupplysingar/landanir-eftir-hofnum/landanir.jsp?dagurFra=01.12.2012&hofn=1&dagurTil=26.12.2012&magn=Samantekt',
       }
   landingList = []
   html = QueryURL(url)
 
   for i in html:
-    table = ParseHTML(i)
+    table = ParseHTML(i, [2, 1], ['Date', 'ShipID', 'Name', 'Gear', 'Catch'], range(0,5))
     for j in table:
       landingList.append(j)
 
   groups = GroupLandingInfo(landingList)
   groupList = {}
   for g in groups:
+    #print g
     groupList.update(g)
    
   for g in groupList:
@@ -70,5 +169,5 @@ if __name__ == '__main__': # If run on it's own
       landingList.append(l)
     groupList[g] = landingList
 
-  print groupList
+  #print groupList
 
