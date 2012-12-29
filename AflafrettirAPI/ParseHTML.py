@@ -9,9 +9,8 @@ API is used to gather information on landings from the website of Directorate
 of Fisheries in Iceland.
 
 *  The ParseHTML class is initialized with a html_dict, tbl_row_no,
-fields, field_range, as described by
-the __init__ docstring. It returns a dictionary with all the values of the html
-page that was given as a input.
+fields, field_range, as described by the __init__ docstring. It returns a
+dictionary with all the values of the html page that was given as a input.
 
 *  Example use of the class:
         
@@ -69,12 +68,7 @@ class ParseHTML(object):
 
     for tr in table.findAll('tr')[self.tbl_row_no[1]:]:
       for index, i in enumerate(self.field_range):
-        #print index, i
         td = tr.findAll('td')[i].string
-#        if val is None:
-#          print "Hello None"
-#        for td in tr.findAll('td')[i]:
-          #print index, td
         if index == 0:
           if td is not None:
             first = td
@@ -84,7 +78,14 @@ class ParseHTML(object):
           row.update({self.fields[index]:int(td)})
         else:
           row.update({self.fields[index]:td.strip()})
-      #Wrow.update({':first})
+        for td in tr.findAll('td')[i]:
+          td = td.strip()
+          if index == 0:
+            row.update({self.fields[index]:td})
+          elif index == len(self.fields)-1:
+            row.update({self.fields[index]:int(td.replace('.', ''))})
+          else:
+            row.update({self.fields[index]:td})
       row['name-key'] = self.name
       result.append(row)
       row = {}
