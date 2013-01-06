@@ -8,21 +8,18 @@ Class: GroupLandingInfo
 API is used to gather information on landings from the website of Directorate
 of Fisheries in Iceland.
 
-*  The ParseHTML class is initialized with a landing_list as described by the
+*  The GroupLandingInfo class is initialized with a landing_list as described by the
 the __init__ docstring. It returns a dictionary of groups of landings. If a ship
 appears in two or more lists, all of it's landings are placed in a common
 landing list for further processing later on.
 
-*  Example use of the class, given a list of landings from the ParseHTML class:
+*  Example use of the class, given a list of landings from the GroupLandingInfo class:
         
         groups = GroupLandingInfo(landingList)
         groupList = {}
         for g in groups:
           groupList.update(g)
 """
-from QueryURL import QueryURL
-from ParseHTML import ParseHTML
-from TotalCatch import TotalCatch
 
 class GroupLandingInfo(object):
 
@@ -144,30 +141,52 @@ class GroupLandingInfo(object):
 # Main body
 ###################################################
 if __name__ == '__main__': # If run on it's own
+  from QueryURL import QueryURL
+  from ParseHTML import ParseHTML
+  from TotalCatch import TotalCatch
+  
   url = {
-      'url2':'http://www.fiskistofa.is/veidar/aflaupplysingar/landanir-eftir-hofnum/landanir.jsp?dagurFra=01.10.2012&hofn=149&dagurTil=26.12.2012&magn=Samantekt',
-      'url3':'http://www.fiskistofa.is/veidar/aflaupplysingar/landanir-eftir-hofnum/landanir.jsp?dagurFra=01.12.2012&hofn=1&dagurTil=26.12.2012&magn=Samantekt',
+      'url':'http://www.fiskistofa.is/veidar/aflaupplysingar/landanir-eftir-hofnum/landanir.jsp?dagurFra=01.12.2012&hofn=1&dagurTil=11.12.2012&magn=Samantekt',
+      'url1':'http://www.fiskistofa.is/veidar/aflaupplysingar/landanir-eftir-hofnum/landanir.jsp?dagurFra=01.12.2012&hofn=149&dagurTil=11.12.2012&magn=Samantekt',
       }
-  landingList = []
+  
+  url2 = {
+      'url':'http://www.fiskistofa.is/veidar/aflaupplysingar/afliallartegundir/aflastodulisti_okvb.jsp?p_fteg=Þorskur+1&p_fra=01.12.2012&p_til=11.12.2012',
+      'url1':'http://www.fiskistofa.is/veidar/aflaupplysingar/afliallartegundir/aflastodulisti_okvb.jsp?p_fteg=Ufsi+3&p_fra=01.12.2012&p_til=11.12.2012'
+      }
+
+  harbour_list = []
+  species_list = []
   html = QueryURL(url)
+  html2 = QueryURL(url2)
+  h_keys = ['Name', 'Gear', 'Catch S', 'Harbour']
+  s_keys = ['Name', 'Category', 'Catch US', 'Species']
 
   for i in html:
-    table = ParseHTML(i, [2, 1], ['Date', 'ShipID', 'Name', 'Gear', 'Catch'], range(0,5))
+    table = ParseHTML(i, [2, 1], ['Date', 'ShipID', 'Name', 'Gear', 'Catch S'],
+        range(0,5), 'Harbour')
     for j in table:
-      landingList.append(j)
-
-  groups = GroupLandingInfo(landingList)
+      harbour_list.append(j)
+      #print j
+  
+  for i in html2:
+    table = ParseHTML(i, [1, 2], ['ShipID', 'Name', 'Category', 'Catch US'],
+        range(0,4), 'Species')
+    for j in table:
+      species_list.append(j)
+  
+  groups = GroupLandingInfo(harbour_list)
   groupList = {}
   for g in groups:
-    #print g
     groupList.update(g)
    
   for g in groupList:
-    lists = TotalCatch(groupList[g])
+    #print groupList[g]
+    lists = TotalCatch(groupList[g], species_list, h_keys, s_keys)
     landingList = []
     for l in lists:
       landingList.append(l)
     groupList[g] = landingList
 
-  #print groupList
+  print groupList
 

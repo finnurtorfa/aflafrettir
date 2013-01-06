@@ -40,7 +40,7 @@ Then go to your $VIRTUAL\_ENV/aflafrettir/lib/python2.7/site-packages/ folder an
 
 Depending on your system and version python and wxPython the symlinks could vary.
 
-Class: DOF\_URLGenerator.py
+Class: DOF\_URLGenerator
 ---------
 
 *  The DOF\_URLGenerator class is used by the Aflafrettir API, a web scraping API. The API is used to gather information on landings from the website of Directorate of Fisheries in Iceland.
@@ -97,38 +97,37 @@ Class: ParseHTML
             info = ParseHTML(h, [1, 2], ['ShipID', 'Name', 'Gear', 'Catch'], range(0,4))
             for i in info:
               print i
-*  The ParseHTML class takes in a dictionary containing a HTML content and an error code. The error code states whether or not the HTML content had been retrieved. An object of the class can be made like so:
 
-        info = ParseHTML(html_cont)
+Class: TotalCatch
+---------
 
-*  And then it is possible to iterate over the info like so:
+*  The TotalCatch class is used by the Aflafrettir API, a web scraping API. The API is used to gather information on landings from the website of Directorate of Fisheries in Iceland.
 
-        for i in info:
+*  The TotalCatch class is initialized with a harbour\_list, species\_list, h\_keys, and s\_keys as described by the __init__ docstring. It returns a dictionary with all the valuable information the two lists contain. It also calculates the total catch of each unique ShipID in the harbour\_list list.
+
+*  Example use of the class, given a harbour\_list and a species\_list:
+        
+        # Initialization parameters
+        h_keys = ['Name', 'Gear', 'Catch S', 'Harbour']
+        s_keys = ['Name', 'Category', 'Catch US', 'Species']
+        
+        lists = TotalCatch(harbour_list, species_list, h_keys, s_keys)
+        for i in lists:
           print i
 
-TotalCatch
+Class: GroupLandingInfo
 ---------
 
-*  The TotalCatch takes in a list of landings, and calculates the total catch for each unique ShipID.
+*  The GroupLandingInfo class is used by the Aflafrettir API, a web scraping API. The API is used to gather information on landings from the website of Directorate of Fisheries in Iceland.
+
+*  The ParseHTML class is initialized with a landing\_list as described by the the \_\_init\_\_ docstring. It returns a dictionary of groups of landings. If a ship appears in two or more lists, all of it's landings are placed in a common landing list for further processing later on.
+
+*  Example use of the class, given a list of landings from the ParseHTML class:
         
-        total_catch = TotalCatch(landingList)
-
-*  Then it is possible to iterate over the total\_catch like so:
-
-        for c in total_catch:
-          print c
-
-GroupLandingInfo
----------
-
-*  The GroupLandingInfo takes in a list of dictionaries containing the landing info and groups all the landings by gear.
-
         groups = GroupLandingInfo(landingList)
-
-*  Then it is possible to iterate over the groups like so:
-        
+        groupList = {}
         for g in groups:
-          print g
+          groupList.update(g)
 
 ExcelListOutput
 ---------
