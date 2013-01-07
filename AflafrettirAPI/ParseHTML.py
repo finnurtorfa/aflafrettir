@@ -67,20 +67,27 @@ class ParseHTML(object):
       logging.exception('There appears to be no info of interest on this page, continue')
       return {'error':1}
 
+    prev = 0
+
     for tr in table.findAll('tr')[self.tbl_row_no[1]:]:
       for index, i in enumerate(self.field_range):
         for td in tr.findAll('td')[i]:
           td = td.strip()
           if index == 0:
+            prev = td
             row.update({self.fields[index]:td})
           elif index == len(self.fields)-1:
             row.update({self.fields[index]:float(td.replace('.', ''))/1000})
           else:
             row.update({self.fields[index]:td})
+
+        if index == 0:
+          row.update({self.fields[index]:prev})
+
       row[self.name_key] = self.name
       result.append(row)
       row = {}
-    
+
     return result
 
   def get_list(self, species=False):
@@ -127,7 +134,7 @@ if __name__ == '__main__': # If run on it's own
   html = QueryURL(url)
   html2 = QueryURL(url2)
   for i in html:
-    info = ParseHTML(i, [2, 1], ['ShipID', 'Name', 'Gear', 'Catch'], range(1,5), 'Harbour')
+    info = ParseHTML(i, [2, 1], ['Date', 'ShipID', 'Name', 'Gear', 'Catch'], range(0,5), 'Harbour')
     for j in info:
       print j
 

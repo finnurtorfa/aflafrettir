@@ -70,7 +70,7 @@ class TotalCatch(object):
     result['Total S'] =  float(sum(total_s))
     result['Most S'] =  float(max(total_s))
     result['Number'] = len(h_list)
-
+    
     return result
   
   def cat_unique_values(self, dict_list, key):
@@ -121,7 +121,7 @@ if __name__ == '__main__': # If run on it's own
   species_list = []
   html = QueryURL(url)
   html2 = QueryURL(url2)
-  h_keys = ['Name', 'Gear', 'Catch S', 'Harbour']
+  h_keys = ['Date', 'Name', 'Gear', 'Catch S', 'Harbour']
   s_keys = ['Name', 'Category', 'Catch US', 'Species']
 
   for i in html:

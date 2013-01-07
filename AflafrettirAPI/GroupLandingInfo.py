@@ -21,6 +21,9 @@ landing list for further processing later on.
           groupList.update(g)
 """
 
+from itertools import groupby
+from operator import itemgetter
+
 class GroupLandingInfo(object):
 
   def __init__(self, landing_list):
@@ -69,12 +72,15 @@ class GroupLandingInfo(object):
     group_landings = {}
     for g in groups: group_landings[g] = []
 
-    for g in gears:
-      gear_dict = {g:[dictio for dictio in landing_list if dictio['Gear'] in g]}
-      for l in groups:
-        if any([(v in groups[l] and gear_dict[g]) for v in gear_dict.keys()]):
-          group_landings[l].extend(gear_dict[g])
+    list_sorted = sorted(landing_list, key=lambda d:(d['Gear'], d['ShipID']))
 
+    for gear, landing in groupby(list_sorted, key=itemgetter('Gear')):
+      for l in landing:
+        for g in groups:
+          if gear in groups[g]:
+            l['Group'] = g
+            group_landings[g].append(l)
+       
     return group_landings
   
   def get_unique_id_by_group(self, groups, group_landings):
@@ -188,5 +194,15 @@ if __name__ == '__main__': # If run on it's own
       landingList.append(l)
     groupList[g] = landingList
 
-  print groupList
+  #print groupList
 
+#Authorship information
+__author__ = 'Finnur Smári Torfason'
+__copyright__ = 'Copyright 2012, www.aflafrettir.com'
+__credits__ = ['Finnur Smári Torfason', 'Gísli Reynisson']
+
+__license__ = 'GPL'
+__version__ = '0.1'
+__maintainer__ = 'Finnur Smári Torfason'
+__email__ = 'finnurtorfa@gmail.com'
+__status__ = 'Development'

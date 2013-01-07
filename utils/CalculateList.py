@@ -46,7 +46,7 @@ class CalculateList(object):
 
     return (h_urls, s_urls)
 
-  def get_data_from_html(self, url_dict, tbl_row_no, fields, field_range):
+  def get_data_from_html(self, url_dict, tbl_row_no, fields, field_range, name_key):
     landing_list = []
     html = QueryURL(url_dict)
     
@@ -54,7 +54,7 @@ class CalculateList(object):
       msg = 'Sæki upplýsingar vegna %s\n' % str(h['name'])
       PostEvent(self._notify_window, MessageEvent(msg, 1))
       logging.info("Fetching data for %s", h['name'])
-      table = ParseHTML(h, tbl_row_no, fields, field_range)
+      table = ParseHTML(h, tbl_row_no, fields, field_range, name_key)
       for t in table:
         landing_list.append(t)
 
@@ -66,14 +66,17 @@ class CalculateList(object):
     excel = ExcelListOutput(totalList, filename, date1, date2)
     excel.save_excel()
 
-  def calc_total_catch(self, landing_list):
+  def calc_total_catch(self, harbour_list, species_list):
+    h_keys = ['Date', 'Name', 'Gear', 'Catch S', 'Harbour']
+    s_keys = ['Name', 'Category', 'Catch US', 'Species']
+
     PostEvent(self._notify_window, MessageEvent('Reikna út heildarafla\n', 1))
-    groups = GroupLandingInfo(landing_list)
+    groups = GroupLandingInfo(harbour_list)
     landing_list = []
     for g in groups:
       for key in g:
         logging.info("Calculating %s", key)
-        lists = TotalCatch(g[key])
+        lists = TotalCatch(g[key], species_list, h_keys, s_keys)
       for l in lists:
         landing_list.append(l)
 
