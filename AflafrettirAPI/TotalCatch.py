@@ -42,6 +42,16 @@ class TotalCatch(object):
     self.h_keys = h_keys
     self.s_keys = s_keys
     self.unique = {i['ShipID']:i['ShipID'] for i in self.harbour_list}.values()
+    self.ratio= {u'Þorskur':0.84,u'Ýsa':0.84, u'Ufsi':0.8399, u'Blálanga':0.799,
+        u'Steinbítur':0.9, u'Hlýri':0.899, u'Grálúða':0.921, u'Skötuselur':0.833,
+        u'Langa': 0.797, u'Þykkvalúra':0.921, u'Sólkoli':0.921, u'Sandkoli':0.919,
+        u'Lýsa':0.795, u'Tindaskata':0.895, u'Skarkoli':0.919, u'Humar':0.307,
+        u'Skata':0.888, u'Stinglax':0.799, u'Keila':0.909, u'Langlúra':0.915,
+        u'Hámeri':0.791, u'Lúða':0.923, u'Skrápflúra':0.916,
+        u'Sandhverfa':0.875, u'Slétthali':0.875, u'Hvítaskata':0.897,
+        u'Hvítskata':0.897, u'Stóra':0.9, 'Tindabikkja':0.875, u'Grásleppa':0}
+    self.pelagic = [u'Gulldepla / Norræna Gulld 130', u'Kolmunni 34', u'Loðna 31',
+        u'Makríll 36', u'Síld 30']
 
   def _calc_total_catch(self, h_list, s_list, h_keys, s_keys):
     """
@@ -56,6 +66,11 @@ class TotalCatch(object):
               harbour_list and species_list.
     """
     result = {}
+    h_list = self.calc_slaughtered(h_list)
+    #s_list = self.calc_pelagic(s_list)
+
+    if not h_list:
+      return None
 
     for k in h_keys:
       result[k] = self.cat_unique_values(h_list, k)
@@ -65,14 +80,38 @@ class TotalCatch(object):
 
     total_us = [i['Catch US'] for i in s_list]
     total_s = [i['Catch S'] for i in h_list]
-    
-    result['Total US'] =  float(sum(total_us))
-    result['Total S'] =  float(sum(total_s))
-    result['Most S'] =  float(max(total_s))
-    result['Number'] = len(h_list)
+
+    result['Total US'] =  round(float(sum(total_us)), 3)
+    result['Total S'] =  round(float(sum(total_s)), 3)
+    result['Most S'] =  round(float(max(total_s)), 3)
+    result['Number'] = len({i['Date']:i['Date'] for i in h_list}.values())
     
     return result
-  
+
+  def calc_slaughtered(self, h_list):
+    import re
+    
+    for index, landing in reversed(list(enumerate(h_list))):
+      if u'ósl' in landing['Stuff'].lower():
+        continue
+      elif u'lifur' in landing['Stuff'].lower() or  u'hrogn' in landing['Stuff'].lower():
+        del h_list[index]
+      elif u'slæ' in landing['Stuff'].lower() or u'sl.' in landing['Stuff'].lower():
+        tmp = re.split('\\/|\\-|\\ ', landing['Stuff'].title())
+        if tmp[0] in self.ratio:
+          h_list[index]['Catch S'] = round(landing['Catch S']/self.ratio[tmp[0]], 3)
+
+    return h_list
+   
+  def calc_pelagic(self, s_list):
+    for index, species in enumerate(s_list):
+      print index, species
+      if unicode(species['Species']) in self.pelagic:
+        print "HELLO\n"
+        s_list[index]['Catch US'] *= 1000
+
+    return s_list
+
   def cat_unique_values(self, dict_list, key):
     """
     Args:
@@ -101,20 +140,21 @@ class TotalCatch(object):
           [dictio for dictio in self.species_list if dictio['ShipID'] in [uid]],
           self.h_keys,
           self.s_keys)
-      yield result
+      if result is not None:
+        yield result
       
 if __name__ == '__main__': # If run on it's own
   from QueryURL import QueryURL
   from ParseHTML import ParseHTML
   
   url = {
-      'url':'http://www.fiskistofa.is/veidar/aflaupplysingar/landanir-eftir-hofnum/landanir.jsp?dagurFra=01.12.2012&hofn=1&dagurTil=11.12.2012&magn=Samantekt',
-      'url1':'http://www.fiskistofa.is/veidar/aflaupplysingar/landanir-eftir-hofnum/landanir.jsp?dagurFra=01.12.2012&hofn=149&dagurTil=11.12.2012&magn=Samantekt',
+      'url':'http://www.fiskistofa.is/veidar/aflaupplysingar/landanir-eftir-hofnum/landanir.jsp?dagurFra=01.12.2012&hofn=1&dagurTil=11.12.2012&magn=Sundurlidun',
+      'url1':'http://www.fiskistofa.is/veidar/aflaupplysingar/landanir-eftir-hofnum/landanir.jsp?dagurFra=01.12.2012&hofn=149&dagurTil=11.12.2012&magn=Sundurlidun',
       }
       
   url2 = {
-      'url':'http://www.fiskistofa.is/veidar/aflaupplysingar/afliallartegundir/aflastodulisti_okvb.jsp?p_fteg=Þorskur+1&p_fra=01.12.2012&p_til=11.12.2012',
-      'url1':'http://www.fiskistofa.is/veidar/aflaupplysingar/afliallartegundir/aflastodulisti_okvb.jsp?p_fteg=Ufsi+3&p_fra=01.12.2012&p_til=11.12.2012'
+      u'Síld 30':'http://www.fiskistofa.is/veidar/aflaupplysingar/afliallartegundir/aflastodulisti_okvb.jsp?p_fteg=Þorskur+1&p_fra=01.12.2012&p_til=11.12.2012',
+      u'Loðna 31':'http://www.fiskistofa.is/veidar/aflaupplysingar/afliallartegundir/aflastodulisti_okvb.jsp?p_fteg=Ufsi+3&p_fra=01.12.2012&p_til=11.12.2012'
       }
 
   harbour_list = []
@@ -125,8 +165,8 @@ if __name__ == '__main__': # If run on it's own
   s_keys = ['Name', 'Category', 'Catch US', 'Species']
 
   for i in html:
-    table = ParseHTML(i, [2, 1], ['Date', 'ShipID', 'Name', 'Gear', 'Catch S'],
-        range(0,5), 'Harbour')
+    table = ParseHTML(i, [2, 1], ['Date', 'ShipID', 'Name', 'Gear', 'Stuff', 'Catch S'],
+        range(0,6), 'Harbour')
     for j in table:
       harbour_list.append(j)
       #print j

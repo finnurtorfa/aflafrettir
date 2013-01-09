@@ -22,29 +22,35 @@ class CalculateList(object):
   def get_lists(self, date_list):
     msg = 'Útbý vefslóðir vegna fyrirspurna\n'
     PostEvent(self._notify_window, MessageEvent(msg, 1))
+
+    URLGen_list = []
     
-    q_urls =[
-        'http://www.fiskistofa.is/veidar/aflaupplysingar/landanir-eftir-hofnum/landanir.jsp?',
-        'http://www.fiskistofa.is/veidar/aflaupplysingar/afliallartegundir/aflastodulisti_okvb.jsp?'
-        ]
-    q_params = [
-        {'magn':'Samantekt', 'dagurFra':date_list[0], 'dagurTil':date_list[1]},
-        {'p_fra':date_list[0], 'p_til':date_list[1]}
-        ]
-    n_params = ['hofn', 'p_fteg']
+    q_params =[
+        ('http://www.fiskistofa.is/veidar/aflaupplysingar/landanir-eftir-hofnum/landanir.jsp?',
+         {'magn':'Samantekt', 'dagurFra':date_list[0], 'dagurTil':date_list[1]},
+         'hofn'),
+        ('http://www.fiskistofa.is/veidar/aflaupplysingar/landanir-eftir-hofnum/landanir.jsp?',
+         {'magn':'Sundurlidun', 'dagurFra':date_list[0], 'dagurTil':date_list[1]},
+         'hofn'),
+        ('http://www.fiskistofa.is/veidar/aflaupplysingar/afliallartegundir/aflastodulisti_okvb.jsp?',
+         {'p_fra':date_list[0], 'p_til':date_list[1]},
+         'p_fteg',
+         True)
+      ]
+    
+    for index, i in enumerate(q_params):
+      URLGen_list.append(DOF_URLGenerator(*i))
 
-    harbours = DOF_URLGenerator(q_urls[0], q_params[0], n_params[0])
-    species = DOF_URLGenerator(q_urls[1], q_params[1], n_params[1], True)
+    url_list = []
+    url_dict = {}
 
-    h_urls = {}
-    s_urls = {}
- 
-    for h in harbours:
-      h_urls.update(h)
-    for s in species:
-      s_urls.update(s)
+    for index, URLGen_obj in enumerate(URLGen_list):
+      for url in URLGen_obj:
+        url_dict.update(url)
+      url_list.append(url_dict)
+      url_dict = {}
 
-    return (h_urls, s_urls)
+    return tuple(url_list)
 
   def get_data_from_html(self, url_dict, tbl_row_no, fields, field_range, name_key):
     landing_list = []
@@ -67,8 +73,8 @@ class CalculateList(object):
     excel.save_excel()
 
   def calc_total_catch(self, harbour_list, species_list):
-    h_keys = ['Date', 'Name', 'Gear', 'Catch S', 'Harbour']
-    s_keys = ['Name', 'Category', 'Catch US', 'Species']
+    h_keys = ['Date', 'ShipID', 'Name', 'Gear', 'Catch S', 'Stuff', 'Harbour']
+    s_keys = ['Category', 'Catch US', 'Species']
 
     PostEvent(self._notify_window, MessageEvent('Reikna út heildarafla\n', 1))
     groups = GroupLandingInfo(harbour_list)
