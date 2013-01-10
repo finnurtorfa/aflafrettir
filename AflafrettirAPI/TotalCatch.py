@@ -50,8 +50,8 @@ class TotalCatch(object):
         u'Hámeri':0.791, u'Lúða':0.923, u'Skrápflúra':0.916,
         u'Sandhverfa':0.875, u'Slétthali':0.875, u'Hvítaskata':0.897,
         u'Hvítskata':0.897, u'Stóra':0.9, 'Tindabikkja':0.875, u'Grásleppa':0}
-    self.pelagic = [u'Gulldepla / Norræna Gulld 130', u'Kolmunni 34', u'Loðna 31',
-        u'Makríll 36', u'Síld 30']
+    self.pelagic = ['Gulldepla / Norræna Gulld 130', 'Kolmunni 34', 'Loðna 31',
+        'Makríll 36', 'Síld 30']
 
   def _calc_total_catch(self, h_list, s_list, h_keys, s_keys):
     """
@@ -67,7 +67,7 @@ class TotalCatch(object):
     """
     result = {}
     h_list = self.calc_slaughtered(h_list)
-    #s_list = self.calc_pelagic(s_list)
+    s_list = self.calc_pelagic(s_list)
 
     if not h_list:
       return None
@@ -89,6 +89,15 @@ class TotalCatch(object):
     return result
 
   def calc_slaughtered(self, h_list):
+    """
+    Args:
+      self:   The instance attributes of the TotalCatch object
+      h_list: A list of landings in harbours itemized by species
+    Returns:
+      h_list: The same list, except if the item is spawn of liver, it is left
+              out. If the item was slaughtered, the catch was updated by
+              multiplying it with the appropriate ratio in self.ratio
+    """
     import re
     
     for index, landing in reversed(list(enumerate(h_list))):
@@ -104,10 +113,16 @@ class TotalCatch(object):
     return h_list
    
   def calc_pelagic(self, s_list):
+    """
+    Args:
+      self:   The instance attributes of the TotalCatch object
+      s_list: A list of catch by species. 
+    Returns:
+      s_list: If the species is a pelagic species, then the catch is multiplied
+              by 1000 to represent it in tonnes.
+    """
     for index, species in enumerate(s_list):
-      print index, species
-      if unicode(species['Species']) in self.pelagic:
-        print "HELLO\n"
+      if species['Species'] in self.pelagic:
         s_list[index]['Catch US'] *= 1000
 
     return s_list
