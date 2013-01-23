@@ -49,7 +49,7 @@ class TotalCatch(object):
         u'Skata':0.888, u'Stinglax':0.799, u'Keila':0.909, u'Langlúra':0.915,
         u'Hámeri':0.791, u'Lúða':0.923, u'Skrápflúra':0.916,
         u'Sandhverfa':0.875, u'Slétthali':0.875, u'Hvítaskata':0.897,
-        u'Hvítskata':0.897, u'Stóra':0.9, 'Tindabikkja':0.875, u'Grásleppa':0}
+        u'Hvítskata':0.897, u'Stóra':0.9, u'Tindabikkja':0.875, u'Grásleppa':0}
     self.pelagic = ['Gulldepla / Norræna Gulld 130', 'Kolmunni 34', 'Loðna 31',
         'Makríll 36', 'Síld 30']
 
