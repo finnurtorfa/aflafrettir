@@ -1,15 +1,25 @@
 #!/usr/bin/python
 # -*- coding: utf-8 -*-
-# 
-# File: ExcelListOutput.py
-# Author: Finnur Smári Torfason
-# Date: 11.12.2012
-# About:
-#   Class for gathering landing information from the web page of the Directorate
-#   of Fisheries in Iceland.
-#   The ExcelListOutput class takes in as a parameter a list of dictionaries
-#   containing landing info and sorts the list in descending order by the catch.
-#   Then it puts the list in an excel(.xls) format.
+
+""" 
+Class: ExcelListOutput
+---------
+
+*  The ExcelListOutput class is used by the Aflafrettir API, a web scraping API. The
+API is used to gather information on landings from the website of Directorate
+of Fisheries in Iceland.
+
+*  The ExcelList class is initialized with a landing_list, filename, date1 and
+date2 as described by the __init__ docstring. It's save_excel() function returns
+a filename.xls excel file containing the landing list sorted by catch.
+
+*  Example use of the class, given a landing_list:
+
+        List = {'Group':'Heild', 'Landings':landing_list}
+        
+        Excel = ExcelListOutput(List, 'Hey.xls', '01.01.01', '01.01.10')
+        Excel.save_excel()       
+"""
 
 from QueryURL import QueryURL
 from ParseHTML import ParseHTML
@@ -17,14 +27,21 @@ from TotalCatch import TotalCatch
 import xlwt
 
 
-###################################################
-# class: TotalCatch
-###################################################
 class ExcelListOutput(object):
   
-  def __init__(self, landingList, filename, date1, date2):
-    self.landing = landingList
-    self.landingList = sorted(landingList['Landings'], key=lambda k: k['Catch US'],
+  def __init__(self, landing_list, filename, date1, date2):
+    """
+    Args:
+      self:         The instance attributes of the TotalCatch object
+      landing_list: A list containing the landing information.
+      filename:     The name of the excel file
+      date1:        The starting date of this calculation
+      date2:        The end date of this calculation
+    Returns:
+      None
+    """
+    self.landing = landing_list
+    self.landing_list = sorted(landing_list['Landings'], key=lambda k: k['Catch US'],
         reverse=True)
     self.wb = xlwt.Workbook('utf-8')
     self.style0 = xlwt.easyxf('font: name Arial, color-index black',
@@ -40,6 +57,12 @@ class ExcelListOutput(object):
 
 
   def save_excel(self):
+    """
+    Args:
+      self: The instance attributes of the TotalCatch object
+    Returns:
+      None
+    """
     ws = self.wb.add_sheet(self.landing['Group'])
     header = u'Afli fyrir tímabilið frá %s til %s' % (self.date1, self.date2)
     ws.write(0, 0, header, self.style0)
@@ -49,7 +72,7 @@ class ExcelListOutput(object):
       ctr += 1
     
     row = 0
-    for l in self.landingList:
+    for l in self.landing_list:
       col = 0
       for i in self.key:
         ws.write(row+2, col, l[i])
@@ -58,10 +81,6 @@ class ExcelListOutput(object):
 
     self.wb.save(self.filename)
 
-
-###################################################
-# Main body
-###################################################
 if __name__ == '__main__': # If run on it's own
 
   url = {
@@ -104,3 +123,14 @@ if __name__ == '__main__': # If run on it's own
 
   Excel = ExcelListOutput(List, 'Hey.xls', '01.01.01', '01.01.10')
   Excel.save_excel()
+
+#Authorship information
+__author__ = 'Finnur Smári Torfason'
+__copyright__ = 'Copyright 2012, www.aflafrettir.com'
+__credits__ = ['Finnur Smári Torfason', 'Gísli Reynisson']
+
+__license__ = 'GPL'
+__version__ = '0.1'
+__maintainer__ = 'Finnur Smári Torfason'
+__email__ = 'finnurtorfa@gmail.com'
+__status__ = 'Development'
