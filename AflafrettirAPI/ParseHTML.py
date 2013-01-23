@@ -9,7 +9,7 @@ API is used to gather information on landings from the website of Directorate
 of Fisheries in Iceland.
 
 *  The ParseHTML class is initialized with a html_dict, tbl_row_no,
-fields, field_range, as described by the __init__ docstring. It returns a
+fields, field_range and a name_key as described by the __init__ docstring. It returns a
 dictionary with all the values of the html page that was given as a input.
 
 *  Example use of the class:
@@ -25,12 +25,11 @@ dictionary with all the values of the html page that was given as a input.
 """
 
 import logging
-from BeautifulSoup import BeautifulSoup
-from QueryURL import QueryURL
+from bs4 import BeautifulSoup
 
 class ParseHTML(object):
 
-  def __init__(self, html_dict, tbl_row_no, fields, field_range):
+  def __init__(self, html_dict, tbl_row_no, fields, field_range, name_key):
     """
     Args:
       self:         The instance attributes of the ParseHTML object
@@ -39,6 +38,7 @@ class ParseHTML(object):
                   contained.
       fields:       Name of the fields of interest
       field_range:  Range over which the fields of interest are located.
+      name_key:     A name of a special key
     Returns:
       None
     """
@@ -47,6 +47,7 @@ class ParseHTML(object):
     self.tbl_row_no = tbl_row_no
     self.fields = fields 
     self.field_range = field_range
+    self.name_key = name_key
     
   def _get_landing_info(self):
     """
@@ -66,6 +67,8 @@ class ParseHTML(object):
       logging.exception('There appears to be no info of interest on this page, continue')
       return {'error':1}
 
+    prev = 0
+
     for tr in table.findAll('tr')[self.tbl_row_no[1]:]:
       for index, i in enumerate(self.field_range):
         td = tr.findAll('td')[i].string
@@ -81,15 +84,20 @@ class ParseHTML(object):
         for td in tr.findAll('td')[i]:
           td = td.strip()
           if index == 0:
+            prev = td
             row.update({self.fields[index]:td})
           elif index == len(self.fields)-1:
-            row.update({self.fields[index]:int(td.replace('.', ''))})
+            row.update({self.fields[index]:float(td.replace('.', ''))/1000})
           else:
             row.update({self.fields[index]:td})
-      row['name-key'] = self.name
+
+        if index == 0:
+          row.update({self.fields[index]:prev})
+
+      row[self.name_key] = self.name
       result.append(row)
       row = {}
-    
+
     return result
 
   def get_list(self, species=False):
@@ -128,6 +136,7 @@ class ParseHTML(object):
         yield info
 
 if __name__ == '__main__': # If run on it's own
+  from QueryURL import QueryURL
   
   url = {'url':'http://www.fiskistofa.is/veidar/aflaupplysingar/landanir-eftir-hofnum/landanir.jsp?dagurFra=01.12.2012&hofn=1&dagurTil=11.12.2012&magn=Samantekt'}
   url2 = {'url':'http://www.fiskistofa.is/veidar/aflaupplysingar/afliallartegundir/aflastodulisti_okvb.jsp?p_fteg=Ýsa+2&p_fra=20.12.2012&p_til=25.12.2012'}
@@ -135,12 +144,12 @@ if __name__ == '__main__': # If run on it's own
   html = QueryURL(url)
   html2 = QueryURL(url2)
   for i in html:
-    info = ParseHTML(i, [2, 1], ['Date', 'ShipID', 'Name', 'Gear', 'Catch'], range(0,5))
+    info = ParseHTML(i, [2, 1], ['Date', 'ShipID', 'Name', 'Gear', 'Catch'], range(0,5), 'Harbour')
     for j in info:
       print j
 
   for i in html2:
-    info = ParseHTML(i, [1, 2], ['ShipID', 'Name', 'Category', 'Catch'], range(0,4))
+    info = ParseHTML(i, [1, 2], ['ShipID', 'Name', 'Category', 'Catch'], range(0,4), 'Species')
     for j in info:
       print j
 

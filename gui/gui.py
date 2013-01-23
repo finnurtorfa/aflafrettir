@@ -32,16 +32,20 @@ class calcThread(Thread):
     
     the_list = cl(self._notify_window, self.date1, self.date2)
     
-    h_list, s_list = the_list.get_lists([self.date1, self.date2])
-    harbour_list = the_list.get_data_from_html(h_list, [2,1], ['ShipID', 'Name',
-      'Gear', 'Catch'], range(1,5))
+    h_list, h_list2, s_list  = the_list.get_lists([self.date1, self.date2])
+
+    harbour_list = the_list.get_data_from_html(h_list2, [2,1], ['Date', 'ShipID', 'Name',
+      'Gear', 'Stuff', 'Catch S'], range(0,6), 'Harbour')
+    
     species_list = the_list.get_data_from_html(s_list, [1,2], ['ShipID', 'Name',
-      'Category', 'Catch'], range(0,4))
+      'Category', 'Catch US'], range(0,4), 'Species')
 
     landing_list = the_list.calc_total_catch(harbour_list, species_list)
+    for i in landing_list:
+      print i
 
     wx.PostEvent(self._notify_window, MessageEvent('Útbý excel skjal\n', 1))
-    the_list.save_data(landing_list, self.filename, self.date1, self.date2)
+    #the_list.save_data(landing_list, self.filename, self.date1, self.date2)
     
     later = datetime.datetime.now()
     msg = 'Klára að reikna lista klukkan %s\n' % later.strftime('%H:%M:%S')

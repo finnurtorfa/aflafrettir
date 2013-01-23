@@ -8,21 +8,21 @@ Class: GroupLandingInfo
 API is used to gather information on landings from the website of Directorate
 of Fisheries in Iceland.
 
-*  The ParseHTML class is initialized with a landing_list as described by the
+*  The GroupLandingInfo class is initialized with a landing_list as described by the
 the __init__ docstring. It returns a dictionary of groups of landings. If a ship
 appears in two or more lists, all of it's landings are placed in a common
 landing list for further processing later on.
 
-*  Example use of the class, given a list of landings from the ParseHTML class:
+*  Example use of the class, given a list of landings from the GroupLandingInfo class:
         
         groups = GroupLandingInfo(landingList)
         groupList = {}
         for g in groups:
           groupList.update(g)
 """
-from QueryURL import QueryURL
-from ParseHTML import ParseHTML
-from TotalCatch import TotalCatch
+
+from itertools import groupby
+from operator import itemgetter
 
 class GroupLandingInfo(object):
 
@@ -72,12 +72,15 @@ class GroupLandingInfo(object):
     group_landings = {}
     for g in groups: group_landings[g] = []
 
-    for g in gears:
-      gear_dict = {g:[dictio for dictio in landing_list if dictio['Gear'] in g]}
-      for l in groups:
-        if any([(v in groups[l] and gear_dict[g]) for v in gear_dict.keys()]):
-          group_landings[l].extend(gear_dict[g])
+    list_sorted = sorted(landing_list, key=lambda d:(d['Gear'], d['ShipID']))
 
+    for gear, landing in groupby(list_sorted, key=itemgetter('Gear')):
+      for l in landing:
+        for g in groups:
+          if gear in groups[g]:
+            l['Group'] = g
+            group_landings[g].append(l)
+       
     return group_landings
   
   def get_unique_id_by_group(self, groups, group_landings):
@@ -139,34 +142,63 @@ class GroupLandingInfo(object):
     for s in self.group_landings:
       yield {s:self.group_landings[s]}
       
-
-###################################################
-# Main body
-###################################################
 if __name__ == '__main__': # If run on it's own
+  from QueryURL import QueryURL
+  from ParseHTML import ParseHTML
+  from TotalCatch import TotalCatch
+  
   url = {
-      'url2':'http://www.fiskistofa.is/veidar/aflaupplysingar/landanir-eftir-hofnum/landanir.jsp?dagurFra=01.10.2012&hofn=149&dagurTil=26.12.2012&magn=Samantekt',
-      'url3':'http://www.fiskistofa.is/veidar/aflaupplysingar/landanir-eftir-hofnum/landanir.jsp?dagurFra=01.12.2012&hofn=1&dagurTil=26.12.2012&magn=Samantekt',
+      'url':'http://www.fiskistofa.is/veidar/aflaupplysingar/landanir-eftir-hofnum/landanir.jsp?dagurFra=01.12.2012&hofn=1&dagurTil=11.12.2012&magn=Samantekt',
+      'url1':'http://www.fiskistofa.is/veidar/aflaupplysingar/landanir-eftir-hofnum/landanir.jsp?dagurFra=01.12.2012&hofn=149&dagurTil=11.12.2012&magn=Samantekt',
       }
-  landingList = []
+  
+  url2 = {
+      'url':'http://www.fiskistofa.is/veidar/aflaupplysingar/afliallartegundir/aflastodulisti_okvb.jsp?p_fteg=Þorskur+1&p_fra=01.12.2012&p_til=11.12.2012',
+      'url1':'http://www.fiskistofa.is/veidar/aflaupplysingar/afliallartegundir/aflastodulisti_okvb.jsp?p_fteg=Ufsi+3&p_fra=01.12.2012&p_til=11.12.2012'
+      }
+
+  harbour_list = []
+  species_list = []
   html = QueryURL(url)
+  html2 = QueryURL(url2)
+  h_keys = ['Name', 'Gear', 'Catch S', 'Harbour']
+  s_keys = ['Name', 'Category', 'Catch US', 'Species']
 
   for i in html:
-    table = ParseHTML(i, [2, 1], ['Date', 'ShipID', 'Name', 'Gear', 'Catch'], range(0,5))
+    table = ParseHTML(i, [2, 1], ['Date', 'ShipID', 'Name', 'Gear', 'Catch S'],
+        range(0,5), 'Harbour')
     for j in table:
-      landingList.append(j)
-
-  groups = GroupLandingInfo(landingList)
+      harbour_list.append(j)
+      #print j
+  
+  for i in html2:
+    table = ParseHTML(i, [1, 2], ['ShipID', 'Name', 'Category', 'Catch US'],
+        range(0,4), 'Species')
+    for j in table:
+      species_list.append(j)
+  
+  groups = GroupLandingInfo(harbour_list)
   groupList = {}
   for g in groups:
-    #print g
     groupList.update(g)
    
   for g in groupList:
-    lists = TotalCatch(groupList[g])
+    #print groupList[g]
+    lists = TotalCatch(groupList[g], species_list, h_keys, s_keys)
     landingList = []
     for l in lists:
       landingList.append(l)
     groupList[g] = landingList
 
   #print groupList
+
+#Authorship information
+__author__ = 'Finnur Smári Torfason'
+__copyright__ = 'Copyright 2012, www.aflafrettir.com'
+__credits__ = ['Finnur Smári Torfason', 'Gísli Reynisson']
+
+__license__ = 'GPL'
+__version__ = '0.1'
+__maintainer__ = 'Finnur Smári Torfason'
+__email__ = 'finnurtorfa@gmail.com'
+__status__ = 'Development'
