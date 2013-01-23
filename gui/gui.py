@@ -6,7 +6,8 @@ GUI
 
 import sys
 
-from PySide.QtGui import (QApplication, QMainWindow, QWidget, QAction)
+from PySide.QtGui import (QApplication, QMainWindow, QWidget, QAction,
+                          QTextEdit, QVBoxLayout)
 
 class AflafrettirGUI(QMainWindow):
   def __init__(self):
@@ -16,6 +17,9 @@ class AflafrettirGUI(QMainWindow):
 
   def initUI(self):
     window = QWidget()
+
+    self.info = QTextEdit()
+    self.info.setReadOnly(True)
 
     exit_action = QAction('Exit', self)
     exit_action.setShortcut('Ctrl+Q')
@@ -27,6 +31,11 @@ class AflafrettirGUI(QMainWindow):
     filemenu.addAction(exit_action)
     
     self.statusBar()
+
+    main_layout = QVBoxLayout()
+    main_layout.addWidget(self.info)
+    window.setLayout(main_layout)
+    self.setCentralWidget(window)
 
     self.setGeometry(300, 300, 350, 250)
     self.setWindowTitle(u'Aflafréttir')
