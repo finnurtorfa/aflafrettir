@@ -1,9 +1,11 @@
 #!/usr/bin/python
 # *-* encoding: utf-8 *-*
 
+from threading import Thread
+
 class URLManager(object):
   def __init__(self, *args, **kwargs):
-    pass
+    (self.harbours, self.species) = self.init_params()
 
   def get_html(self, url, **kwargs):
     """ Sends a GET request, returns :class: 'Response' object
@@ -16,10 +18,10 @@ class URLManager(object):
     return requests.get(url, params=kwargs)
 
   def get_params(self, url, **kwargs):
-    """ Sends a GET request, returns :dict: object
+    """ Passes :params: to :function: 'get_html', returns :dict: object
 
     :param url: a URL for the new :class: 'Request' object
-    :param **kwargs: optional arguments that :class:  takes
+    :param **kwargs: optional arguments that :class: 'BeautifulSoup' takes
     """
     from bs4 import BeautifulSoup
 
@@ -35,12 +37,32 @@ class URLManager(object):
 
     return result
 
+  def init_params(self):
+    """ Passes :params: to :function: 'get_params', returns :tuple: object:
+    """
+    base_url = 'http://www.fiskistofa.is/veidar/aflaupplysingar/'
+    new_params = (
+        (base_url + 'landanir-eftir-hofnum/', {'name':'hofn'}),
+        (base_url + 'afliallartegundir', {'name':'p_fteg'})
+        )
+    
+    result = ()
+
+    for p in new_params:
+      result = result + (self.get_params(p[0], **p[1]), )
+
+    return result
+
+
+class URLManagerThread(Thread):
+  def __init__(self, url_manager):
+    self.url_manager = url_manager
+
+  def run(self):
+    pass
+
 def main():
   url_manager = URLManager()
-  new_param = {'name':'hofn'}
-  new_param2 = {'name':'p_fteg'}
-  print url_manager.get_params('http://www.fiskistofa.is/veidar/aflaupplysingar/landanir-eftir-hofnum/', **new_param)
-  print url_manager.get_params('http://www.fiskistofa.is/veidar/aflaupplysingar/afliallartegundir/', **new_param2)
 
 if __name__ == '__main__':
   main()
