@@ -5,15 +5,38 @@ import Queue
 
 from threading import Thread
 
-class WebCrawler(object):
-  def __init__(self, **kwargs):
-    self.h_url = kwargs['h_url']
-    self.s_url = kwargs['s_url']
-    
-    (self.harbours, self.species) = self.fetch_get_params()
+class WebCrawler(Thread):
+  def __init__(self, url, queue, param_name, params, harbour=True):
+    """ Initializes the :class: 'WebCrawle' object.
 
-    self.h_url += 'landanir.jsp'
-    self.s_url += 'aflastodulisti_okvb.jsp'
+    :param self: instance attribute of :class: 'WebCrawler' object
+    :param url: a URL used by various methods
+    :param queue: a :class: 'Queue' object
+    :param param_name: the name of the variable GET parameters
+    :param params: the variable GET parameters
+    :param harbour: a boolean value to indicate whether the :class:
+                    'WebCrawler' object is querying the DOF database for
+                    harbours or species.
+    """
+    Thread.__init__(self)
+    
+    self.url = url
+    self.queue = queue
+    self.param_name = param_name
+    self.params = params
+    
+    self.new_params = self.get_params(url, {'name':param_name})
+    self.populate_queue(self.new_params)
+
+    self.daemon = True
+
+  def run(self):
+    while True:
+      get_html_cb = self.queue.get()
+      resp = get_html_cb[0](self.url, **get_html_cb[1])
+      print resp.url, resp
+
+      self.queue.task_done()
 
   def get_html(self, url, **kwargs):
     """ Sends a GET request, returns :class: 'Response' object
@@ -48,93 +71,40 @@ class WebCrawler(object):
 
     return result
 
-  def fetch_get_params(self):
-    """ Passes :params: to :function: 'get_params', returns :tuple: object:
-    
-    :param self: instance attribute of :class: 'WebCrawler' object
-    """
-    new_params = (
-        (self.h_url, {'name':'hofn'}),
-        (self.s_url, {'name':'p_fteg'})
-        )
-    
-    result = ()
-
-    for p in new_params:
-      result = result + (self.get_params(p[0], p[1]), )
-
-    return result
-
-  def set_get_params(self, h_params, s_params):
-    """ Sets the GET params for querying the website of Directorate of
-    Fisheries(DOF) in Iceland.
-
-    :param self: instance attribute of :class: 'WebCrawler' object
-    :param h_params: GET parameters for harbours
-    :param s_params: GET parameters for species
-    """
-    self.h_params = h_params
-    self.s_params = s_params
-
-  def populate_queue(self, param_name, queue, harbour=True):
+  def populate_queue(self, new_params):
     """ Adds items to a :class: 'Queue' object
 
     :param self: instance attribute of :class: 'WebCrawler' object
-    :param param_name: the name of the variable GET parameter
-    :param queue: a :class: 'Queue' object that items are added to
-    :param harbour: a boolean value to distinguish between harbours and species
+    :param new_params: the name of the variable GET parameter
     """
-    if harbour:
-      p_dict = self.h_dict
-      p_url = self.h_url
-      params = self.harbours
-    else:
-      p_dict = self.s_dict
-      p_url = self.s_url
-      params = self.species
 
-    for p in params:
-      tmp_dict = p_dict.copy()
-      tmp_dict.update({param_name:params[p]})
-      queue.put((self.get_html, p_url, tmp_dict, p, harbour))
-
-class WebCrawlerThread(Thread):
-  def __init__(self, crawler, param_name, queue):
-    Thread.__init__(self)
-    
-    self.crawler = crawler
-    self.param_name = param_name
-    self.queue = queue
-
-    self.daemon = True
-
-  def run(self):
-    while True:
-      get_params_cb = self.queue.get()
-      resp = get_params_cb[0](get_params_cb[1], **get_params_cb[2])
-      print resp.url, resp
-
-      self.queue.task_done()
+    for p in new_params:
+      tmp_params = self.params.copy()
+      tmp_params[self.param_name] = new_params[p]
+      self.queue.put((self.get_html, tmp_params))
 
 def main():
   base_url = 'http://www.fiskistofa.is/veidar/aflaupplysingar/'
-  h_url = base_url + 'landanir-eftir-hofnum/'
-  s_url = base_url + 'afliallartegundir/'
-  url_dict = {'h_url':h_url, 's_url':s_url}
-  url_params = (
-      {'dagurFra':'01.01.2013', 'dagurTil':'10.01.2013', 'magn':'Sundurlidun'}, 
-      {'p_fra':'01.01.2013', 'p_til':'10.01.2013'}
-      )
+  h_url = base_url + 'landanir-eftir-hofnum/landanir.jsp'
+  s_url = base_url + 'afliallartegundir/aflastodulisti_okvb.jsp'
+  
   h_queue = Queue.Queue()
   s_queue = Queue.Queue()
-  crawler = WebCrawler(**url_dict)
-  crawler.set_get_params(*url_params)
-  crawler.populate_queue('hofn', h_queue)
-  crawler.populate_queue('p_fteg', s_queue, False)
 
-  h_thread = WebCrawlerThread(crawler, 'hofn', h_queue)
-  s_thread = WebCrawlerThread(crawler, 'p_fteg', s_queue)
+  h_params = (
+      h_url, 
+      h_queue,
+      'hofn',
+      {'dagurFra':'01.01.2013', 'dagurTil':'10.01.2013', 'magn':'Sundurlidun'})
+  s_params = (
+      s_url,
+      s_queue,
+      'p_fteg',
+      {'p_fra':'01.01.2013', 'p_til':'10.01.2013'},
+      False)
 
+  h_thread = WebCrawler(*h_params)
+  s_thread = WebCrawler(*s_params)
   h_thread.start()
   s_thread.start()
 
@@ -143,3 +113,13 @@ def main():
 
 if __name__ == '__main__':
   main()
+
+__author__      = 'Finnur Smári Torfason'
+__copyright__   = 'Copyright 2012, www.aflafrettir.com'
+__credits__     = ['Finnur Smári Torfason', 'Gísli Reynisson']
+
+__license__     = 'GPL'
+__version__     = '0.1'
+__maintainer__  = 'Finnur Smári Torfason'
+__email__       = 'finnurtorfa@gmail.com'
+__status__      = 'Development'
