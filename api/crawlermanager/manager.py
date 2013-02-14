@@ -4,6 +4,7 @@
 import Queue
 
 from threading import Thread
+from webscraper import DOFWebScraper
 
 class WebCrawler(Thread):
   def __init__(self, url, queue, param_name, params, harbour=True):
@@ -24,6 +25,7 @@ class WebCrawler(Thread):
     self.queue = queue
     self.param_name = param_name
     self.params = params
+    self.harbour = harbour
     
     self.new_params = self.get_params(url, {'name':param_name})
     self.populate_queue(self.new_params)
@@ -34,7 +36,10 @@ class WebCrawler(Thread):
     while True:
       get_html_cb = self.queue.get()
       resp = get_html_cb[0](self.url, **get_html_cb[1])
-      print resp.url, resp
+      if self.harbour:
+        ws = DOFWebScraper(resp.text, get_html_cb[2])
+      else:
+        ws = DOFWebScraper(resp.text, get_html_cb[2], False)
 
       self.queue.task_done()
 
@@ -81,7 +86,7 @@ class WebCrawler(Thread):
     for p in new_params:
       tmp_params = self.params.copy()
       tmp_params[self.param_name] = new_params[p]
-      self.queue.put((self.get_html, tmp_params))
+      self.queue.put((self.get_html, tmp_params, {p:new_params[p]}))
 
 def main():
   base_url = 'http://www.fiskistofa.is/veidar/aflaupplysingar/'
