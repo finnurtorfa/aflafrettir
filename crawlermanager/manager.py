@@ -7,6 +7,10 @@ from threading import Thread
 from webscraper import DOFWebScraper
 
 class WebCrawler(Thread):
+  """ :class WebCrawler: object which crawls the website of Directorate of
+  Fisheries and feeds the HTML code to the :class: 'DOFWebScraper' object.
+  """
+
   def __init__(self, url, queue, param_name, params, harbour=True):
     """ Initializes the :class: 'WebCrawle' object.
 
@@ -41,6 +45,12 @@ class WebCrawler(Thread):
       else:
         ws = DOFWebScraper(resp.text, get_html_cb[2], False)
 
+      if ws.table is not None:
+        data = ws.get_data(ws.table)
+
+      if len(data) < 10:
+        print data
+ 
       self.queue.task_done()
 
   def get_html(self, url, **kwargs):
@@ -86,7 +96,7 @@ class WebCrawler(Thread):
     for p in new_params:
       tmp_params = self.params.copy()
       tmp_params[self.param_name] = new_params[p]
-      self.queue.put((self.get_html, tmp_params, {p:new_params[p]}))
+      self.queue.put((self.get_html, tmp_params, {self.param_name:p}))
 
 def main():
   base_url = 'http://www.fiskistofa.is/veidar/aflaupplysingar/'
