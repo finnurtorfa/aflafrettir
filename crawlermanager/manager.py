@@ -11,12 +11,12 @@ class WebCrawler(Thread):
   Fisheries and feeds the HTML code to the :class: 'DOFWebScraper' object.
   """
 
-  def __init__(self, url, queue, param_name, params, harbour=True):
+  def __init__(self, url, queue_in, queue_out, param_name, params, harbour=True):
     """ Initializes the :class: 'WebCrawle' object.
 
     :param self: instance attribute of :class: 'WebCrawler' object
     :param url: a URL used by various methods
-    :param queue: a :class: 'Queue' object
+    :param queue_in: a :class: 'Queue' object
     :param param_name: the name of the variable GET parameters
     :param params: the variable GET parameters
     :param harbour: a boolean value to indicate whether the :class:
@@ -26,7 +26,8 @@ class WebCrawler(Thread):
     Thread.__init__(self)
     
     self.url = url
-    self.queue = queue
+    self.queue_in = queue_in
+    self.queue_out = queue_out
     self.param_name = param_name
     self.params = params
     self.harbour = harbour
@@ -38,7 +39,7 @@ class WebCrawler(Thread):
 
   def run(self):
     while True:
-      get_html_cb = self.queue.get()
+      get_html_cb = self.queue_in.get()
       resp = get_html_cb[0](self.url, **get_html_cb[1])
       if self.harbour:
         ws = DOFWebScraper(resp.text, get_html_cb[2])
@@ -47,11 +48,11 @@ class WebCrawler(Thread):
 
       if ws.table is not None:
         data = ws.get_data(ws.table)
+        if data:
+          print data
+          self.queue_out.put(data)
 
-      if len(data) < 10:
-        print data
- 
-      self.queue.task_done()
+      self.queue_in.task_done()
 
   def get_html(self, url, **kwargs):
     """ Sends a GET request, returns :class: 'Response' object
@@ -96,24 +97,28 @@ class WebCrawler(Thread):
     for p in new_params:
       tmp_params = self.params.copy()
       tmp_params[self.param_name] = new_params[p]
-      self.queue.put((self.get_html, tmp_params, {self.param_name:p}))
+      self.queue_in.put((self.get_html, tmp_params, {self.param_name:p}))
 
 def main():
   base_url = 'http://www.fiskistofa.is/veidar/aflaupplysingar/'
   h_url = base_url + 'landanir-eftir-hofnum/landanir.jsp'
   s_url = base_url + 'afliallartegundir/aflastodulisti_okvb.jsp'
   
-  h_queue = Queue.Queue()
-  s_queue = Queue.Queue()
+  h_queue_in = Queue.Queue()
+  h_queue_out = Queue.Queue()
+  s_queue_in = Queue.Queue()
+  s_queue_out = Queue.Queue()
 
   h_params = (
       h_url, 
-      h_queue,
+      h_queue_in,
+      h_queue_out,
       'hofn',
       {'dagurFra':'01.01.2013', 'dagurTil':'10.01.2013', 'magn':'Sundurlidun'})
   s_params = (
       s_url,
-      s_queue,
+      s_queue_in,
+      s_queue_out,
       'p_fteg',
       {'p_fra':'01.01.2013', 'p_til':'10.01.2013'},
       False)
@@ -123,7 +128,7 @@ def main():
   h_thread.start()
   s_thread.start()
 
-  while (not h_queue.empty()) and (not s_queue.empty()):
+  while (not h_queue_in.empty()) and (not s_queue_in.empty()):
     pass
 
 if __name__ == '__main__':
