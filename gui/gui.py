@@ -4,7 +4,7 @@
 GUI
 """
 
-import sys
+import sys, Queue
 
 from PySide.QtGui import (QApplication, QMainWindow, QWidget, QAction,
                           QTextEdit, QVBoxLayout, QHBoxLayout, QCalendarWidget,
@@ -15,6 +15,16 @@ from crawlermanager.manager import WebCrawler
 class AflafrettirGUI(QMainWindow):
   def __init__(self):
     super(AflafrettirGUI, self).__init__()
+
+    base_url = 'http://www.fiskistofa.is/veidar/aflaupplysingar/'
+    self.h_url = base_url + 'landanir-eftir-hofnum/landanir.jsp'
+    self.s_url = base_url + 'afliallartegundir/aflastodulisti_okvb.jsp'
+
+    self.h_queue_in = Queue.Queue()
+    self.h_queue_out = Queue.Queue()
+    
+    self.s_queue_in = Queue.Queue()
+    self.s_queue_out = Queue.Queue()
 
     self.initUI()
 
@@ -68,7 +78,36 @@ class AflafrettirGUI(QMainWindow):
     window.show()
 
   def calc_catch(self):
-    print "Clicked"
+    (date1, date2) = self.get_dates()
+
+    h_params = (
+        self.h_url, 
+        self.h_queue_in,
+        self.h_queue_out,
+        'hofn',
+        {'dagurFra':date1, 'dagurTil':date2, 'magn':'Sundurlidun'},)
+    s_params = (
+        self.s_url, 
+        self.s_queue_in,
+        self.s_queue_out,
+        'p_fteg',
+        {'p_fra':date1, 'p_til':date2},
+        False,)
+
+    h_thread = WebCrawler(*h_params)
+    s_thread = WebCrawler(*s_params)
+    h_thread.start()
+    s_thread.start()
+
+  def get_dates(self):
+    fmt = 'dd.MM.yyyy'
+    date1 = self.cal1.selectedDate().toString(fmt)
+    date2 = self.cal2.selectedDate().toString(fmt)
+
+    if date1 > date2:
+      (date1, date2) = (date2, date1)
+
+    return (date1, date2)
 
   def closeEvent(self, e):
     self.exit()
