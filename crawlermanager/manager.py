@@ -3,13 +3,15 @@
 
 import Queue
 
-from threading import Thread
+from PySide.QtCore import QThread, Signal
 from webscraper import DOFWebScraper
 
-class WebCrawler(Thread):
+
+class WebCrawler(QThread):
   """ :class WebCrawler: object which crawls the website of Directorate of
   Fisheries and feeds the HTML code to the :class: 'DOFWebScraper' object.
   """
+  fetchReady = Signal(str)
 
   def __init__(self, url, queue_in, queue_out, param_name, params, harbour=True):
     """ Initializes the :class: 'WebCrawle' object.
@@ -23,8 +25,8 @@ class WebCrawler(Thread):
                     'WebCrawler' object is querying the DOF database for
                     harbours or species.
     """
-    Thread.__init__(self)
-    
+    QThread.__init__(self)
+
     self.url = url
     self.queue_in = queue_in
     self.queue_out = queue_out
@@ -42,14 +44,15 @@ class WebCrawler(Thread):
       get_html_cb = self.queue_in.get()
       resp = get_html_cb[0](self.url, **get_html_cb[1])
       if self.harbour:
+        self.fetchReady.emit(get_html_cb[2]['hofn'])
         ws = DOFWebScraper(resp.text, get_html_cb[2])
       else:
+        self.fetchReady.emit(get_html_cb[2]['p_fteg'])
         ws = DOFWebScraper(resp.text, get_html_cb[2], False)
 
       if ws.table is not None:
         data = ws.get_data(ws.table)
         if data:
-          print data
           self.queue_out.put(data)
 
       self.queue_in.task_done()

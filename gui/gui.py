@@ -79,25 +79,35 @@ class AflafrettirGUI(QMainWindow):
 
   def calc_catch(self):
     (date1, date2) = self.get_dates()
+    
+    if date1 and date2:
+      h_params = (
+          self.h_url, 
+          self.h_queue_in,
+          self.h_queue_out,
+          'hofn',
+          {'dagurFra':date1, 'dagurTil':date2, 'magn':'Sundurlidun'},)
+      s_params = (
+          self.s_url, 
+          self.s_queue_in,
+          self.s_queue_out,
+          'p_fteg',
+          {'p_fra':date1, 'p_til':date2},
+          False,)
+  
+      h_thread = WebCrawler(*h_params)
+      s_thread = WebCrawler(*s_params)
 
-    h_params = (
-        self.h_url, 
-        self.h_queue_in,
-        self.h_queue_out,
-        'hofn',
-        {'dagurFra':date1, 'dagurTil':date2, 'magn':'Sundurlidun'},)
-    s_params = (
-        self.s_url, 
-        self.s_queue_in,
-        self.s_queue_out,
-        'p_fteg',
-        {'p_fra':date1, 'p_til':date2},
-        False,)
+      h_thread.fetchReady.connect(self.get_fetch)
+      s_thread.fetchReady.connect(self.get_fetch)
 
-    h_thread = WebCrawler(*h_params)
-    s_thread = WebCrawler(*s_params)
-    h_thread.start()
-    s_thread.start()
+      h_thread.start()
+      s_thread.start()
+    else:
+      self.info.append(u'Villa!Eru dagsetningarnar þær sömu?')
+
+  def get_fetch(self, data):
+    self.info.append(u'Sæki gögn vegna ' + data)
 
   def get_dates(self):
     fmt = 'dd.MM.yyyy'
@@ -106,6 +116,8 @@ class AflafrettirGUI(QMainWindow):
 
     if date1 > date2:
       (date1, date2) = (date2, date1)
+    elif date1 == date2:
+      return (None, None)
 
     return (date1, date2)
 
