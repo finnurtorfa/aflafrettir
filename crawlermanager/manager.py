@@ -12,8 +12,9 @@ class WebCrawler(QThread):
   Fisheries and feeds the HTML code to the :class: 'DOFWebScraper' object.
   """
   fetchReady = Signal(str)
+  fetchDone = Signal(bool)
 
-  def __init__(self, url, queue_in, queue_out, param_name, params, harbour=True):
+  def __init__(self, url, queue_in, queue_out, param_name, params=None, harbour=True):
     """ Initializes the :class: 'WebCrawle' object.
 
     :param self: instance attribute of :class: 'WebCrawler' object
@@ -35,11 +36,11 @@ class WebCrawler(QThread):
     self.harbour = harbour
     
     self.new_params = self.get_params(url, {'name':param_name})
-    self.populate_queue(self.new_params)
 
     self.daemon = True
 
   def run(self):
+    self.populate_queue(self.new_params)
     while True:
       get_html_cb = self.queue_in.get()
       resp = get_html_cb[0](self.url, **get_html_cb[1])
@@ -56,6 +57,11 @@ class WebCrawler(QThread):
           self.queue_out.put(data)
 
       self.queue_in.task_done()
+
+      if self.queue_in.empty():
+        print "Þráður Búinn"
+        self.fetchDone.emit(True)
+
 
   def get_html(self, url, **kwargs):
     """ Sends a GET request, returns :class: 'Response' object
@@ -89,6 +95,9 @@ class WebCrawler(QThread):
       result.update({u'Færeyjar' : u'167'})
 
     return result
+
+  def set_params(self, params):
+    self.params = params
 
   def populate_queue(self, new_params):
     """ Adds items to a :class: 'Queue' object

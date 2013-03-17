@@ -8,7 +8,7 @@ import sys, Queue
 
 from PySide.QtGui import (QApplication, QMainWindow, QWidget, QAction,
                           QTextEdit, QVBoxLayout, QHBoxLayout, QCalendarWidget,
-                          QPushButton)
+                          QPushButton, QProgressBar)
 
 from crawlermanager.manager import WebCrawler
 
@@ -20,11 +20,28 @@ class AflafrettirGUI(QMainWindow):
     self.h_url = base_url + 'landanir-eftir-hofnum/landanir.jsp'
     self.s_url = base_url + 'afliallartegundir/aflastodulisti_okvb.jsp'
 
+    self.cnt = 0
+
     self.h_queue_in = Queue.Queue()
     self.h_queue_out = Queue.Queue()
     
     self.s_queue_in = Queue.Queue()
     self.s_queue_out = Queue.Queue()
+    h_params = (
+        self.h_url, 
+        self.h_queue_in,
+        self.h_queue_out,
+        'hofn',)
+    s_params = (
+        self.s_url, 
+        self.s_queue_in,
+        self.s_queue_out,
+        'p_fteg',
+        None,
+        False,)
+
+    self.h_thread = WebCrawler(*h_params)
+    self.s_thread = WebCrawler(*s_params)
 
     self.initUI()
 
@@ -44,6 +61,8 @@ class AflafrettirGUI(QMainWindow):
     self.button = QPushButton('Reikna afla', self)
     self.button.clicked.connect(self.calc_catch)
 
+    self.pbar = QProgressBar(self)
+
     exit_action = QAction('Exit', self)
     exit_action.setShortcut('Ctrl+Q')
     exit_action.setStatusTip('Exit Application')
@@ -53,7 +72,7 @@ class AflafrettirGUI(QMainWindow):
     filemenu = menubar.addMenu('&File')
     filemenu.addAction(exit_action)
     
-    self.statusBar()
+    self.statusbar = self.statusBar()
 
     calendar_layout = QHBoxLayout()
     calendar_layout.addWidget(self.cal1)
@@ -79,35 +98,26 @@ class AflafrettirGUI(QMainWindow):
 
   def calc_catch(self):
     (date1, date2) = self.get_dates()
+    self.statusbar.addWidget(self.pbar)
     
     if date1 and date2:
-      h_params = (
-          self.h_url, 
-          self.h_queue_in,
-          self.h_queue_out,
-          'hofn',
-          {'dagurFra':date1, 'dagurTil':date2, 'magn':'Sundurlidun'},)
-      s_params = (
-          self.s_url, 
-          self.s_queue_in,
-          self.s_queue_out,
-          'p_fteg',
-          {'p_fra':date1, 'p_til':date2},
-          False,)
-  
-      h_thread = WebCrawler(*h_params)
-      s_thread = WebCrawler(*s_params)
+      self.h_thread.set_params({'dagurFra':date1, 'dagurTil':date2, 'magn':'Sundurlidun'})
+      self.s_thread.set_params({'p_fra':date1, 'p_til':date2})
 
-      h_thread.fetchReady.connect(self.get_fetch)
-      s_thread.fetchReady.connect(self.get_fetch)
+      self.pbar.setMaximum(len(self.h_thread.new_params) + len(self.s_thread.new_params))
 
-      h_thread.start()
-      s_thread.start()
+      self.h_thread.fetchReady.connect(self.get_fetch)
+      self.s_thread.fetchReady.connect(self.get_fetch)
+
+      self.h_thread.start()
+      self.s_thread.start()
     else:
       self.info.append(u'Villa!Eru dagsetningarnar þær sömu?')
 
   def get_fetch(self, data):
     self.info.append(u'Sæki gögn vegna ' + data)
+    self.cnt += 1
+    self.pbar.setValue(self.cnt)
 
   def get_dates(self):
     fmt = 'dd.MM.yyyy'
