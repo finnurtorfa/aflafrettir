@@ -51,10 +51,19 @@ class AflafrettirGUI(QMainWindow):
 
     self.h_thread = WebCrawler(*h_params)
     self.s_thread = WebCrawler(*s_params)
-
+    
+    self.h_thread.fetchReady.connect(self.get_fetch)
+    self.s_thread.fetchReady.connect(self.get_fetch)
+    self.h_thread.fetchDone.connect(self.sort)
+    self.s_thread.fetchDone.connect(self.sort)
+ 
     self.initUI()
 
   def initUI(self):
+    """ GUI specific initialization of the :class: 'AflafrettirGUI' object.
+
+    :param self: instance attribute of :class: 'AflafrettirGUI' object
+    """
     self.setMaximumWidth(750)
     window = QWidget()
 
@@ -63,27 +72,23 @@ class AflafrettirGUI(QMainWindow):
 
     self.cal1 = QCalendarWidget(self)
     self.cal1.setMaximumSize(370, 200)
-
     self.cal2 = QCalendarWidget(self)
     self.cal2.setMaximumSize(370, 200)
 
     self.button = QPushButton('Reikna afla', self)
-    self.button.clicked.connect(self.calc_catch)
+    self.button.clicked.connect(self.fetch_data)
 
     self.pbar = QProgressBar(self)
 
     exit_action = QAction('Exit', self)
     exit_action.setShortcut('Ctrl+Q')
     exit_action.setStatusTip('Exit Application')
-    exit_action.triggered.connect(self.exit)
+    exit_action.triggered.connect(self.closeEvent)
 
     menubar = self.menuBar()
     filemenu = menubar.addMenu('&File')
     filemenu.addAction(exit_action)
 
-    self.h_thread.fetchDone.connect(self.sort)
-    self.s_thread.fetchDone.connect(self.sort)
-    
     self.statusbar = self.statusBar()
 
     calendar_layout = QHBoxLayout()
@@ -108,23 +113,25 @@ class AflafrettirGUI(QMainWindow):
     self.show()
     window.show()
 
-  def calc_catch(self):
-    (date1, date2) = self.get_dates()
-    self.statusbar.addWidget(self.pbar)
-    
-    if date1 and date2:
+  def fetch_data(self):
+    """ Sets the dates in :class: 'WebCrawler' object and starts two threads
+    which gather data from the website fo Directorate of Fisheries in Iceland.
+
+    :param self: instance attribute of :class: 'AflafrettirGUI' object
+    """
+    try:
+      (date1, date2) = self.get_dates()
+
+      self.statusbar.addWidget(self.pbar)
+      self.pbar.setMaximum(len(self.h_thread.new_params) + len(self.s_thread.new_params))
+      
       self.h_thread.set_params({'dagurFra':date1, 'dagurTil':date2, 'magn':'Sundurlidun'})
       self.s_thread.set_params({'p_fra':date1, 'p_til':date2})
-             
-      self.pbar.setMaximum(len(self.h_thread.new_params) + len(self.s_thread.new_params))
-
-      self.h_thread.fetchReady.connect(self.get_fetch)
-      self.s_thread.fetchReady.connect(self.get_fetch)
 
       self.h_thread.start()
       self.s_thread.start()
-    else:
-      self.info.append(u'Villa!Eru dagsetningarnar þær sömu?')
+    except ValueError as e:
+      self.info.append(unicode(e))
 
   def sort(self, done):
     """ Called when a 'WebCrawler' thread has emptied it's queue. Runs the
@@ -141,11 +148,24 @@ class AflafrettirGUI(QMainWindow):
       print self.sort_cnt
 
   def get_fetch(self, data):
+    """ Called when :class: 'WebCrawler' object pops an object from it's input
+    queue. 
+
+    :param self: Instance attribute of the :class: 'AflafrettirGUI' object
+    :param data: String containing the name of the harbour/species the :class:
+                 'WebCrawler' object is fetching data about
+    """
     self.info.append(u'Sæki gögn vegna ' + data)
     self.cnt += 1
     self.pbar.setValue(self.cnt)
 
   def get_dates(self):
+    """ Returns the dates selected in :class: 'QCalendarWidget' objects. It
+    returns the dates. Returns the dates in ascending order. If the dates are
+    equal it raises 
+    
+    :param self: Instance attribute of the :class: 'AflafrettirGUI' object
+    """
     fmt = 'dd.MM.yyyy'
     date1 = self.cal1.selectedDate().toString(fmt)
     date2 = self.cal2.selectedDate().toString(fmt)
@@ -153,16 +173,18 @@ class AflafrettirGUI(QMainWindow):
     if date1 > date2:
       (date1, date2) = (date2, date1)
     elif date1 == date2:
-      return (None, None)
+      raise ValueError(u'Sömu Dagsetningar')
 
     return (date1, date2)
 
   def closeEvent(self, e):
-    self.exit()
-
-  def exit(self):
-    self.close()
+    """ Closes the application
     
+    :param self: Instance attribute of the :class: 'AflafrettirGUI' object
+    :param e: A :class: 'QCloseEvent' object.
+    """
+    e.accept()
+    self.close()
 
 def main():
   app = QApplication(sys.argv)
