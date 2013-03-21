@@ -13,7 +13,15 @@ from PySide.QtGui import (QApplication, QMainWindow, QWidget, QAction,
 from crawlermanager.manager import WebCrawler
 
 class AflafrettirGUI(QMainWindow):
+  """:class AflafrettirGUI: object which inherits from :class: 'QMainWindow'
+  object from PySide and defines the GUI application and how it's properties.
+  """
+  
   def __init__(self):
+    """ Initializes the :class: 'AflafrettirGUI' object.
+
+    :param self: instance attribute of :class: 'AflafrettirGUI' object
+    """
     super(AflafrettirGUI, self).__init__()
 
     base_url = 'http://www.fiskistofa.is/veidar/aflaupplysingar/'
@@ -21,6 +29,7 @@ class AflafrettirGUI(QMainWindow):
     self.s_url = base_url + 'afliallartegundir/aflastodulisti_okvb.jsp'
 
     self.cnt = 0
+    self.sort_cnt = 0
 
     self.h_queue_in = Queue.Queue()
     self.h_queue_out = Queue.Queue()
@@ -71,6 +80,9 @@ class AflafrettirGUI(QMainWindow):
     menubar = self.menuBar()
     filemenu = menubar.addMenu('&File')
     filemenu.addAction(exit_action)
+
+    self.h_thread.fetchDone.connect(self.sort)
+    self.s_thread.fetchDone.connect(self.sort)
     
     self.statusbar = self.statusBar()
 
@@ -103,7 +115,7 @@ class AflafrettirGUI(QMainWindow):
     if date1 and date2:
       self.h_thread.set_params({'dagurFra':date1, 'dagurTil':date2, 'magn':'Sundurlidun'})
       self.s_thread.set_params({'p_fra':date1, 'p_til':date2})
-
+             
       self.pbar.setMaximum(len(self.h_thread.new_params) + len(self.s_thread.new_params))
 
       self.h_thread.fetchReady.connect(self.get_fetch)
@@ -113,6 +125,20 @@ class AflafrettirGUI(QMainWindow):
       self.s_thread.start()
     else:
       self.info.append(u'Villa!Eru dagsetningarnar þær sömu?')
+
+  def sort(self, done):
+    """ Called when a 'WebCrawler' thread has emptied it's queue. Runs the
+    sorting algorithm when both of the threads have emptied their queues.
+
+    :param self: Instance attribute of the :class: 'AflafrettirGUI' object
+    :param done: A boolean expression stating whether a thread has emptied it's
+                 queue
+    """
+    if done:
+      self.sort_cnt += 1
+
+    if self.sort_cnt >= 2:
+      print self.sort_cnt
 
   def get_fetch(self, data):
     self.info.append(u'Sæki gögn vegna ' + data)

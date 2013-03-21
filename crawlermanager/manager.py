@@ -15,7 +15,7 @@ class WebCrawler(QThread):
   fetchDone = Signal(bool)
 
   def __init__(self, url, queue_in, queue_out, param_name, params=None, harbour=True):
-    """ Initializes the :class: 'WebCrawle' object.
+    """ Initializes the :class: 'WebCrawler' object.
 
     :param self: instance attribute of :class: 'WebCrawler' object
     :param url: a URL used by various methods
@@ -40,6 +40,12 @@ class WebCrawler(QThread):
     self.daemon = True
 
   def run(self):
+    """ Runs the 'WebCrawler' thread. Runs continuously checking if the input
+    queue is empty, if not, calls the callback function that is popped of the
+    queue and stores the returning data in the output queue.
+
+    :param self: instance attribute of :class: 'WebCrawler' object
+    """
     self.populate_queue(self.new_params)
     while True:
       get_html_cb = self.queue_in.get()
