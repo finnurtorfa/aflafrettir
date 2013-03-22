@@ -1,15 +1,12 @@
 #!/usr/bin/python
 # -*- coding: utf-8 -*-
-"""
-GUI
-"""
-
 import sys, Queue
 
 from PySide.QtGui import (QApplication, QMainWindow, QWidget, QAction,
                           QTextEdit, QVBoxLayout, QHBoxLayout, QCalendarWidget,
                           QPushButton, QProgressBar)
 
+from crawlermanager.totalcatch import TotalCatch
 from crawlermanager.manager import WebCrawler
 
 class AflafrettirGUI(QMainWindow):
@@ -54,8 +51,10 @@ class AflafrettirGUI(QMainWindow):
     
     self.h_thread.fetchReady.connect(self.get_fetch)
     self.s_thread.fetchReady.connect(self.get_fetch)
-    self.h_thread.fetchDone.connect(self.sort)
-    self.s_thread.fetchDone.connect(self.sort)
+    self.h_thread.fetchDone.connect(self.calc_catch)
+    self.s_thread.fetchDone.connect(self.calc_catch)
+
+    self.catch = TotalCatch()
  
     self.initUI()
 
@@ -133,7 +132,7 @@ class AflafrettirGUI(QMainWindow):
     except ValueError as e:
       self.info.append(unicode(e))
 
-  def sort(self, done):
+  def calc_catch(self, done):
     """ Called when a 'WebCrawler' thread has emptied it's queue. Runs the
     sorting algorithm when both of the threads have emptied their queues.
 
