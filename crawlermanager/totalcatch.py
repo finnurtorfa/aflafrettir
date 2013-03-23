@@ -14,8 +14,10 @@ class TotalCatch(object):
     self.pelagic = ['Gulldepla / Norræna Gulld 130', 'Kolmunni 34', 'Loðna 31',
         'Makríll 36', 'Síld 30']
 
-    def calc_harbour(self, queue):
-      print "Calculating Harbour"
+  def calc_harbour(self, queue):
+    while not queue.empty():
+      print queue.get()
 
-    def calc_species(self, queue):
-      print "Calculating Species"
+  def calc_species(self, queue):
+    while not queue.empty():
+      print queue.get()

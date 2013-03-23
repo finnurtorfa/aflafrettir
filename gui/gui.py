@@ -82,7 +82,7 @@ class AflafrettirGUI(QMainWindow):
     exit_action = QAction('Exit', self)
     exit_action.setShortcut('Ctrl+Q')
     exit_action.setStatusTip('Exit Application')
-    exit_action.triggered.connect(self.closeEvent)
+    exit_action.triggered.connect(self.close)
 
     menubar = self.menuBar()
     filemenu = menubar.addMenu('&File')
@@ -144,7 +144,8 @@ class AflafrettirGUI(QMainWindow):
       self.sort_cnt += 1
 
     if self.sort_cnt >= 2:
-      print self.sort_cnt
+      self.catch.calc_harbour(self.h_queue_out)
+      self.catch.calc_species(self.s_queue_out)
 
   def get_fetch(self, data):
     """ Called when :class: 'WebCrawler' object pops an object from it's input
@@ -183,7 +184,6 @@ class AflafrettirGUI(QMainWindow):
     :param e: A :class: 'QCloseEvent' object.
     """
     e.accept()
-    self.close()
 
 def main():
   app = QApplication(sys.argv)
