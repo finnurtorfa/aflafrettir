@@ -118,10 +118,12 @@ class AflafrettirGUI(QMainWindow):
 
     :param self: instance attribute of :class: 'AflafrettirGUI' object
     """
+    self.info.clear()
     try:
       (date1, date2) = self.get_dates()
 
       self.statusbar.addWidget(self.pbar)
+      self.pbar.show()
       self.pbar.setMaximum(len(self.h_thread.new_params) + len(self.s_thread.new_params))
       
       self.h_thread.set_params({'dagurFra':date1, 'dagurTil':date2, 'magn':'Sundurlidun'})
@@ -146,6 +148,10 @@ class AflafrettirGUI(QMainWindow):
     if self.sort_cnt >= 2:
       self.catch.calc_harbour(self.h_queue_out)
       self.catch.calc_species(self.s_queue_out)
+      self.statusbar.removeWidget(self.pbar)
+      self.cnt = 0
+      self.sort_cnt = 0
+
 
   def get_fetch(self, data):
     """ Called when :class: 'WebCrawler' object pops an object from it's input

@@ -47,7 +47,7 @@ class WebCrawler(QThread):
     :param self: instance attribute of :class: 'WebCrawler' object
     """
     self.populate_queue(self.new_params)
-    while True:
+    while not self.queue_in.empty():
       get_html_cb = self.queue_in.get()
       resp = get_html_cb[0](self.url, **get_html_cb[1])
       if self.harbour:
@@ -64,9 +64,8 @@ class WebCrawler(QThread):
 
       self.queue_in.task_done()
 
-      if self.queue_in.empty():
-        print "Þráður Búinn"
-        self.fetchDone.emit(True)
+    print "Þráður Búinn"
+    self.fetchDone.emit(True)
 
 
   def get_html(self, url, **kwargs):
