@@ -16,8 +16,31 @@ class TotalCatch(object):
 
   def calc_harbour(self, queue):
     while not queue.empty():
-      print queue.get()
+      queue.get()
 
   def calc_species(self, queue):
+    data = list()
     while not queue.empty():
-      print queue.get()
+      data.extend(queue.get())
+
+    data = self._split_by_unique_values('Name', data)
+
+  def _split_by_unique_values(self, key, data):
+    from operator import itemgetter
+    from itertools import groupby
+    output = ()
+    for i, g in groupby(sorted(data, key=itemgetter(key)), 
+        key = itemgetter(key)):
+      output = output + (list(g), )
+
+    return output
+
+__author__      = 'Finnur Smári Torfason'
+__copyright__   = 'Copyright 2012, www.aflafrettir.com'
+__credits__     = ['Finnur Smári Torfason', 'Gísli Reynisson']
+
+__license__     = 'GPL'
+__version__     = '0.1'
+__maintainer__  = 'Finnur Smári Torfason'
+__email__       = 'finnurtorfa@gmail.com'
+__status__      = 'Development'
