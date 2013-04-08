@@ -43,7 +43,7 @@ class DOFWebScraper(object):
     return None
 
   def get_data(self, table):
-    """ Returns a list of tuples that contain the data necessary. The data it
+    """ Returns a list of dictionaries that contain the data necessary. The data it
     contains, depends whether the data is for species or harbours.
     Harbour:
       date:     The date of the landing
@@ -63,7 +63,7 @@ class DOFWebScraper(object):
     :param self: instance attribute of :class: 'DOFWebScraper' object
     :param table: A HTML table with the data
     """
-    rows = ()
+    rows = dict()
     data = []
 
     for row in table.find_all('tr')[self.init_row:]:
@@ -71,16 +71,16 @@ class DOFWebScraper(object):
         if index == 0:
           if column.string is not None:
             first = column.string.strip()
-          rows = rows + ({self.fields[index]:first},)
+          rows[self.fields[index]] = first
         elif index == len(self.fields)-1:
           column.string = column.string.replace('.', '')
-          rows = rows + ({self.fields[index]:column.string.strip()},)
+          rows[self.fields[index]] = column.string.strip()
         else:
-          rows = rows + ({self.fields[index]:column.string.strip()},)
+          rows[self.fields[index]] = column.string.strip()
 
-      rows = rows + (self.name,)
+      rows.update(self.name)
       data.append(rows)
-      rows = ()
+      rows = dict()
 
     return data
 
