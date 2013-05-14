@@ -3,8 +3,9 @@
 import sys, Queue
 
 from PySide.QtGui import (QApplication, QMainWindow, QWidget, QAction,
-                          QTextEdit, QVBoxLayout, QHBoxLayout, QCalendarWidget,
-                          QPushButton, QProgressBar)
+                          QTextEdit, QVBoxLayout, QHBoxLayout, QDateTimeEdit,
+                          QPushButton, QProgressBar, QLabel)
+from PySide.QtCore import (QDate)
 
 from crawlermanager.totalcatch import TotalCatch
 from crawlermanager.manager import WebCrawler
@@ -69,10 +70,13 @@ class AflafrettirGUI(QMainWindow):
     self.info = QTextEdit()
     self.info.setReadOnly(True)
 
-    self.cal1 = QCalendarWidget(self)
-    self.cal1.setMaximumSize(370, 200)
-    self.cal2 = QCalendarWidget(self)
-    self.cal2.setMaximumSize(370, 200)
+    cal_text1 = QLabel('Dagsetning 1:', self)
+    cal_text2 = QLabel('Dagsetning 2:', self)
+
+    self.cal1 = QDateTimeEdit(QDate.currentDate())
+    self.cal1.setDisplayFormat('dd.MM.yyyy')
+    self.cal2 = QDateTimeEdit(QDate.currentDate())
+    self.cal2.setDisplayFormat('dd.MM.yyyy')
 
     self.button = QPushButton('Reikna afla', self)
     self.button.clicked.connect(self.fetch_data)
@@ -90,10 +94,17 @@ class AflafrettirGUI(QMainWindow):
 
     self.statusbar = self.statusBar()
 
-    calendar_layout = QHBoxLayout()
-    calendar_layout.addWidget(self.cal1)
-    calendar_layout.addWidget(self.cal2)
-    calendar_layout.addStretch(1)
+    date_layout1 = QHBoxLayout()
+    date_layout1.addWidget(cal_text1)
+    date_layout1.addWidget(self.cal1)
+
+    date_layout2 = QHBoxLayout()
+    date_layout2.addWidget(cal_text2)
+    date_layout2.addWidget(self.cal2)
+
+    calendar_layout = QVBoxLayout()
+    calendar_layout.addLayout(date_layout1)
+    calendar_layout.addLayout(date_layout2)
 
     button_layout = QHBoxLayout()
     button_layout.addWidget(self.button)
@@ -166,15 +177,15 @@ class AflafrettirGUI(QMainWindow):
     self.pbar.setValue(self.cnt)
 
   def get_dates(self):
-    """ Returns the dates selected in :class: 'QCalendarWidget' objects. It
-    returns the dates. Returns the dates in ascending order. If the dates are
-    equal it raises 
+    """ Returns the dates selected in :class: 'QDateTimeEdit' objects. It
+    returns the dates in ascending order. If the dates are
+    equal it raises a ValueError
     
     :param self: Instance attribute of the :class: 'AflafrettirGUI' object
     """
     fmt = 'dd.MM.yyyy'
-    date1 = self.cal1.selectedDate().toString(fmt)
-    date2 = self.cal2.selectedDate().toString(fmt)
+    date1 = self.cal1.date().toString(fmt)
+    date2 = self.cal2.date().toString(fmt)
 
     if date1 > date2:
       (date1, date2) = (date2, date1)
