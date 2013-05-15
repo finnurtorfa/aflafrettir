@@ -15,22 +15,42 @@ class TotalCatch(object):
         'Makríll 36', 'Síld 30']
 
   def calc_harbour(self, queue):
-    while not queue.empty():
-      queue.get()
+    data = self.get_data(queue)
+    data = self._sort_by_unique_values('Name', data)
+    print data
 
   def calc_species(self, queue):
+    data = self.get_data(queue)
+    data = self._sort_by_unique_values('Name', data)
+
+  def get_data(self, queue):
+    """ Returns a list of dictionaries containing the data collected by the
+    webcrawler.
+    
+    :param self:  Instance attribute of the :class: 'TotalCatch' object
+    :param queue: The queue which contains the data
+    """
     data = list()
     while not queue.empty():
       data.extend(queue.get())
 
-    data = self._split_by_unique_values('Name', data)
+    return data
 
-  def _split_by_unique_values(self, key, data):
+  def _sort_by_unique_values(self, key, data):
+    """ Returns a sorted version of the data collected by the webcrawler. The
+    return data is a tuple of lists of dictionaries. The lists are sorted by the
+    key.
+
+    :param self:  Instance attribute of the :class: 'TotalCatch' object
+    :param key:   The key to sort the data by
+    :param data:  The data to sort
+    """
     from operator import itemgetter
     from itertools import groupby
+    
     output = ()
-    for i, g in groupby(sorted(data, key=itemgetter(key)), 
-        key = itemgetter(key)):
+    grp = groupby(sorted(data, key=itemgetter(key)), key = itemgetter(key))
+    for i, g in grp:
       output = output + (list(g), )
 
     return output

@@ -64,9 +64,7 @@ class WebCrawler(QThread):
 
       self.queue_in.task_done()
 
-    print "Þráður Búinn"
     self.fetchDone.emit(True)
-
 
   def get_html(self, url, **kwargs):
     """ Sends a GET request, returns :class: 'Response' object
