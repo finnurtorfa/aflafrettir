@@ -1,22 +1,41 @@
 #!/usr/bin/python
 # -*- coding: utf-8 -*-
-#
-# File: aflafrettir.py
-# Author: Finnur Smári Torfason
-# Date: 19/12/2012  
-# Abouth:
-#   Main program for the aflafrettir program
-#
-import logging
-import gui.gui as gui
 
-def logging_info():
-  fn = 'log/aflafrettir.log'
-  f = '[%(levelname)s: %(asctime)s] \t%(message)s'
-  date = '%d-%m-%Y %H:%M:%S'
-  logging.basicConfig(filename=fn, format=f, datefmt=date, level = logging.DEBUG)
+""" 
+aflafrettir
+~~~~~~~~~~~
+
+This module starts the GUI for the Aflafréttir GUI and sets the logging level
+
+"""
+
+import logging
+
+def init_logging(**kwargs):
+  """ Initializes the :class: 'logging'. 
+
+  :param filename:  name of the file to log to
+  :param formate:   Change the output formate
+  :param datefmt:   Change the date format
+  :param level:     The logging level
+  """
+  logging.basicConfig(**kwargs)
   logging.info('Started running %s', __file__)
 
 if __name__ == '__main__':
-  logging_info()
-  gui.main()
+  log_args = {'filename':'log/aflafrettir.log', 
+            'format': '[%(levelname)s: %(asctime)s] \t %(message)s', 
+            'datefmt':'%d-%m-%Y %H:%M:%S',
+            'level': 'DEBUG'}
+  init_logging(**log_args)
+  #gui.main()
+
+__author__      = 'Finnur Smári Torfason'
+__copyright__   = 'Copyright 2012, www.aflafrettir.com'
+__credits__     = ['Finnur Smári Torfason', 'Gísli Reynisson']
+
+__license__     = 'GPL v3'
+__version__     = '0.1'
+__maintainer__  = 'Finnur Smári Torfason'
+__email__       = 'finnurtorfa@gmail.com'
+__status__      = 'Development'
