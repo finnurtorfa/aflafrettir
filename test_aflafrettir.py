@@ -34,16 +34,16 @@ class AflafrettirTestCase(unittest.TestCase):
     assert month_range(d3, d2) == (5, 14)
 
   def test_period_split(self):
-    date1 = '2012-01-15'
-    date2 = '2014-03-05'
+    date1 = '2012-09-15'
+    date2 = '2016-03-05'
     p = split_periods(date1, date2)
 
-    assert p['date_from'].pop(0) == '2012-01-15'
-    assert p['date_to'].pop(0) == '2012-01-31'
-    assert p['date_from'].pop(0) == '2012-02-01'
-    assert p['date_to'].pop(0) == '2012-02-29'
-    assert p['date_from'].pop() == '2014-03-01'
-    assert p['date_to'].pop() == '2014-03-05'
+    assert p['date_from'].pop(0) == '2012-09-15'
+    assert p['date_to'].pop(0) == '2012-09-30'
+    assert p['date_from'].pop(0) == '2012-10-01'
+    assert p['date_to'].pop(0) == '2012-10-31'
+    assert p['date_from'].pop() == '2016-03-01'
+    assert p['date_to'].pop() == '2016-03-05'
 
 if __name__ == '__main__':
   unittest.main()
