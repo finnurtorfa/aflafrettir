@@ -11,9 +11,11 @@ Unit tests for Aflafrettir
 import unittest
 
 from utils.date import split_periods, month_range
+from datamanager.manager import SoapManager
 
 class AflafrettirTestCase(unittest.TestCase):
   def setUp(self):
+    self.manager = SoapManager()
     pass
   
   def tearDown(self):
@@ -44,6 +46,23 @@ class AflafrettirTestCase(unittest.TestCase):
     assert p['date_to'].pop(0) == '2012-10-31'
     assert p['date_from'].pop() == '2016-03-01'
     assert p['date_to'].pop() == '2016-03-05'
+
+  def test_SoapManager(self):
+    try:
+      self.manager.get_client()
+    except ValueError:
+      pass
+    else:
+        self.fail('No ValueError')
+
+    try:
+      self.manager.set_credentials('ship', 'test')
+      self.manager.get_client()
+    except ValueError:
+      if self.manager.headers:
+        pass
+      else:
+        self.fail('Headers not set')
 
 if __name__ == '__main__':
   unittest.main()
