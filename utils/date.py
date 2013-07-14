@@ -15,6 +15,23 @@ from dateutil.relativedelta import relativedelta
 
 fmt = '%Y-%m-%d'
 
+def check_dates_are_valid(*args):
+  """ Returns the first occurrence of an invalid date from a list of input
+  dates and True if all dates are valid
+
+  :param *args: list of 0 or more dates
+  """
+  if not args:
+    raise ValueError('At least 1 date is needed')
+
+  for (i, date) in enumerate(args):
+    try:
+      d = datetime.strptime(date, fmt)
+    except ValueError:
+      return False, i
+
+  return True, 0
+
 def split_periods(date_from, date_to):
   """ Returns a :dict: object with lists of dates to and from, representing the
   input period from month to month.
