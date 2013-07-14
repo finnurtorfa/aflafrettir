@@ -8,7 +8,7 @@ test_aflafrettir
 Unit tests for Aflafrettir
 """
 
-import unittest
+import unittest, suds
 
 from datetime import datetime
 from suds.sax.date import Date
@@ -91,6 +91,11 @@ class AflafrettirTestCase(unittest.TestCase):
     b = self.manager.get_landings('2013-01-01', '2013-01-2')
 
     assert isinstance(b, list)
+    
+    try:
+      c = self.manager.call_method('getLanding', *args)
+    except suds.MethodNotFound:
+      pass
 
 if __name__ == '__main__':
   unittest.main()
