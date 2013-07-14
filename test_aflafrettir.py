@@ -10,7 +10,10 @@ Unit tests for Aflafrettir
 
 import unittest
 
-from utils.date import split_periods, month_range
+from datetime import datetime
+from suds.sax.date import Date
+
+from utils.date import split_periods, month_range, check_dates_are_valid
 from datamanager.manager import SoapManager
 
 class AflafrettirTestCase(unittest.TestCase):
@@ -22,7 +25,6 @@ class AflafrettirTestCase(unittest.TestCase):
     pass
 
   def test_month_diff(self):
-    from datetime import datetime
 
     d1 = datetime(2012, 01, 01)
     d2 = datetime(2012, 05, 05)
@@ -35,11 +37,23 @@ class AflafrettirTestCase(unittest.TestCase):
     assert month_range(d2, d3) == (5, 14)
     assert month_range(d3, d2) == (5, 14)
 
+  def test_check_date_is_valid(self):
+
+    try:
+      check_dates_are_valid()
+    except ValueError:
+      pass
+
+    assert (False, 0) == check_dates_are_valid('2012')
+    assert (False, 0) == check_dates_are_valid('2012-09')
+    assert (True, 0)  == check_dates_are_valid('2012-09-15')
+    assert (False, 0) == check_dates_are_valid('2012-15-09')
+    assert (False, 1) == check_dates_are_valid('2012-09-15', '2012-15-09')
+
   def test_period_split(self):
     date1 = '2012-09-15'
     date2 = '2016-03-05'
     p = split_periods(date1, date2)
-
     assert p['date_from'].pop(0) == '2012-09-15'
     assert p['date_to'].pop(0) == '2012-09-30'
     assert p['date_from'].pop(0) == '2012-10-01'
@@ -56,13 +70,27 @@ class AflafrettirTestCase(unittest.TestCase):
         self.fail('No ValueError')
 
     try:
-      self.manager.set_credentials('ship', 'test')
+      self.manager.set_credentials('aflafrettir', 'ananrer8')
+      #self.manager.set_credentials('ship', 'test')
       self.manager.get_client()
     except ValueError:
       if self.manager.headers:
         pass
       else:
         self.fail('Headers not set')
+
+    d1 = '2012-01-01'
+    d2 = '2012-01-02'
+
+    args = (d1, d2)
+
+    a = self.manager.call_method('getLandings', *args)
+
+    assert isinstance(a, list)
+    
+    b = self.manager.get_landings('2013-01-01', '2013-01-2')
+
+    assert isinstance(b, list)
 
 if __name__ == '__main__':
   unittest.main()
