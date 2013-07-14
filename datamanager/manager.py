@@ -44,6 +44,23 @@ class SoapManager(object):
     """
     return getattr(self.client.service, method)(*args)
   
+  def get_landings(self, date_from, date_to):
+    """ Returns a list, containing response from the Icelandic Directorate of
+    Fisheries's SOAP 'getLandings' method. Raises an AttributeError if the method does not
+    exist. Raises a suds.WebFault in case of other errors such as insufficient
+    number of arguments etc.
+
+    :param date_from: A string containing a date to get the landings from 
+    :param date_from: A string containing a date to get the landings to
+    """
+    date_from = Date(date_from)
+    date_to = Date(date_to)
+
+    if date_from > date_to:
+      (date_from, date_to) = (date_to, date_from)
+
+    return self.call_method('getLandings', date_from, date_to)
+
 if __name__ == '__main__':
   manager = SoapManager()
 
