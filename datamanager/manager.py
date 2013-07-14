@@ -7,13 +7,14 @@ manager
 """
 
 from suds.client import Client
+from suds.sax.date import Date
 
 class SoapManager(object):
   """ :class SoapManager: will fetch data from the SOAP service of the Icelandic
   Directorate of Fisheries
   """
   def __init__(self):
-    self.url = 'http://shiptest.fiskistofa.is/ship/ShipService?wsdl'
+    self.url = 'http://ship.fiskistofa.is/ship/ShipService?wsdl'
     self.headers = None
     self.client = None
     self.dates = None
@@ -32,6 +33,17 @@ class SoapManager(object):
     else:
       raise ValueError('Missing headers(Username and Password)')
 
+  def call_method(self, method, *args):
+    """ Returns a list, containing response from the Icelandic Directorate of
+    Fisheries's SOAP service. Raises an AttributeError if the method does not
+    exist. Raises a suds.WebFault in case of other errors such as insufficient
+    number of arguments etc.
+
+    :param method: String, containing the name of the method to call
+    :param args:   An arbitrary number of arguments, which the SOAP methods take
+    """
+    return getattr(self.client.service, method)(*args)
+  
 if __name__ == '__main__':
   manager = SoapManager()
 
