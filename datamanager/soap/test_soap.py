@@ -29,7 +29,6 @@ class SoapManagerTestCase(unittest.TestCase):
 
     try:
       self.manager.set_credentials('aflafrettir', 'ananrer8')
-      #self.manager.set_credentials('ship', 'test')
       self.manager.get_client()
     except ValueError:
       if self.manager.headers:
