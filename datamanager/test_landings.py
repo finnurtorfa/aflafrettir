@@ -57,7 +57,7 @@ if __name__ == '__main__':
   import sys
   sys.path.insert(0,'.')
   
-  from datamanager.soap.manager import SoapManager
-  from manager import Landings
+  from datamanager.manager import SoapManager
+  from landings import Landings
 
   unittest.main()

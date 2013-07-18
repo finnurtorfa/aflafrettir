@@ -15,11 +15,19 @@ class Landings(object):
   """
   keys = ['landingCatch', 'landingDate', 'landingHarbour', 'shipGrossTonnage',
       'shipName', 'shipNumber']
-  groups = {'Uppsjávarskip':[u'LODN', u'SILD', u'FLOT', u'LOFL', u'SIFL'], 
-      'Net':[u'NET', u'SNET', u'GRSL', ], 'Humar':[u'HUMA'], 'Lína':[u'Lína'],
-      'Rækja':[u'RAEK'], 'Botnvörpungar':[u'BOTN'], 'Dragnót':[u'DRAG'],
-      'Handfæri':[u'HAND'], 'Ýmislegt':[u'YMIS', u'\xdeGIL', u'KRAB', u'HORP',
-        u'SJOS', u'IGPL', u'RMNT', u'KRAL']}
+  groups = {
+    'Uppsjávarskip':[u'Loðnunót', u'Síldarnót', u'Flotvarpa', u'Loðnuflotvarpa',
+      u'Síldar-/kolmunnaflotvarpa'], 
+    'Net':[u'Net', u'Skötuselsnet', u'Grásleppunet', ], 
+    'Humar':[u'Humarvarpa'],
+    'Lína':[u'Lína'], 
+    'Rækja':[u'Rækjuvarpa'], 
+    'Botnvörpungar':[u'Botnvarpa'],
+    'Dragnót':[u'Dragnót 135 mm'], 
+    'Handfæri':[u'Handfæri'],
+    'Ýmislegt':[u'YMIS', u'\xdeGIL', u'KRAB', u'HORP', u'SJOS', u'IGPL',
+      u'RMNT', u'KRAL']
+    }
  
   def __init__(self):
     """ Initializes the :class Landings:
@@ -59,16 +67,6 @@ class Landings(object):
           if self.equipment in e:
             self.group = k
             break
-
-class SortingManager(object):
-  """ :class SortingManager: contains functions to sort data regarding landings
-  from the Icelandic Directorate of Fisheries.
-  """
-  def __init__(self):
-    pass
-
-  def group_by_gears(self, data):
-    return False
 
 if __name__ == '__main__':
   manager = SoapManager()
