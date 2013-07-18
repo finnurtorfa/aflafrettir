@@ -12,26 +12,46 @@ import unittest, suds
 
 class SortingManagerTestCase(unittest.TestCase):
   def setUp(self):
-    self.manager = SoapManager()
-    self.manager.set_credentials('aflafrettir', 'ananrer8')
-    #self.manager.get_client()
-    #self.data = self.manager.get_landings('2013-01-01', '2013-01-2')
-
+    pass
   def tearDown(self):
     pass
 
   def test_Landings(self):
     test = Landings()
+    
+    self.manager = SoapManager()
+    self.manager.set_credentials('aflafrettir', 'ananrer8')
+    self.manager.get_client()
 
-    assert test.shipId == None
-    assert test.name == None
-    assert test.ship_size == None
-    assert test.catch == None
-    assert test.harbour == None
-    assert test.total_catch == None
-    assert test.gear == None
+    data = self.manager.get_landings('2013-02-01', '2013-02-02')
+    
+    assert test.totalCatch == None
+    assert test.landingCatch == None
+    assert test.landingDate == None
+    assert test.landingHarbour == None
+    assert test.shipGrossTonnage == None
+    assert test.shipName == None
+    assert test.shipNumber == None
+    assert test.equipment == None
     assert test.group == None
-    assert test.date == None
+    
+    test.set_variable(data.pop())
+    
+    assert test.totalCatch == None
+    assert test.landingCatch != None
+    assert test.landingDate != None
+    assert test.landingHarbour != None
+    assert test.shipGrossTonnage != None
+    assert test.shipName != None
+    assert test.shipNumber != None
+    assert test.equipment == None 
+    assert test.group == None 
+
+    test.calc_total_catch()
+
+    assert test.totalCatch != None
+    assert test.equipment != None
+    assert test.group != None
 
 if __name__ == '__main__':
   import sys
