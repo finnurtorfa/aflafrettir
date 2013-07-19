@@ -25,7 +25,8 @@ class Landings(object):
     'Botnvörpungar':[u'Botnvarpa'],
     'Dragnót':[u'Dragnót 135 mm'], 
     'Handfæri':[u'Handfæri'],
-    'Ýmislegt':[u'YMIS', u'\xdeGIL', u'KRAB', u'HORP', u'SJOS', u'IGPL',
+    'Ýmislegt':[u'Ýmis veiðarfæri', u'Þorskgildra', u'Krabbagildra',
+      u'Hörpudiskplógur/Scallop dr.', u'Sjóstöng', u'Ígulkeraplógur',
       u'RMNT', u'KRAL']
     }
  
@@ -66,7 +67,9 @@ class Landings(object):
         for e in v:
           if self.equipment in e:
             self.group = k
-            break
+            return
+      else:
+        self.group = 'Ýmislegt'
 
 if __name__ == '__main__':
   manager = SoapManager()
