@@ -111,6 +111,26 @@ class Landings(object):
 
     return self
 
+def sort_landings(landings):
+  """ Returns a dictionary. The dictionary keys represent the categories of
+  which the data is sorted by.
+  """
+  result = dict()
+  tmp_dict = dict()
+  unique_number = list()
+
+  for k,v in groups.iteritems():
+    result[k] = list()
+    tmp_dict[k] = [i for i in landings if i.group == k]
+    unique_number = list(set([n.shipNumber for n in tmp_dict[k]]))
+    
+    for i in unique_number:
+      tmp = [l for l in landings if l.shipNumber == i]
+      tmp = calculate_catch(tmp)
+      result[k].append(tmp)
+
+  return result
+
 if __name__ == '__main__':
   manager = SoapManager()
 
