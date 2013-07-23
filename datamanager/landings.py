@@ -131,8 +131,16 @@ def sort_landings(landings):
 
   return result
 
-if __name__ == '__main__':
-  manager = SoapManager()
+def calculate_catch(landings):
+  """ Takes in a list of :class Landings: with landings by a single ship and
+  returns a :class Landings: where the total catch, number of landings etc. has
+  been calculated
+  """
+  tmp = landings.pop()
+  for i in landings:
+    tmp = tmp + i
+
+  return tmp
 
 __author__      = 'Finnur Smári Torfason'
 __copyright__   = 'Copyright 2012, www.aflafrettir.com'
