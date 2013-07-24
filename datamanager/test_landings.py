@@ -18,6 +18,7 @@ class SortingManagerTestCase(unittest.TestCase):
 
   def test_Landings(self):
     test = Landings()
+    test_list = []
     
     self.manager = SoapManager()
     self.manager.set_credentials('aflafrettir', 'ananrer8')
@@ -34,6 +35,7 @@ class SortingManagerTestCase(unittest.TestCase):
     assert test.shipNumber == None
     assert test.equipment == None
     assert test.group == None
+    assert test.count == 1
     
     test.set_variable(data.pop())
     
@@ -46,6 +48,7 @@ class SortingManagerTestCase(unittest.TestCase):
     assert test.shipNumber != None
     assert test.equipment == None 
     assert test.group == None 
+    assert test.count == 1
 
     test.calc_total_catch()
 
@@ -53,11 +56,28 @@ class SortingManagerTestCase(unittest.TestCase):
     assert test.equipment != None
     assert test.group != None
 
+    test_list.append(test)
+
+    for landing in data:
+      test = Landings()
+      test.set_variable(landing)
+      test.calc_total_catch()
+      test_list.append(test)
+
+    result = sort_landings(test_list)
+    assert type(result) == type(dict())
+
+    a = result['Handfæri'][0]
+    b = result['Handfæri'][1]
+    
+    with self.assertRaises(ValueError):
+      a+b
+
 if __name__ == '__main__':
   import sys
   sys.path.insert(0,'.')
   
   from datamanager.manager import SoapManager
-  from landings import Landings
+  from landings import Landings, sort_landings
 
   unittest.main()
