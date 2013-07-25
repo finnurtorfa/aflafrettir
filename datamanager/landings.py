@@ -35,6 +35,7 @@ class Landings(object):
     """
     self.totalCatch       = None
     self.landingCatch     = None
+    self.maxCatch         = 0
     self.landingDate      = None
     self.landingHarbour   = None
     self.shipGrossTonnage = None
@@ -67,6 +68,7 @@ class Landings(object):
           self.equipment = i['equipment']
 
       self.landingCatch = catch
+      self.maxCatch = self.totalCatch
 
       for k,v in groups.iteritems():
         for e in v:
@@ -85,6 +87,9 @@ class Landings(object):
                         + ' ship')
 
     self.totalCatch +=  add.totalCatch
+
+    if self.maxCatch < add.maxCatch:
+       self.maxCatch = add.maxCatch
     
     for k,v in add.landingCatch.iteritems():
       if k in self.landingCatch:
@@ -110,6 +115,12 @@ class Landings(object):
     self.count = len(self.landingDate)
 
     return self
+
+  def __lt__(self, other):
+    """ Compares the size of totalCatch of two :class Landings: object and
+    returns the result
+    """
+    return self.totalCatch < other.totalCatch
 
 def sort_landings(landings):
   """ Returns a dictionary. The dictionary keys represent the categories of
