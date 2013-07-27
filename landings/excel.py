@@ -2,8 +2,11 @@
 # -*- coding: utf-8 -*-
 
 """ 
-manager
+excel.py
 ~~~~~~~~~~~
+
+Contains functions for sorting and writing information contained in :class
+Landings: to an excel file.
 """
 
 import xlwt
@@ -18,6 +21,11 @@ keys = ['shipNumber', 'shipName', 'count', 'totalCatch', 'maxCatch',
     'landingHarbour', 'equipment', 'landingCatch']
 
 def save_excel(name, landing_dict):
+  """ Sets up a :class xlwt.Workbook: and saves data in an excel file.
+
+  :param name:          A string representing the name of the excel file.
+  :param landing_dict:  A dictionary of landings to be written to excel file.
+  """
   wbk = xlwt.Workbook('utf-8')
 
   for k,v in landing_dict.iteritems():
@@ -27,6 +35,14 @@ def save_excel(name, landing_dict):
   wbk.save(name)
 
 def write_data(wbk, sheet_name, data_sorted):
+  """ Writes data to a :class xlwt.Workbook: object.
+
+  :param wbk:         A :class xlwt.Workbook: that will receive data
+  :param sheet_name:  Name of the sheet to be added to the workbook. The sheet
+                      name represents the group of landings in data_sorted.
+  :param data_sorted: A list of :class Landings: sorted in reverse order by
+                      totalCatch
+  """
   sheet = wbk.add_sheet(sheet_name)
 
   for i, v in enumerate(item):
