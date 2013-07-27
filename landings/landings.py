@@ -32,6 +32,8 @@ class Landings(object):
 
   def __init__(self):
     """ Initializes the :class Landings:
+
+    :param self:  An instance attribute of the :class Landings:
     """
     self.totalCatch       = None
     self.landingCatch     = None
@@ -49,6 +51,9 @@ class Landings(object):
     """ Checks if attributes from the :class Client: 'getLandings' method
     matching the names of the strings in the 'keys' class variable exist
     and passes them to the :class Landings: instance variables.
+    
+    :param self:  An instance attribute of the :class Landings:
+    :param data:  An instance of :class Client: 'getLandings method.
     """
     for key in keys:
       val = getattr(data, key)
@@ -57,6 +62,8 @@ class Landings(object):
   def calc_total_catch(self):
     """ Calculates the total catch, equipment used and which group the equipment
     belongs to, from a single fishing trip.
+    
+    :param self:  An instance attribute of the :class Landings:
     """
     if self.landingCatch is not None:
       self.totalCatch = 0
@@ -81,6 +88,9 @@ class Landings(object):
   def __add__(self, add):
     """ Returns the sum of two :class Landings(): given that the landings were
     performed by the same ship. 
+    
+    :param self:  An instance attribute of the :class Landings:
+    :param add:   Another instance attribute of the :class Landings:
     """
     if self.shipNumber != add.shipNumber:
       raise ValueError('Can only perform addition on landings from the same' 
@@ -119,12 +129,17 @@ class Landings(object):
   def __lt__(self, other):
     """ Compares the size of totalCatch of two :class Landings: object and
     returns the result
+    
+    :param self:  An instance attribute of the :class Landings:
+    :param other: Another instance attribute of the :class Landings:
     """
     return self.totalCatch < other.totalCatch
 
 def sort_landings(landings):
   """ Returns a dictionary. The dictionary keys represent the categories of
   which the data is sorted by.
+
+  :param landings: a list of :class Landings:
   """
   result = dict()
   tmp_dict = dict()
@@ -146,6 +161,8 @@ def calculate_catch(landings):
   """ Takes in a list of :class Landings: with landings by a single ship and
   returns a :class Landings: where the total catch, number of landings etc. has
   been calculated
+  
+  :param landings: a list of :class Landings:
   """
   tmp = landings.pop()
   for i in landings:
