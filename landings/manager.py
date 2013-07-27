@@ -2,8 +2,12 @@
 # -*- coding: utf-8 -*-
 
 """ 
-manager
+manager.py
 ~~~~~~~~~~~
+
+Contains :class LandingsManager: a manager class for the SOAP service provided
+by the Directorate of Fisheries in Iceland. Specifically this class is used for
+fetching landings information from the service.
 """
 
 from suds.client import Client
