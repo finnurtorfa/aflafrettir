@@ -10,7 +10,7 @@ Unit tests for Aflafrettir
 
 import unittest
 
-class SortingManagerTestCase(unittest.TestCase):
+class ExcelTestCase(unittest.TestCase):
   def setUp(self):
     pass
   def tearDown(self):
@@ -65,7 +65,7 @@ if __name__ == '__main__':
   import sys
   sys.path.insert(0,'.')
   
-  from datamanager.landings import Landings
-  from excel import save_excel
+  from landings.landings import Landings
+  from landings.excel import save_excel
 
   unittest.main()

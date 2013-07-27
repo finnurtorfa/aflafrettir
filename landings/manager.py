@@ -9,9 +9,9 @@ manager
 from suds.client import Client
 from suds.sax.date import Date
 
-class SoapManager(object):
-  """ :class SoapManager: will fetch data from the SOAP service of the Icelandic
-  Directorate of Fisheries
+class LandingsManager(object):
+  """ :class LandingsManager: will fetch landings data from the SOAP service of the 
+  Icelandic Directorate of Fisheries
   """
   def __init__(self):
     self.url = 'http://ship.fiskistofa.is/ship/ShipService?wsdl'
@@ -62,7 +62,7 @@ class SoapManager(object):
     return self.call_method('getLandings', date_from, date_to)
 
 if __name__ == '__main__':
-  manager = SoapManager()
+  manager = LandingsManager()
 
 __author__      = 'Finnur Smári Torfason'
 __copyright__   = 'Copyright 2012, www.aflafrettir.com'

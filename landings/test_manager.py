@@ -10,16 +10,17 @@ Unit tests for Aflafrettir
 
 import unittest, suds
 
-from manager import SoapManager
+from manager import LandingsManager
 
-class SoapManagerTestCase(unittest.TestCase):
+
+class LandingsManagerTestCase(unittest.TestCase):
   def setUp(self):
-    self.manager = SoapManager()
+    self.manager = LandingsManager()
   
   def tearDown(self):
     pass
 
-  def test_SoapManager(self):
+  def test_LandingsManager(self):
     try:
       self.manager.get_client()
     except ValueError:

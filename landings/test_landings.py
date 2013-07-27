@@ -10,7 +10,7 @@ Unit tests for Aflafrettir
 
 import unittest, suds
 
-class SortingManagerTestCase(unittest.TestCase):
+class LandingsTestCase(unittest.TestCase):
   def setUp(self):
     pass
   def tearDown(self):
@@ -20,7 +20,7 @@ class SortingManagerTestCase(unittest.TestCase):
     test = Landings()
     test_list = []
     
-    self.manager = SoapManager()
+    self.manager = LandingsManager()
     self.manager.set_credentials('aflafrettir', 'ananrer8')
     self.manager.get_client()
 
@@ -77,7 +77,7 @@ if __name__ == '__main__':
   import sys
   sys.path.insert(0,'.')
   
-  from datamanager.manager import SoapManager
-  from landings import Landings, sort_landings
+  from landings.manager import LandingsManager
+  from landings.landings import Landings, sort_landings
 
   unittest.main()
