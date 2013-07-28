@@ -9,7 +9,7 @@ This module starts the GUI for the Aflafréttir GUI and sets the logging level
 
 """
 
-import logging
+import logging, gui.gui
 
 def init_logging(**kwargs):
   """ Initializes the :class: 'logging'. 
@@ -28,7 +28,7 @@ if __name__ == '__main__':
             'datefmt':'%d-%m-%Y %H:%M:%S',
             'level': 'DEBUG'}
   init_logging(**log_args)
-  #gui.main()
+  gui.gui.main()
 
 __author__      = 'Finnur Smári Torfason'
 __copyright__   = 'Copyright 2012, www.aflafrettir.com'
