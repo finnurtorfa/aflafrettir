@@ -29,7 +29,9 @@ class LandingsManagerTestCase(unittest.TestCase):
         self.fail('No ValueError')
 
     try:
-      self.manager.set_credentials('aflafrettir', 'ananrer8')
+      user = raw_input("Enter username: ")
+      passw = raw_input("Enter password: ")
+      self.manager.set_credentials(user, passw)
       self.manager.get_client()
     except ValueError:
       if self.manager.headers:
