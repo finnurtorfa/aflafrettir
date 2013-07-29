@@ -44,11 +44,11 @@ def split_periods(date_from, date_to):
   logging.info('Date from: %s', date_from)
   logging.info('Date to: %s', date_to)
   
-  if type(date_from) is str:
+  if type(date_from) is not datetime:
     logging.info('Change date_from string to a datetime object')
     date_from = datetime.strptime(date_from, '%Y-%m-%d')
 
-  if type(date_to) is str:
+  if type(date_to) is not datetime:
     logging.info('Change date_to string to a datetime object')
     date_to = datetime.strptime(date_to, '%Y-%m-%d')
 
