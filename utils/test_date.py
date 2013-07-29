@@ -11,7 +11,7 @@ import unittest, suds
 
 from datetime import datetime
 
-from date import split_periods, month_range, check_dates_are_valid
+from date import split_periods, month_range, check_dates
 
 
 class DateManipulationTestCase(unittest.TestCase):
@@ -37,15 +37,15 @@ class DateManipulationTestCase(unittest.TestCase):
   def test_check_date_is_valid(self):
 
     try:
-      check_dates_are_valid()
+      check_dates()
     except ValueError:
       pass
 
-    assert (False, 0) == check_dates_are_valid('2012')
-    assert (False, 0) == check_dates_are_valid('2012-09')
-    assert (True, 0)  == check_dates_are_valid('2012-09-15')
-    assert (False, 0) == check_dates_are_valid('2012-15-09')
-    assert (False, 1) == check_dates_are_valid('2012-09-15', '2012-15-09')
+    assert (False, 0) == check_dates('2012')
+    assert (False, 0) == check_dates('2012-09')
+    assert (True, 0)  == check_dates('2012-09-15')
+    assert (False, 0) == check_dates('2012-15-09')
+    assert (False, 1) == check_dates('2012-09-15', '2012-15-09')
 
   def test_period_split(self):
     date1 = '2012-09-15'

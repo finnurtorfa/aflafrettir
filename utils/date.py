@@ -15,7 +15,7 @@ from dateutil.relativedelta import relativedelta
 
 fmt = '%Y-%m-%d'
 
-def check_dates_are_valid(*args):
+def check_dates(*args):
   """ Returns the first occurrence of an invalid date from a list of input
   dates and True if all dates are valid
 
