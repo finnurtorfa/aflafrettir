@@ -191,6 +191,45 @@ class CredentialsDialog(QDialog):
 
     self.close()
 
+class Worker(Process):
+  """ :class Worker: inherits from the :class Process:. It handles interaction
+  with the SOAP service of the Icelandic Directorate of Fisheries.
+  """
+  def __init__(self, event, queue, manager, date_from, date_to):
+    """ Initializes the :class Worker: which inherits from :class Process:
+
+    :param self:      An instance attribute of the :class Worker:
+    :param event:     An event, used to notify the parent process that the child
+                      process has finished running.
+    :param queue:     A :class Queue: to put results into.
+    :param manager:   A :class LandingManager: that fetches the landings
+    :param date_from: A date which forms the date range to fetch data from the
+                      SOAP service of the Icelandic Directorate of Fisheries.
+    :param date_to:   The other date to form the date range to call the SOAP
+                      service provided by the Icelandic Directorate of Fisheries.
+    """
+    super(Worker, self).__init__()
+    self.event = event
+    self.queue = queue
+    self.manager = manager
+    self.date_from = date_from
+    self.date_to = date_to
+
+  def run(self):
+    """ Fetches the landings, converts them to a :class Landings: and puts them
+    in a queue. When the process is over, it signals the main process.
+
+    :param self:  An instance attribute of the :class Worker:
+    """
+    landings = self.manager.get_landings(self.date_from, self.date_to)
+
+    for l in landings:
+      tmp = Landings()
+      tmp.set_variable(l)
+      tmp.calc_total_catch()
+      self.queue.put(tmp)
+
+    self.event.set()
 
 def main():
   app = QApplication(sys.argv)
