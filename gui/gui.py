@@ -1,15 +1,15 @@
 #!/usr/bin/python
 # -*- coding: utf-8 -*-
 
-import sys
+import sys, time
 
 from PySide.QtGui import (QMainWindow, QApplication, QWidget, QTextEdit,
                           QVBoxLayout, QHBoxLayout, QLabel, QDateTimeEdit,
                           QPushButton, QProgressBar, QAction, QFileDialog,
                           QDialog, QLineEdit)
-from PySide.QtCore import (QDate)
+from PySide.QtCore import (QObject, QDate, Signal, Qt, QThread)
 
-from multiprocessing import Process, Event, Queue
+from multiprocessing import Process, Queue
 
 from landings.manager import LandingsManager
 from landings.landings import Landings
@@ -17,6 +17,11 @@ from landings.landings import Landings
 from utils.date import split_periods, month_range, check_dates
 
 date_fmt = 'yyyy-MM-dd'
+
+class AflafrettirSignal(QObject):
+  """ :class AflafrettirSignal: is a custom signalling class
+  """
+  work_done = Signal(bool)
 
 class AflafrettirGUI(QMainWindow):
   """ :class AflafrettirGUI: a PySide GUI :class:. This GUI handles interaction
@@ -30,6 +35,13 @@ class AflafrettirGUI(QMainWindow):
     :param self: An instance attribute of the :class AflafrettirGUI:
     """
     super(AflafrettirGUI, self).__init__()
+
+    self.queue = Queue()
+    self.cred = CredentialsDialog(self)
+    
+    self.processes_done = 0
+    self.username = ""
+    self.password = ""
 
     self.initUI()
 
@@ -104,19 +116,25 @@ class AflafrettirGUI(QMainWindow):
 
     self.show()
     window.show()
-    
-    self.enter_credentials()
 
+    self.enter_credentials()
+    
   def enter_credentials(self):
-    cred = CredentialsDialog(self)
-    cred.show()
+    self.cred.show()
+
+  def set_credentials(self, username, password):
+    self.username = username
+    self.password = password
 
   def fetch_data(self):
     """ R
     """
 
+    manager = LandingsManager()
+    
     if self.password and self.username:
-      print self.username, self.password
+      manager.set_credentials(self.username, self.password)
+      manager.get_client()
 
     date_from = self.cal1.date().toString(date_fmt)
     date_to = self.cal2.date().toString(date_fmt)
@@ -124,13 +142,27 @@ class AflafrettirGUI(QMainWindow):
     if check_dates(date_from, date_to):
       dates = split_periods(date_from, date_to)
 
+    for i in range(0,len(dates['date_from'])):
+      self.info.append(u'Þráður nr. ' + str(i+1))
+      self.info.append(u'Sæki upplýsingar fyrir tímabilið: ' +
+                       str(dates['date_from'][i]) + u' - ' +
+                       str(dates['date_to'][i]))
 
-    fname, _ = QFileDialog.getSaveFileName(self, 'Vista skrá', '~/')
+      worker = Worker(self.queue, manager, dates['date_from'][i],
+                      dates['date_to'][i])
+      worker.signal.work_done.connect(self.work_done)
+      worker.start()
+
+    #fname, _ = QFileDialog.getSaveFileName(self, 'Vista skrá', '~/')
+
+  def work_done(self):
+    self.processes_done += 1
+    print "Done"
 
 class CredentialsDialog(QDialog):
   """ A dialog for entering username and password.
   """
-  def __init__(self, parent=None):
+  def __init__(self, parent):
     """ A initialization function for :class CredentialsDialog:
     
     :param self:    An instance attribute of the :class CredentialsDialog:
@@ -177,30 +209,40 @@ class CredentialsDialog(QDialog):
   
     self.setWindowTitle(u'Sláðu in notendanafn of lykilorð')
 
+  def keyPressEvent(self, event):
+    """ Overloads the keyPressEvent, calling push_ok() when enter was pressed
+
+    :param self:  An instance attribute of the :class CredentialsDialog:
+    :param event: A key press event
+    """
+    if event.key() == Qt.Key_Return:
+      self.push_ok()
+
   def push_ok(self):
     """ Gets the text that are written in the 2 :class QLineEdit: objects and if
     there is any, it passes the username and password up to the parent of :class
     CredentialsDialog: and finally closes the dialog.
+    
+    :param self:  An instance attribute of the :class CredentialsDialog:
    """
     user = self.username.text()
     passw = self.password.text()
 
     if user and passw:
-      self.parent.username = user
-      self.parent.password = passw
+      self.parent.set_credentials(user, passw)
 
     self.close()
 
 class Worker(Process):
-  """ :class Worker: inherits from the :class Process:. It handles interaction
+  """ :class Worker: inherits from the :class Thread:. It handles interaction
   with the SOAP service of the Icelandic Directorate of Fisheries.
   """
-  def __init__(self, event, queue, manager, date_from, date_to):
+  signal = AflafrettirSignal()
+  
+  def __init__(self, queue, manager, date_from, date_to):
     """ Initializes the :class Worker: which inherits from :class Process:
 
     :param self:      An instance attribute of the :class Worker:
-    :param event:     An event, used to notify the parent process that the child
-                      process has finished running.
     :param queue:     A :class Queue: to put results into.
     :param manager:   A :class LandingManager: that fetches the landings
     :param date_from: A date which forms the date range to fetch data from the
@@ -209,27 +251,26 @@ class Worker(Process):
                       service provided by the Icelandic Directorate of Fisheries.
     """
     super(Worker, self).__init__()
-    self.event = event
     self.queue = queue
     self.manager = manager
     self.date_from = date_from
     self.date_to = date_to
+    self.daemon = True
 
   def run(self):
-    """ Fetches the landings, converts them to a :class Landings: and puts them
-    in a queue. When the process is over, it signals the main process.
-
-    :param self:  An instance attribute of the :class Worker:
-    """
     landings = self.manager.get_landings(self.date_from, self.date_to)
 
     for l in landings:
       tmp = Landings()
       tmp.set_variable(l)
       tmp.calc_total_catch()
+      print tmp.landingDate, tmp.shipName, tmp.totalCatch 
+      for k,v in tmp.landingCatch.iteritems():
+        print "\t", k,v
       self.queue.put(tmp)
 
-    self.event.set()
+
+    self.signal.work_done.emit(True)
 
 def main():
   app = QApplication(sys.argv)
