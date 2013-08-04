@@ -53,10 +53,11 @@ def write_data(wbk, sheet_name, data_sorted):
       tmp = getattr(v, k)
 
       if k == 'landingHarbour' or k == 'equipment':
-        tmp = ', '.join(list(set([str(x) for x in tmp])))
+        if type(tmp) == type(list):
+          tmp = ', '.join(list(set([unicode(x) for x in tmp])))
       
       if k == 'landingCatch':
-        tmp_k = ', '.join([str(f) for f in tmp.keys()])
+        tmp_k = ', '.join([unicode(f) for f in tmp.keys()])
         tmp_v = ', '.join([str(v) for v in tmp.values()])
         sheet.write(i+1, j, tmp_k)
         sheet.write(i+1, j+1, tmp_v)
