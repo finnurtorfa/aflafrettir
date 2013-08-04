@@ -55,6 +55,11 @@ def split_periods(date_from, date_to):
   start_month, end_month = month_range(date_from, date_to)
   new_year = 0
 
+  if date_from.year == date_to.year and date_from.month == date_to.month:
+    p['date_from'].append(date_from.strftime(fmt))
+    p['date_to'].append(date_to.strftime(fmt))
+    return p
+
   for m in range(start_month, end_month+1):
     if (m+new_year)%13 == 0: # End of year condition
       date_from += relativedelta(year=date_from.year+1, day=1, month=1)

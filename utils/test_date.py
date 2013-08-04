@@ -58,5 +58,12 @@ class DateManipulationTestCase(unittest.TestCase):
     assert p['date_from'].pop() == '2016-03-01'
     assert p['date_to'].pop() == '2016-03-05'
 
+    date1 = '2013-08-01'
+    date2 = '2013-08-03'
+    p = split_periods(date1, date2)
+    print p
+    assert p['date_from'].pop() == '2013-08-01'
+    assert p['date_to'].pop() == '2013-08-03'
+
 if __name__ == '__main__':
   unittest.main()
