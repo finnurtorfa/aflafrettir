@@ -20,8 +20,11 @@ class LandingsTestCase(unittest.TestCase):
     test = Landings()
     test_list = []
     
+    usern = raw_input('Enter username: ')
+    passw = raw_input('Enter password: ')
+
     self.manager = LandingsManager()
-    self.manager.set_credentials('aflafrettir', 'ananrer8')
+    self.manager.set_credentials(usern, passw)
     self.manager.get_client()
 
     data = self.manager.get_landings('2013-02-01', '2013-02-02')
