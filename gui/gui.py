@@ -137,19 +137,24 @@ class AflafrettirGUI(QMainWindow):
     :param self: An instance attribute of the :class AflafrettirGUI:
     """
     if not self.working and self.dates['date_from']:
-      time.sleep(2)
+      #time.sleep(2)
       self.start_thread()
       
     if (not self.working and self.dates['date_from'] != None and 
         not self.dates['date_from']):
       self.dates = {'date_from':None, 'date_to':None}
       landing_list = list()
+    
+      self.info.append(u'Búið að sækja allar upplýsingar. Reikna út lista')
       
       while not self.queue.empty():
         landing_list.append(self.queue.get())
   
       landing_dict = sort_landings(landing_list)
       save_excel('Prufa', landing_dict)
+
+      self.info.append('Hef lokið útreikningum. Listinn er vistaður í: ' +
+          str(self.fname))
 
  
   def enter_credentials(self):
