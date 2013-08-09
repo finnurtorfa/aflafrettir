@@ -66,11 +66,15 @@ class Landings(object):
     :param self:  An instance attribute of the :class Landings:
     """
     if self.landingCatch is not None:
-      self.totalCatch = 0
+      self.totalCatch = 0.0
       catch = dict()
       for i in self.landingCatch:
-        self.totalCatch += i['totalCatch']
-        catch[i['species']] = i['totalCatch']
+        if i['species'] not in [u'Loðna', u'Síld', u'Kolmunni']:
+          self.totalCatch += float(i['totalCatch'])/1000.0
+          catch[i['species']] = float(i['totalCatch'])/1000.0
+        else:
+          self.totalCatch += i['totalCatch']
+          catch[i['species']] = i['totalCatch']
         if self.equipment is None:
           self.equipment = i['equipment']
 
