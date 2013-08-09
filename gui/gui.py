@@ -151,10 +151,10 @@ class AflafrettirGUI(QMainWindow):
         landing_list.append(self.queue.get())
   
       landing_dict = sort_landings(landing_list)
-      save_excel('Prufa', landing_dict)
+      save_excel(self.fname, landing_dict)
 
-      self.info.append('Hef lokið útreikningum. Listinn er vistaður í: ' +
-          str(self.fname))
+      self.info.append(u'Hef lokið útreikningum. Listinn er vistaður í: ' +
+          unicode(self.fname))
 
  
   def enter_credentials(self):
@@ -193,6 +193,7 @@ class AflafrettirGUI(QMainWindow):
     :param self: An instance attribute of the :class AflafrettirGUI:
     """
     if self.password and self.username:
+      self.info.clear()
       self.fname, _ = QFileDialog.getSaveFileName(self, 'Vista skrá', '~/')
       date_from = self.cal1.date().toString(date_fmt)
       date_to = self.cal2.date().toString(date_fmt)

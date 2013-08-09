@@ -27,7 +27,7 @@ if __name__ == '__main__':
             'format': '[%(levelname)s: %(asctime)s] \t %(message)s', 
             'datefmt':'%d-%m-%Y %H:%M:%S',
             'level': 'DEBUG'}
-  init_logging(**log_args)
+  #init_logging(**log_args)
   gui.gui.main()
 
 __author__      = 'Finnur Smári Torfason'
