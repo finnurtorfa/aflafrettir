@@ -7,12 +7,15 @@ from PySide.QtGui import (QMainWindow, QApplication, QWidget, QTextEdit,
                           QVBoxLayout, QHBoxLayout, QLabel, QDateTimeEdit,
                           QPushButton, QProgressBar, QAction, QFileDialog,
                           QDialog, QLineEdit)
-from PySide.QtCore import (QObject, QDate, Signal, Qt, QThread)
+from PySide.QtCore import (QObject, QDate, Signal, Qt, QTimer)
 
-from multiprocessing import Process, Queue
+from threading import Thread
+from Queue import Queue
+#from multiprocessing import Process, Queue
 
 from landings.manager import LandingsManager
-from landings.landings import Landings
+from landings.landings import Landings, sort_landings
+from landings.excel import save_excel
 
 from utils.date import split_periods, month_range, check_dates
 
@@ -39,9 +42,11 @@ class AflafrettirGUI(QMainWindow):
     self.queue = Queue()
     self.cred = CredentialsDialog(self)
     
-    self.processes_done = 0
-    self.username = ""
-    self.password = ""
+    self.working = False
+    self.dates = {'date_from': None, 'date_to':None}
+    self.username = ''
+    self.password = ''
+    self.fname = ''
 
     self.initUI()
 
@@ -67,7 +72,7 @@ class AflafrettirGUI(QMainWindow):
     self.cal2.setDisplayFormat('dd.MM.yyyy')
 
     self.button = QPushButton('Reikna afla', self)
-    self.button.clicked.connect(self.fetch_data)
+    self.button.clicked.connect(self.set_landing_info)
 
     self.pbar = QProgressBar(self)
 
@@ -79,6 +84,10 @@ class AflafrettirGUI(QMainWindow):
     credential_action = QAction(u'Notenda upplýsingar', self)
     credential_action.setStatusTip(u'Slá inn notendanafn og lykilorð')
     credential_action.triggered.connect(self.enter_credentials)
+
+    self.timer = QTimer(self)
+    self.timer.timeout.connect(self.act)
+    self.timer.start(1000)
 
     menubar = self.menuBar()
     filemenu = menubar.addMenu('&File')
@@ -118,46 +127,81 @@ class AflafrettirGUI(QMainWindow):
     window.show()
 
     self.enter_credentials()
-    
+
+  def act(self):
+    """ Called when a :class QTimer: times out. This function checks if a
+    previous thread has finished fetching data, and if there are other threads
+    left to start. If not it will calculate the landing lists and write the on
+    an excel format.
+
+    :param self: An instance attribute of the :class AflafrettirGUI:
+    """
+    if not self.working and self.dates['date_from']:
+      time.sleep(2)
+      self.start_thread()
+      
+    if (not self.working and self.dates['date_from'] != None and 
+        not self.dates['date_from']):
+      self.dates = {'date_from':None, 'date_to':None}
+      landing_list = list()
+      
+      while not self.queue.empty():
+        landing_list.append(self.queue.get())
+  
+      landing_dict = sort_landings(landing_list)
+      save_excel('Prufa', landing_dict)
+
+ 
   def enter_credentials(self):
+    """ Starts the Credentials Dialog
+    
+    :param self: An instance attribute of the :class AflafrettirGUI:
+    """
     self.cred.show()
 
-  def set_credentials(self, username, password):
-    self.username = username
-    self.password = password
-
-  def fetch_data(self):
-    """ R
-    """
-
-    manager = LandingsManager()
+  def start_thread(self):
+    """ Set's the manager, and starts a thread to fetch data from the SOAP
+    service of the Icelandic Directorate of Fisheries.
     
+    :param self: An instance attribute of the :class AflafrettirGUI:
+    """
+    manager = LandingsManager()
+    manager.set_credentials(self.username, self.password)
+    manager.get_client()
+    
+    date_from = self.dates['date_from'].pop()
+    date_to = self.dates['date_to'].pop()
+    
+    self.info.append(u'Sæki upplýsingar fyrir tímabilið: ' +
+                     str(date_from) + u' - ' + str(date_to))
+    
+    worker = Worker(self.queue, manager, date_from, date_to)
+    worker.signal.work_done.connect(self.worker_done)
+    worker.start()
+    
+    self.working = True
+
+  def set_landing_info(self):
+    """ Once the button is started, this function is called to set up some lists
+    and variables to be able to calculate the landing lists.
+
+    :param self: An instance attribute of the :class AflafrettirGUI:
+    """
     if self.password and self.username:
-      manager.set_credentials(self.username, self.password)
-      manager.get_client()
+      self.fname, _ = QFileDialog.getSaveFileName(self, 'Vista skrá', '~/')
+      date_from = self.cal1.date().toString(date_fmt)
+      date_to = self.cal2.date().toString(date_fmt)
 
-    date_from = self.cal1.date().toString(date_fmt)
-    date_to = self.cal2.date().toString(date_fmt)
+      if check_dates(date_from, date_to):
+        self.dates = split_periods(date_from, date_to)
 
-    if check_dates(date_from, date_to):
-      dates = split_periods(date_from, date_to)
 
-    for i in range(0,len(dates['date_from'])):
-      self.info.append(u'Þráður nr. ' + str(i+1))
-      self.info.append(u'Sæki upplýsingar fyrir tímabilið: ' +
-                       str(dates['date_from'][i]) + u' - ' +
-                       str(dates['date_to'][i]))
-
-      worker = Worker(self.queue, manager, dates['date_from'][i],
-                      dates['date_to'][i])
-      worker.signal.work_done.connect(self.work_done)
-      worker.start()
-
-    #fname, _ = QFileDialog.getSaveFileName(self, 'Vista skrá', '~/')
-
-  def work_done(self):
-    self.processes_done += 1
-    print "Done"
+  def worker_done(self):
+    """ Called when a :class Worker: is done fetching data.
+    
+    :param self: An instance attribute of the :class AflafrettirGUI:
+    """
+    self.working = False
 
 class CredentialsDialog(QDialog):
   """ A dialog for entering username and password.
@@ -229,11 +273,12 @@ class CredentialsDialog(QDialog):
     passw = self.password.text()
 
     if user and passw:
-      self.parent.set_credentials(user, passw)
+      self.parent.password = passw
+      self.parent.username = user
 
     self.close()
 
-class Worker(Process):
+class Worker(Thread):
   """ :class Worker: inherits from the :class Thread:. It handles interaction
   with the SOAP service of the Icelandic Directorate of Fisheries.
   """
@@ -258,18 +303,17 @@ class Worker(Process):
     self.daemon = True
 
   def run(self):
+    """ Here is the work of the :class Worker: is performed. Started by calling
+    Thread.start() method.
+    """
     landings = self.manager.get_landings(self.date_from, self.date_to)
 
     for l in landings:
       tmp = Landings()
       tmp.set_variable(l)
       tmp.calc_total_catch()
-      print tmp.landingDate, tmp.shipName, tmp.totalCatch 
-      for k,v in tmp.landingCatch.iteritems():
-        print "\t", k,v
       self.queue.put(tmp)
-
-
+    
     self.signal.work_done.emit(True)
 
 def main():
