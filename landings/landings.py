@@ -84,7 +84,7 @@ class Landings(object):
             return
       else:
         self.group = 'Ýmislegt'
-
+ 
   def __add__(self, add):
     """ Returns the sum of two :class Landings(): given that the landings were
     performed by the same ship. 
@@ -113,14 +113,18 @@ class Landings(object):
       self.landingDate = [self.landingDate, add.landingDate]
     
     if type(self.landingHarbour) == type(list()):
-      self.landingHarbour.append(add.landingHarbour)
+      if add.landingHarbour not in self.landingHarbour:
+        self.landingHarbour.append(add.landingHarbour)
     else:
-      self.landingHarbour = [self.landingHarbour, add.landingHarbour]
+      if add.landingHarbour != self.landingHarbour:
+        self.landingHarbour = [self.landingHarbour, add.landingHarbour]
       
     if type(self.equipment) == type(list()):
-      self.equipment.append(add.equipment)
+      if add.equipment not in self.equipment:
+        self.equipment.append(add.equipment)
     else:
-      self.equipment = [self.equipment, add.equipment]
+      if add.equipment != self.equipment:
+        self.equipment = [self.equipment, add.equipment]
     
     self.count = len(self.landingDate)
 
@@ -151,7 +155,7 @@ def sort_landings(landings):
     unique_number = list(set([n.shipNumber for n in tmp_dict[k]]))
     
     for i in unique_number:
-      tmp = [l for l in landings if l.shipNumber == i]
+      tmp = [l for l in landings if l.shipNumber == i and l.group == k]
       tmp = calculate_catch(tmp)
       result[k].append(tmp)
 
