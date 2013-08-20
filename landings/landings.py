@@ -23,7 +23,9 @@ groups = {
   'Handfæri':[u'Handfæri'],
   'Ýmislegt':[u'Ýmis veiðarfæri', u'Þorskgildra', u'Krabbagildra',
     u'Hörpudiskplógur/Scallop dr.', u'Sjóstöng', u'Ígulkeraplógur',
-    u'RMNT', u'KRAL']}
+    u'RMNT', u'KRAL'],
+  'Smábátar -10BT': '',
+  'Smábátar +10BT': ''}
  
 class Landings(object):
   """ :class Landings: contains info about landings such as catch, total catch,
@@ -82,6 +84,13 @@ class Landings(object):
       self.maxCatch = self.totalCatch
 
       for k,v in groups.iteritems():
+        if self.shipGrossTonnage <= 10.0:
+          self.group = 'Smábátar -10BT'
+          return
+        elif self.shipGrossTonnage > 10.0 and self.shipGrossTonnage <= 30.0:
+          self.group = 'Smábátar +10BT'
+          return
+
         for e in v:
           if self.equipment in e:
             self.group = k
