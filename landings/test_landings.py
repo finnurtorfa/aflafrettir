@@ -23,11 +23,11 @@ class LandingsTestCase(unittest.TestCase):
     usern = raw_input('Enter username: ')
     passw = raw_input('Enter password: ')
 
-    self.manager = LandingsManager()
-    self.manager.set_credentials(usern, passw)
-    self.manager.get_client()
+    manager = LandingsManager()
+    manager.set_credentials(usern, passw)
+    manager.get_client()
 
-    data = self.manager.get_landings('2013-02-01', '2013-02-02')
+    data = manager.get_landings('2013-02-01', '2013-02-02')
     
     assert test.totalCatch == None
     assert test.landingCatch == None

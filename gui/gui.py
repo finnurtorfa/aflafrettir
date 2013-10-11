@@ -168,8 +168,8 @@ class AflafrettirGUI(QMainWindow):
             pass
   
           words = line.split(': ')
-          self.username = words[0]
-          self.password = words[1]
+          self.username = words[0].strip()
+          self.password = words[1].strip()
     except IOError:
       self.info.append(os.getcwd() + '/.config ekki til.')
       self.info.append(u'Skráðu inn notendanafn of lykilorð handvirkt')
