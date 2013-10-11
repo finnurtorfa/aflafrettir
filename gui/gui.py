@@ -1,7 +1,7 @@
 #!/usr/bin/python
 # -*- coding: utf-8 -*-
 
-import sys, time
+import sys, os
 
 from PySide.QtGui import (QMainWindow, QApplication, QWidget, QTextEdit,
                           QVBoxLayout, QHBoxLayout, QLabel, QDateTimeEdit,
@@ -126,7 +126,7 @@ class AflafrettirGUI(QMainWindow):
     self.show()
     window.show()
 
-    self.enter_credentials()
+    self.get_credentials()
 
   def act(self):
     """ Called when a :class QTimer: times out. This function checks if a
@@ -137,7 +137,6 @@ class AflafrettirGUI(QMainWindow):
     :param self: An instance attribute of the :class AflafrettirGUI:
     """
     if not self.working and self.dates['date_from']:
-      #time.sleep(2)
       self.start_thread()
       
     if (not self.working and self.dates['date_from'] != None and 
@@ -156,9 +155,27 @@ class AflafrettirGUI(QMainWindow):
       self.info.append(u'Hef lokið útreikningum. Listinn er vistaður í: ' +
           unicode(self.fname))
 
- 
+  def get_credentials(self):
+    """ Reads the config file and sets the username and password
+    
+    :param self: An instance attribute of the :class AflafrettirGUI:
+    """
+    try: 
+      with open(os.getcwd() + '/.config') as f:
+        lines = f.readlines()
+        for line in lines:
+          if line.startswith('#'):
+            pass
+  
+          words = line.split(': ')
+          self.username = words[0]
+          self.password = words[1]
+    except IOError:
+      self.info.append(os.getcwd() + '/.config ekki til.')
+      self.info.append(u'Skráðu inn notendanafn of lykilorð handvirkt')
+
   def enter_credentials(self):
-    """ Starts the Credentials Dialog
+    """ Opens up :class CredentialsDialog: object 
     
     :param self: An instance attribute of the :class AflafrettirGUI:
     """
