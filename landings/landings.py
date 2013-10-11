@@ -56,8 +56,11 @@ class Landings(object):
     :param data:  An instance of :class Client: 'getLandings method.
     """
     for key in keys:
-      val = getattr(data, key)
-      setattr(self, key, val)
+      try:
+        val = getattr(data, key)
+        setattr(self, key, val)
+      except AttributeError:
+        setattr(self, key, None)
 
   def calc_total_catch(self):
     """ Calculates the total catch, equipment used and which group the equipment
