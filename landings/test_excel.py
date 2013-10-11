@@ -65,7 +65,7 @@ if __name__ == '__main__':
   import sys
   sys.path.insert(0,'.')
   
-  from landings.landings import Landings
-  from landings.excel import save_excel
+  from landings import Landings
+  from excel import save_excel
 
   unittest.main()

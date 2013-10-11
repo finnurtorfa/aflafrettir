@@ -80,7 +80,7 @@ if __name__ == '__main__':
   import sys
   sys.path.insert(0,'.')
   
-  from landings.manager import LandingsManager
-  from landings.landings import Landings, sort_landings
+  from manager import LandingsManager
+  from landings import Landings, sort_landings
 
   unittest.main()
