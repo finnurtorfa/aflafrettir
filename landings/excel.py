@@ -15,10 +15,10 @@ style0 = xlwt.easyxf('font: name Arial, color-index black',
     num_format_str='#,##0')
 style1 = xlwt.easyxf('font: name Arial, color-index black, bold on',
     num_format_str='#,##0')
-item = ['Skipaskrárnúmer', 'Nafn', 'Fjöldi', 'Heildarafli', 'Mesti afli',
-    'Höfn', 'Veiðarfæri', 'Tegundir', 'Afli e. tegundum']
-keys = ['shipNumber', 'shipName', 'count', 'totalCatch', 'maxCatch',
-    'landingHarbour', 'equipment', 'landingCatch']
+item = [u'Skipaskrárnúmer', u'Nafn', u'Fjöldi', u'Heildarafli', u'Mesti afli',
+    u'Höfn', u'Veiðarfæri', u'Tegundir', u'Afli e. tegundum']
+keys = [u'shipNumber', u'shipName', u'count', u'totalCatch', u'maxCatch',
+    u'landingHarbour', u'equipment', u'landingCatch']
 
 def save_excel(name, landing_dict):
   """ Sets up a :class xlwt.Workbook: and saves data in an excel file.
@@ -64,12 +64,12 @@ def write_data(wbk, sheet_name, data_sorted):
       else:
         sheet.write(i+1, j, tmp)
 
-__author__      = 'Finnur Smári Torfason'
+__author__      = u'Finnur Smári Torfason'
 __copyright__   = 'Copyright 2012, www.aflafrettir.com'
-__credits__     = ['Finnur Smári Torfason', 'Gísli Reynisson']
+__credits__     = [u'Finnur Smári Torfason', u'Gísli Reynisson']
 
 __license__     = 'GPL v3'
 __version__     = '0.1'
-__maintainer__  = 'Finnur Smári Torfason'
+__maintainer__  = u'Finnur Smári Torfason'
 __email__       = 'finnurtorfa@gmail.com'
 __status__      = 'Development'

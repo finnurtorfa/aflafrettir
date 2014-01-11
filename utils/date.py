@@ -99,12 +99,12 @@ def month_range(d1, d2):
 
   return d1.month, d1.month + diff
 
-__author__      = 'Finnur Smári Torfason'
+__author__      = u'Finnur Smári Torfason'
 __copyright__   = 'Copyright 2012, www.aflafrettir.com'
-__credits__     = ['Finnur Smári Torfason', 'Gísli Reynisson']
+__credits__     = [u'Finnur Smári Torfason', u'Gísli Reynisson']
 
 __license__     = 'GPL v3'
 __version__     = '0.1'
-__maintainer__  = 'Finnur Smári Torfason'
+__maintainer__  = u'Finnur Smári Torfason'
 __email__       = 'finnurtorfa@gmail.com'
 __status__      = 'Development'

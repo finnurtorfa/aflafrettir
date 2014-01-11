@@ -12,22 +12,22 @@ from suds.sax.date import Date
 keys = ['landingCatch', 'landingDate', 'landingHarbour', 'shipGrossTonnage',
     'shipName', 'shipNumber']
 groups = {
-  'Uppsjávarskip':[u'Loðnunót', u'Síldarnót', u'Flotvarpa', u'Loðnuflotvarpa',
+  u'Uppsjávarskip':[u'Loðnunót', u'Síldarnót', u'Flotvarpa', u'Loðnuflotvarpa',
     u'Síldar-/kolmunnaflotvarpa'], 
-  'Net':[u'Net', u'Skötuselsnet', u'Grásleppunet', ], 
-  'Humar':[u'Humarvarpa'],
-  'Lína':[u'Lína'], 
-  'Rækja':[u'Rækjuvarpa'], 
-  'Botnvörpungar':[u'Botnvarpa'],
-  'Dragnót':[u'Dragnót 135 mm'], 
-  'Handfæri':[u'Handfæri'],
-  'Ýmislegt':[u'Ýmis veiðarfæri', u'Þorskgildra', u'Krabbagildra',
+  u'Net':[u'Net', u'Skötuselsnet', u'Grásleppunet', ], 
+  u'Humar':[u'Humarvarpa'],
+  u'Lína':[u'Lína'], 
+  u'Rækja':[u'Rækjuvarpa'], 
+  u'Botnvörpungar':[u'Botnvarpa'],
+  u'Dragnót':[u'Dragnót 135 mm'], 
+  u'Handfæri':[u'Handfæri'],
+  u'Ýmislegt':[u'Ýmis veiðarfæri', u'Þorskgildra', u'Krabbagildra',
     u'Hörpudiskplógur/Scallop dr.', u'Sjóstöng', u'Ígulkeraplógur',
     u'RMNT', u'KRAL'],
-  'Smábátar -8BT': '',
-  'Smábátar 8-13BT': '',
-  'Smábátar 13-15BT': '',
-  'Smábátar +15BT': ''}
+  u'Smábátar -8BT': '',
+  u'Smábátar 8-13BT': '',
+  u'Smábátar 13-15BT': '',
+  u'Smábátar +15BT': ''}
  
 class Landings(object):
   """ :class Landings: contains info about landings such as catch, total catch,
@@ -90,19 +90,19 @@ class Landings(object):
 
       for k,v in groups.iteritems():
         if (self.shipGrossTonnage <= 8.0 and self.equipment == u'Lína'):
-          self.group = 'Smábátar -8BT'
+          self.group = u'Smábátar -8BT'
           return
         elif (self.shipGrossTonnage > 8.00 and self.shipGrossTonnage <= 13.0 and
               self.equipment == u'Lína'):
-          self.group = 'Smábátar 8-13BT'
+          self.group = u'Smábátar 8-13BT'
           return
         elif (self.shipGrossTonnage > 13.00 and self.shipGrossTonnage < 15.0 and
               self.equipment == u'Lína'):
-          self.group = 'Smábátar 13-15BT'
+          self.group = u'Smábátar 13-15BT'
           return
         elif (self.shipGrossTonnage >= 15.00 and
              self.equipment == u'Lína'):
-          self.group = 'Smábátar +15BT'
+          self.group = u'Smábátar +15BT'
           return
 
         for e in v:
@@ -110,7 +110,7 @@ class Landings(object):
             self.group = k
             return
       else:
-        self.group = 'Ýmislegt'
+        self.group = u'Ýmislegt'
  
   def __add__(self, add):
     """ Returns the sum of two :class Landings(): given that the landings were
@@ -201,12 +201,12 @@ def calculate_catch(landings):
 
   return tmp
 
-__author__      = 'Finnur Smári Torfason'
+__author__      = u'Finnur Smári Torfason'
 __copyright__   = 'Copyright 2012, www.aflafrettir.com'
-__credits__     = ['Finnur Smári Torfason', 'Gísli Reynisson']
+__credits__     = [u'Finnur Smári Torfason', u'Gísli Reynisson']
 
 __license__     = 'GPL v3'
 __version__     = '0.1'
-__maintainer__  = 'Finnur Smári Torfason'
+__maintainer__  = u'Finnur Smári Torfason'
 __email__       = 'finnurtorfa@gmail.com'
 __status__      = 'Development'

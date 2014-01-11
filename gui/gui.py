@@ -60,8 +60,8 @@ class AflafrettirGUI(QMainWindow):
     self.info = QTextEdit()
     self.info.setReadOnly(True)
 
-    cal_text1 = QLabel('Dagsetning 1:', self)
-    cal_text2 = QLabel('Dagsetning 2:', self)
+    cal_text1 = QLabel(u'Dagsetning 1:', self)
+    cal_text2 = QLabel(u'Dagsetning 2:', self)
 
     self.cal1 = QDateTimeEdit(QDate.currentDate())
     self.cal1.setCalendarPopup(True)
@@ -71,14 +71,14 @@ class AflafrettirGUI(QMainWindow):
     self.cal2.setCalendarPopup(True)
     self.cal2.setDisplayFormat('dd.MM.yyyy')
 
-    self.button = QPushButton('Reikna afla', self)
+    self.button = QPushButton(u'Reikna afla', self)
     self.button.clicked.connect(self.set_landing_info)
 
     self.pbar = QProgressBar(self)
 
-    exit_action = QAction('Exit', self)
+    exit_action = QAction(u'Exit', self)
     exit_action.setShortcut('Ctrl+Q')
-    exit_action.setStatusTip('Exit Application')
+    exit_action.setStatusTip(u'Exit Application')
     exit_action.triggered.connect(self.close)
 
     credential_action = QAction(u'Notenda upplýsingar', self)
@@ -211,7 +211,7 @@ class AflafrettirGUI(QMainWindow):
     """
     if self.password and self.username:
       self.info.clear()
-      self.fname, _ = QFileDialog.getSaveFileName(self, 'Vista skrá', '~/')
+      self.fname, _ = QFileDialog.getSaveFileName(self, u'Vista skrá', '~/')
       date_from = self.cal1.date().toString(date_fmt)
       date_to = self.cal2.date().toString(date_fmt)
 
