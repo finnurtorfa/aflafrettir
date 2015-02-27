@@ -18,7 +18,7 @@ class LandingsManager(object):
   Icelandic Directorate of Fisheries
   """
   def __init__(self):
-    self.url = 'http://ship.fiskistofa.is/ship/ShipService?wsdl'
+    self.url = 'https://ship.fiskistofa.is/ship/ShipService?wsdl'
     self.headers = None
     self.client = None
     self.dates = None
