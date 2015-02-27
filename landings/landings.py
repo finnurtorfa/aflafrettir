@@ -89,15 +89,13 @@ class Landings(object):
       self.maxCatch = self.totalCatch
 
       for k,v in groups.iteritems():
-        if (self.shipGrossTonnage <= 8.0 and self.equipment == u'Lína'):
+        if (self.shipGrossTonnage <= 8.0): 
           self.group = u'Smábátar -8BT'
           return
-        elif (self.shipGrossTonnage > 8.00 and self.shipGrossTonnage <= 13.0 and
-              self.equipment == u'Lína'):
+        elif (self.shipGrossTonnage > 8.00 and self.shipGrossTonnage <= 13.0): 
           self.group = u'Smábátar 8-13BT'
           return
-        elif (self.shipGrossTonnage > 13.00 and self.shipGrossTonnage < 15.0 and
-              self.equipment == u'Lína'):
+        elif (self.shipGrossTonnage > 13.00 and self.shipGrossTonnage < 15.0):
           self.group = u'Smábátar 13-15BT'
           return
         elif (self.shipGrossTonnage >= 15.00 and
