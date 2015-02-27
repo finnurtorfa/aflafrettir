@@ -11,7 +11,6 @@ from PySide.QtCore import (QObject, QDate, Signal, Qt, QTimer)
 
 from threading import Thread
 from Queue import Queue
-#from multiprocessing import Process, Queue
 
 from landings.manager import LandingsManager
 from landings.landings import Landings, sort_landings
@@ -195,7 +194,8 @@ class AflafrettirGUI(QMainWindow):
     date_to = self.dates['date_to'].pop()
     
     self.info.append(u'Sæki upplýsingar fyrir tímabilið: ' +
-                     str(date_from) + u' - ' + str(date_to))
+                     str(date_from).decode('utf-8') + u' - ' +
+                     str(date_to).decode('utf-8'))
     
     worker = Worker(self.queue, manager, date_from, date_to)
     worker.signal.work_done.connect(self.worker_done)
@@ -274,7 +274,7 @@ class CredentialsDialog(QDialog):
 
     self.setLayout(main_layout)
   
-    self.setWindowTitle(u'Sláðu in notendanafn of lykilorð')
+    self.setWindowTitle(u'Sláðu in notendanafn og lykilorð')
 
   def keyPressEvent(self, event):
     """ Overloads the keyPressEvent, calling push_ok() when enter was pressed
