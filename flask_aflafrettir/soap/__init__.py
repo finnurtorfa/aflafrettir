@@ -116,3 +116,24 @@ class DOFManager(SOAPManager):
 
     return self.call_method('getLandings', date_from, date_to, ship_id)
 
+if __name__ == '__main__':
+  manager = DOFManager(credentials={'Username':'Username',
+                                    'Password':'Password'})
+  print(manager.client)
+  print(manager.get_api_version())
+  print(manager.get_fishing_areas())
+  print(manager.get_fishing_stocks())
+  print(manager.get_species())
+  print(manager.get_states())
+  print(manager.get_storage_methods())
+  print(manager.get_all_landings('2015-02-01', '2015-04-02'))
+
+__author__      = u'Finnur Smári Torfason'
+__copyright__   = 'Copyright 2015, www.aflafrettir.com'
+__credits__     = [u'Finnur Smári Torfason', u'Gísli Reynisson']
+
+__license__     = 'GPL v3'
+__version__     = '0.2'
+__maintainer__  = u'Finnur Smári Torfason'
+__email__       = 'finnurtorfa@gmail.com'
+__status__      = 'Development'
