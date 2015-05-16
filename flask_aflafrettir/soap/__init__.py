@@ -1,5 +1,5 @@
 """
-  flask.flask_aflafrettir.soap.manager
+  flask.aflafrettir.soap.manager
   ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
   Add a manager class for the Directorate of Fisheries of Iceland's SOAP
@@ -8,6 +8,8 @@
 
 from suds.client import Client
 from suds.sax.date import Date
+
+from utils import check_dates, split_periods
 
 class SOAPManager(object):
   """ A 'SOAPManager' object that manages connection to a SOAP service
@@ -97,10 +99,18 @@ class DOFManager(SOAPManager):
     :param date_from:   A string|datetime|date object containing the start date
     :param date_to:     A string|datetime|date object containing the end date
     """
-    date_from = Date(date_from)
-    date_to = Date(date_to)
+    landings = []
 
-    return self.call_method('getAllLandings', date_from, date_to)
+    if check_dates(date_from, date_to):
+      dates = split_periods(date_from, date_to)
+
+    while dates['date_from']:
+      date_from = Date(dates['date_from'].pop())
+      date_to = Date(dates['date_to'].pop())
+
+      landings.extend(self.call_method('getAllLandings', date_from, date_to))
+
+    return landings
 
   def get_landings(self, date_from, date_to, ship_id):
     """ Fetch all landings for a specific boat for a period of time. It is 
@@ -111,10 +121,21 @@ class DOFManager(SOAPManager):
     :param date_to:     A string|datetime|date object containing the end date
     :param ship_id:     A string with the ship's id
     """
-    date_from = Date(date_from)
-    date_to = Date(date_to)
+    landings = []
 
-    return self.call_method('getLandings', date_from, date_to, ship_id)
+    if check_dates(date_from, date_to):
+      dates = split_periods(date_from, date_to)
+
+    while dates['date_from']:
+      date_from = Date(dates['date_from'].pop())
+      date_to = Date(dates['date_to'].pop())
+
+      landings.extend(self.call_method('getLandings',
+                                       date_from,
+                                       date_to,
+                                       ship_id))
+
+    return landings
 
 if __name__ == '__main__':
   manager = DOFManager(credentials={'Username':'Username',
@@ -126,7 +147,8 @@ if __name__ == '__main__':
   print(manager.get_species())
   print(manager.get_states())
   print(manager.get_storage_methods())
-  print(manager.get_all_landings('2015-02-01', '2015-04-02'))
+  print(manager.get_all_landings('2015-02-01', '2015-02-02'))
+  print(manager.get_landings('2015-02-01', '2015-04-02', "4801692989"))
 
 __author__      = u'Finnur Smári Torfason'
 __copyright__   = 'Copyright 2015, www.aflafrettir.com'
