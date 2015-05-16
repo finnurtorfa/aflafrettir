@@ -42,11 +42,11 @@ def split_periods(date_from, date_to):
   
   if type(date_from) is not datetime:
     logging.info('Change date_from string to a datetime object')
-    date_from = datetime.strptime(date_from, '%Y-%m-%d')
+    date_from = datetime.strptime(date_from, fmt)
 
   if type(date_to) is not datetime:
     logging.info('Change date_to string to a datetime object')
-    date_to = datetime.strptime(date_to, '%Y-%m-%d')
+    date_to = datetime.strptime(date_to, fmt)
 
   start_month, end_month = month_range(date_from, date_to)
   new_year = 0
