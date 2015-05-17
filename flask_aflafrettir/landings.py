@@ -2,10 +2,11 @@
 # -*- coding: utf-8 -*-
 
 """ 
-manager
-~~~~~~~~~~~
-"""
+flask.aflafrettir.landings
+==========================
 
+
+"""
 from suds.client import Client
 from suds.sax.date import Date
 
