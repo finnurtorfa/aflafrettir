@@ -10,27 +10,27 @@ flask.aflafrettir.landings
 from suds.client import Client
 from suds.sax.date import Date
 
-keys = ['landingCatch', 'landingDate', 'landingHarbour', 'shipGrossTonnage',
-    'shipName', 'shipNumber']
-groups = {
-  u'Uppsjávarskip':[5, 9, 10],
-  u'Net':[1, 2, 3, 4],
-  u'Humar':[7],
-  u'Lína':[12, 13], 
-  u'Rækja':[8], 
-  u'Botnvörpungar':[6],
-  u'Dragnót':[11], 
-  u'Handfæri':[14],
-  u'Ýmislegt':[15, 16, 17, 18, 19, 20, 21],
-  u'Smábátar -8BT': '',
-  u'Smábátar 8-13BT': '',
-  u'Smábátar 13-15BT': '',
-  u'Smábátar +15BT': ''}
- 
 class Landings(object):
   """ :class Landings: contains info about landings such as catch, total catch,
   shipID, name etc.
   """
+  keys = ['landingCatch', 'landingDate', 'landingHarbour', 'shipGrossTonnage',
+          'shipName', 'shipNumber']
+  groups = {
+    u'Uppsjávarskip':[5, 9, 10],
+    u'Net':[1, 2, 3, 4],
+    u'Humar':[7],
+    u'Lína':[12, 13], 
+    u'Rækja':[8], 
+    u'Botnvörpungar':[6],
+    u'Dragnót':[11], 
+    u'Handfæri':[14],
+    u'Ýmislegt':[15, 16, 17, 18, 19, 20, 21],
+    u'Smábátar -8BT': '',
+    u'Smábátar 8-13BT': '',
+    u'Smábátar 13-15BT': '',
+    u'Smábátar +15BT': ''}
+ 
 
   def __init__(self):
     """ Initializes the :class Landings:
