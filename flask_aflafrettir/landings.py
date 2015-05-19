@@ -37,17 +37,16 @@ class Landings(object):
 
     :param self:  An instance attribute of the :class Landings:
     """
-    self.totalCatch       = None
-    self.landingCatch     = None
-    self.maxCatch         = 0
-    self.landingDate      = None
-    self.landingHarbour   = None
-    self.shipGrossTonnage = None
-    self.shipName         = None
-    self.shipNumber       = None
-    self.equipment        = None
-    self.group            = None
-    self.count            = 1
+    self.equipment          = None
+    self.landingDate        = None
+    self.landingHarbour     = None
+    self.shipGrossTonnage   = None
+    self.shipName           = None
+
+    self.totalCatch         = 0.0
+    self.maxCatch           = 0.0
+    self.groupName          = None
+    self.count              = 0
     
   def set_variable(self, data):
     """ Checks if attributes from the :class Client: 'getLandings' method
