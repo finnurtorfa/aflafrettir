@@ -58,12 +58,27 @@ class Landings(object):
     :param self:      An instance attribute of the :class Landings:
     :param landing:   An instance of :class Client: 'getLandings method.
     """
+    self.equipment          = self.get_equipment_from_name(
+                                landing.landingCatch[0].equipment)
+    
     for k in self.keys:
       try:
         val = getattr(landing, k)
         setattr(self, k, val)
       except AttributeError:
         setattr(self, k, None)
+
+  def get_equipment_from_name(self, equipment_id):
+    """ Translates a fishing equipments id into a name
+
+    :param self:          An instance attribute of the :class Landings:
+    :param equipment_id:  An equipment id
+    """
+    for e in self.equipment_list:
+      if e.id == equipment_id:
+        return e.name
+
+    return "Annað"
 
   def set_variable(self, data):
     """ Checks if attributes from the :class Client: 'getLandings' method
