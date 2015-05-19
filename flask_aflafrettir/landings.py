@@ -14,8 +14,8 @@ class Landings(object):
   """ :class Landings: contains info about landings such as catch, total catch,
   shipID, name etc.
   """
-  keys = ['landingCatch', 'landingDate', 'landingHarbour', 'shipGrossTonnage',
-          'shipName', 'shipNumber']
+  keys = ['landingDate', 'landingHarbour', 'shipGrossTonnage', 'shipName', 
+          'shipNumber']
   groups = {
     u'Uppsjávarskip':[5, 9, 10],
     u'Net':[1, 2, 3, 4],
@@ -32,22 +32,39 @@ class Landings(object):
     u'Smábátar +15BT': ''}
  
 
-  def __init__(self):
+  def __init__(self, equipment_list):
     """ Initializes the :class Landings:
 
-    :param self:  An instance attribute of the :class Landings:
+    :param self:        An instance attribute of the :class Landings:
+    :param equipment:   A list of available equipments
     """
     self.equipment          = None
     self.landingDate        = None
     self.landingHarbour     = None
     self.shipGrossTonnage   = None
     self.shipName           = None
+    self.shipNumber         = None
 
     self.totalCatch         = 0.0
     self.maxCatch           = 0.0
     self.groupName          = None
     self.count              = 0
+    self.equipment_list     = equipment_list
     
+  def insert(self, landing): 
+    """ Takes in a single landing, and calculates the total catch, max catch, 
+    the group this landing belongs to etc.
+
+    :param self:      An instance attribute of the :class Landings:
+    :param landing:   An instance of :class Client: 'getLandings method.
+    """
+    for k in self.keys:
+      try:
+        val = getattr(landing, k)
+        setattr(self, k, val)
+      except AttributeError:
+        setattr(self, k, None)
+
   def set_variable(self, data):
     """ Checks if attributes from the :class Client: 'getLandings' method
     matching the names of the strings in the 'keys' class variable exist
@@ -196,12 +213,24 @@ def calculate_catch(landings):
 
   return tmp
 
+if __name__ == '__main__':
+  from soap import DOFManager
+
+  manager = DOFManager(credentials={'Username': 'Username', 
+                                    'Password': 'Password'})
+
+  landings = manager.get_all_landings('2015-02-01', '2015-02-02')
+  equipments = manager.get_fishing_equipment()
+
+  for l in landings:
+    landing = Landings(equipments)
+    landing.insert(l)
 __author__      = u'Finnur Smári Torfason'
 __copyright__   = 'Copyright 2012, www.aflafrettir.com'
 __credits__     = [u'Finnur Smári Torfason', u'Gísli Reynisson']
 
 __license__     = 'GPL v3'
-__version__     = '0.1'
+__version__     = '0.2'
 __maintainer__  = u'Finnur Smári Torfason'
 __email__       = 'finnurtorfa@gmail.com'
 __status__      = 'Development'
