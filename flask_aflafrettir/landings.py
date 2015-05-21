@@ -32,11 +32,12 @@ class Landings(object):
     u'Smábátar +15BT': ''}
  
 
-  def __init__(self, equipment_list):
+  def __init__(self, equipment_list, species_list):
     """ Initializes the :class Landings:
 
-    :param self:        An instance attribute of the :class Landings:
-    :param equipment:   A list of available equipments
+    :param self:            An instance attribute of the :class Landings:
+    :param equipment_list:  A list of available equipments
+    :param species_list:    A list of available species
     """
     self.equipment          = None
     self.landingDate        = None
@@ -46,10 +47,12 @@ class Landings(object):
     self.shipNumber         = None
 
     self.totalCatch         = 0.0
+    self.landingCatch       = dict()
     self.maxCatch           = 0.0
     self.groupName          = None
     self.count              = 0
     self.equipment_list     = equipment_list
+    self.species_list       = species_list
     
   def insert(self, landing): 
     """ Takes in a single landing, and calculates the total catch, max catch, 
@@ -58,7 +61,7 @@ class Landings(object):
     :param self:      An instance attribute of the :class Landings:
     :param landing:   An instance of :class Client: 'getLandings method.
     """
-    self.equipment          = self.get_equipment_from_name(
+    self.equipment          = self.get_equipment_from_id(
                                 landing.landingCatch[0].equipment)
     
     for k in self.keys:
@@ -68,7 +71,9 @@ class Landings(object):
       except AttributeError:
         setattr(self, k, None)
 
-  def get_equipment_from_name(self, equipment_id):
+    self.calc_total_catch(landing.landingCatch)
+
+  def get_equipment_from_id(self, equipment_id):
     """ Translates a fishing equipments id into a name
 
     :param self:          An instance attribute of the :class Landings:
@@ -79,6 +84,32 @@ class Landings(object):
         return e.name
 
     return "Annað"
+
+  def get_species_from_id(self, species_id):
+    """ Translates species id into a name 
+
+    :param self:        An instance attribute of the :class Landings:
+    :param species_id:  A species id
+    """
+    for s in self.species_list:
+      if s.id == species_id:
+        return s.name
+
+    return "Annað"
+  
+  def calc_total_catch(self, catch):
+    """ Calculates the total catch in a fishing trip and places it in an 
+    appropriate group.
+
+    :param self:    An instance attribute of the :class Landings:
+    :param catch:   The landing catch from a single fishing trip.
+    """
+    for c in catch:
+      if self.get_species_from_id(c.species) not in self.landingCatch:
+        self.landingCatch[self.get_species_from_id(c.species)] = 0.0
+
+      self.landingCatch[self.get_species_from_id(c.species)] += c.totalCatch
+      self.totalCatch += c.totalCatch
 
   def set_variable(self, data):
     """ Checks if attributes from the :class Client: 'getLandings' method
@@ -95,50 +126,6 @@ class Landings(object):
       except AttributeError:
         setattr(self, key, None)
 
-  def calc_total_catch(self):
-    """ Calculates the total catch, equipment used and which group the equipment
-    belongs to, from a single fishing trip.
-    
-    :param self:  An instance attribute of the :class Landings:
-    """
-    if self.landingCatch is not None:
-      self.totalCatch = 0.0
-      catch = dict()
-      for i in self.landingCatch:
-        if i['species'] not in [u'Loðna', u'Síld', u'Kolmunni']:
-          self.totalCatch += float(i['totalCatch'])/1000.0
-          catch[i['species']] = float(i['totalCatch'])/1000.0
-        else:
-          self.totalCatch += i['totalCatch']
-          catch[i['species']] = i['totalCatch']
-        if self.equipment is None:
-          self.equipment = i['equipment']
-
-      self.landingCatch = catch
-      self.maxCatch = self.totalCatch
-
-      for k,v in groups.iteritems():
-        if (self.shipGrossTonnage <= 8.0): 
-          self.group = u'Smábátar -8BT'
-          return
-        elif (self.shipGrossTonnage > 8.00 and self.shipGrossTonnage <= 13.0): 
-          self.group = u'Smábátar 8-13BT'
-          return
-        elif (self.shipGrossTonnage > 13.00 and self.shipGrossTonnage < 15.0):
-          self.group = u'Smábátar 13-15BT'
-          return
-        elif (self.shipGrossTonnage >= 15.00 and
-             self.equipment == u'Lína'):
-          self.group = u'Smábátar +15BT'
-          return
-
-        for e in v:
-          if self.equipment in e:
-            self.group = k
-            return
-      else:
-        self.group = u'Ýmislegt'
- 
   def __add__(self, add):
     """ Returns the sum of two :class Landings(): given that the landings were
     performed by the same ship. 
@@ -236,9 +223,10 @@ if __name__ == '__main__':
 
   landings = manager.get_all_landings('2015-02-01', '2015-02-02')
   equipments = manager.get_fishing_equipment()
+  species = manager.get_species()
 
   for l in landings:
-    landing = Landings(equipments)
+    landing = Landings(equipments, species)
     landing.insert(l)
 __author__      = u'Finnur Smári Torfason'
 __copyright__   = 'Copyright 2012, www.aflafrettir.com'
