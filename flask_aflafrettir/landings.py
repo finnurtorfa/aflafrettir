@@ -61,8 +61,8 @@ class Landings(object):
     :param self:      An instance attribute of the :class Landings:
     :param landing:   An instance of :class Client: 'getLandings method.
     """
-    self.equipment          = self.get_equipment_from_id(
-                                landing.landingCatch[0].equipment)
+    self.equipment = self.get_equipment_from_id(
+        landing.landingCatch[0].equipment)
     
     for k in self.keys:
       try:
@@ -72,6 +72,8 @@ class Landings(object):
         setattr(self, k, None)
 
     self.calc_total_catch(landing.landingCatch)
+
+    print(self)
 
   def get_equipment_from_id(self, equipment_id):
     """ Translates a fishing equipments id into a name
@@ -110,21 +112,6 @@ class Landings(object):
 
       self.landingCatch[self.get_species_from_id(c.species)] += c.totalCatch
       self.totalCatch += c.totalCatch
-
-  def set_variable(self, data):
-    """ Checks if attributes from the :class Client: 'getLandings' method
-    matching the names of the strings in the 'keys' class variable exist
-    and passes them to the :class Landings: instance variables.
-    
-    :param self:  An instance attribute of the :class Landings:
-    :param data:  An instance of :class Client: 'getLandings method.
-    """
-    for key in keys:
-      try:
-        val = getattr(data, key)
-        setattr(self, key, val)
-      except AttributeError:
-        setattr(self, key, None)
 
   def __add__(self, add):
     """ Returns the sum of two :class Landings(): given that the landings were
