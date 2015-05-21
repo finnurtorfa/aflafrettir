@@ -53,6 +53,22 @@ class Landings(object):
     self.count              = 0
     self.equipment_list     = equipment_list
     self.species_list       = species_list
+
+  def __repr__(self):
+    return "Landing: \n\tID: {}\n\tName: {}\n\tTonnage: {}\n\tHarbour: {}\n\t" \
+           "Date: {}\n\tTotal Catch: {}\n\tMax Catch: {}\n\t" \
+           "Landing Catch: {}\n\tEquipment: {}\n\tGroup: {}\n\tCount: {}" \
+        .format(self.shipNumber,
+                self.shipName,
+                self.shipGrossTonnage,
+                self.landingHarbour,
+                self.landingDate,
+                self.totalCatch,
+                self.maxCatch,
+                self.landingCatch,
+                self.equipment,
+                self.groupName,
+                self.count)
     
   def insert(self, landing): 
     """ Takes in a single landing, and calculates the total catch, max catch, 
