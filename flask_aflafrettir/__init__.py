@@ -7,7 +7,7 @@
 """
 
 __author__      = u'Finnur Smári Torfason'
-__copyright__   = 'Copyright 2015, www.aflafrettir.com'
+__copyright__   = 'Copyright 2015, www.aflafrettir.is'
 __credits__     = [u'Finnur Smári Torfason', u'Gísli Reynisson']
 
 __license__     = 'GPL v3'

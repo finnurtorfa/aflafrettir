@@ -152,7 +152,7 @@ if __name__ == '__main__':
   print(manager.get_landings('2015-02-01', '2015-04-02', "4801692989"))
 
 __author__      = u'Finnur Smári Torfason'
-__copyright__   = 'Copyright 2015, www.aflafrettir.com'
+__copyright__   = 'Copyright 2015, www.aflafrettir.is'
 __credits__     = [u'Finnur Smári Torfason', u'Gísli Reynisson']
 
 __license__     = 'GPL v3'
