@@ -20,12 +20,12 @@ class Landings(object):
     u'Uppsjávarskip':[5, 9, 10],
     u'Net':[1, 2, 3, 4],
     u'Humar':[7],
-    u'Lína':[12, 13], 
+    u'Lína':[12, 13, 20, 21], 
     u'Rækja':[8], 
     u'Botnvörpungar':[6],
     u'Dragnót':[11], 
     u'Handfæri':[14],
-    u'Ýmislegt':[15, 16, 17, 18, 19, 20, 21]}
+    u'Ýmislegt':[15, 16, 17, 18, 19]}
     
   line_groups = {
       u'Smábátar -8BT': [0, 8.0],
