@@ -180,6 +180,9 @@ class Landings(object):
       self.landingDate = [self.landingDate, add.landingDate]
       self.landingHarbour = [self.landingHarbour, add.landingHarbour]
       self.equipment = [self.equipment, add.equipment]
+
+    self.landingHarbour = list(set(self.landingHarbour))
+    self.equipment = list(set(self.equipment))
     
     self.count = len(self.landingDate)
 
@@ -250,9 +253,6 @@ if __name__ == '__main__':
     lan.append(landing)
 
   result = sort_landings(lan)
-  for k in result:
-    print("\n   {}   \n".format(k))
-    print(result[k])
 
 __author__      = u'Finnur Smári Torfason'
 __copyright__   = 'Copyright 2015, www.aflafrettir.is'
