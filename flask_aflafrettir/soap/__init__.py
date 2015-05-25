@@ -9,7 +9,7 @@
 from suds.client import Client
 from suds.sax.date import Date
 
-from utils import check_dates, split_periods
+from .utils import check_dates, split_periods
 
 class SOAPManager(object):
   """ A 'SOAPManager' object that manages connection to a SOAP service
@@ -144,6 +144,7 @@ if __name__ == '__main__':
   print(manager.get_api_version())
   print(manager.get_fishing_areas())
   print(manager.get_fishing_stocks())
+  print(manager.get_fishing_equipment())
   print(manager.get_species())
   print(manager.get_states())
   print(manager.get_storage_methods())
