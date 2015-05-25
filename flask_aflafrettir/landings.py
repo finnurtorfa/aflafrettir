@@ -158,38 +158,28 @@ class Landings(object):
     :param add:   Another instance attribute of the :class Landings:
     """
     if self.shipNumber != add.shipNumber:
-      raise ValueError('Can only perform addition on landings from the same' 
-                        + ' ship')
+      raise ValueError('Can only perform addition on landings from the same' \
+                       ' ship')
 
     self.totalCatch +=  add.totalCatch
 
     if self.maxCatch < add.maxCatch:
        self.maxCatch = add.maxCatch
     
-    for k,v in add.landingCatch.iteritems():
+    for k in add.landingCatch:
       if k in self.landingCatch:
-        self.landingCatch[k] += v
+        self.landingCatch[k] += add.landingCatch[k]
       else:
-        self.landingCatch[k] = v
+        self.landingCatch[k] = add.landingCatch[k]
 
-    if type(self.landingDate) == type(list()):
+    try:
       self.landingDate.append(add.landingDate)
-    else:
+      self.landingHarbour.append(add.landingHarbour)
+      self.equipment.append(add.equipment)
+    except AttributeError:
       self.landingDate = [self.landingDate, add.landingDate]
-    
-    if type(self.landingHarbour) == type(list()):
-      if add.landingHarbour not in self.landingHarbour:
-        self.landingHarbour.append(add.landingHarbour)
-    else:
-      if add.landingHarbour != self.landingHarbour:
-        self.landingHarbour = [self.landingHarbour, add.landingHarbour]
-      
-    if type(self.equipment) == type(list()):
-      if add.equipment not in self.equipment:
-        self.equipment.append(add.equipment)
-    else:
-      if add.equipment != self.equipment:
-        self.equipment = [self.equipment, add.equipment]
+      self.landingHarbour = [self.landingHarbour, add.landingHarbour]
+      self.equipment = [self.equipment, add.equipment]
     
     self.count = len(self.landingDate)
 
@@ -210,21 +200,25 @@ def sort_landings(landings):
 
   :param landings: a list of :class Landings:
   """
-  result = dict()
-  tmp_dict = dict()
-  unique_number = list()
+  groups = dict()
+  results = dict()
 
-  for k,v in groups.iteritems():
-    result[k] = list()
-    tmp_dict[k] = [i for i in landings if i.group == k]
-    unique_number = list(set([n.shipNumber for n in tmp_dict[k]]))
-    
-    for i in unique_number:
-      tmp = [l for l in landings if l.shipNumber == i and l.group == k]
+  for l in landings:
+    if l.groupName not in groups:
+      groups[l.groupName] = []
+      results[l.groupName] = []
+
+    groups[l.groupName].append(l)
+
+  for k in groups:
+    unique_id  = list(set([n.shipNumber for n in groups[k]]))
+    for i in unique_id:
+      tmp = [l for l in groups[k] if l.shipNumber == i]
       tmp = calculate_catch(tmp)
-      result[k].append(tmp)
+      results[k].append(tmp)
 
-  return result
+
+  return results
 
 def calculate_catch(landings):
   """ Takes in a list of :class Landings: with landings by a single ship and
@@ -248,10 +242,17 @@ if __name__ == '__main__':
   landings = manager.get_all_landings('2015-02-01', '2015-02-02')
   equipments = manager.get_fishing_equipment()
   species = manager.get_species()
+  lan = []
 
   for l in landings:
     landing = Landings(equipments, species)
     landing.insert(l)
+    lan.append(landing)
+
+  result = sort_landings(lan)
+  for k in result:
+    print("\n   {}   \n".format(k))
+    print(result[k])
 
 __author__      = u'Finnur Smári Torfason'
 __copyright__   = 'Copyright 2012, www.aflafrettir.com'
