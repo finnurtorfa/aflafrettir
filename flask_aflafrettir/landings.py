@@ -239,6 +239,8 @@ def calculate_catch(landings):
 if __name__ == '__main__':
   from soap import DOFManager
 
+  from excel import save_excel
+
   manager = DOFManager(credentials={'Username': 'Username', 
                                     'Password': 'Password'})
 
@@ -253,6 +255,8 @@ if __name__ == '__main__':
     lan.append(landing)
 
   result = sort_landings(lan)
+
+  save_excel('test.xlsx', result)
 
 __author__      = u'Finnur Smári Torfason'
 __copyright__   = 'Copyright 2015, www.aflafrettir.is'
