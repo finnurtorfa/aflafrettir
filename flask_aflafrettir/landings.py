@@ -258,12 +258,12 @@ if __name__ == '__main__':
 
   save_excel('test.xlsx', result)
 
-__author__      = u'Finnur Smári Torfason'
+__author__      = 'Finnur Smári Torfason'
 __copyright__   = 'Copyright 2015, www.aflafrettir.is'
-__credits__     = [u'Finnur Smári Torfason', u'Gísli Reynisson']
+__credits__     = ['Finnur Smári Torfason', 'Gísli Reynisson']
 
 __license__     = 'GPL v3'
 __version__     = '0.2'
-__maintainer__  = u'Finnur Smári Torfason'
+__maintainer__  = 'Finnur Smári Torfason'
 __email__       = 'finnurtorfa@gmail.com'
 __status__      = 'Development'
