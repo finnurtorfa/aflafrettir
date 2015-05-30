@@ -237,16 +237,16 @@ def calculate_catch(landings):
   return tmp
 
 if __name__ == '__main__':
-  from soap import DOFManager
+  from soap import DOFService
 
   from excel import save_excel
 
-  manager = DOFManager(credentials={'Username': 'Username', 
+  service = DOFService(credentials={'Username': 'Username', 
                                     'Password': 'Password'})
 
-  landings = manager.get_all_landings('2015-02-01', '2015-02-02')
-  equipments = manager.get_fishing_equipment()
-  species = manager.get_species()
+  landings = service.get_all_landings('2015-02-01', '2015-02-02')
+  equipments = service.get_fishing_equipment()
+  species = service.get_species()
   lan = []
 
   for l in landings:

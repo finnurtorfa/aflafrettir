@@ -11,11 +11,11 @@ from suds.sax.date import Date
 
 from .utils import check_dates, split_periods
 
-class SOAPManager(object):
-  """ A 'SOAPManager' object that manages connection to a SOAP service
+class SOAPService(object):
+  """ A 'SOAPService' object that manages connection to a SOAP service
   """
   def __init__(self, url=None, **kwargs):
-    """ Initialize the :class SOAPManager:
+    """ Initialize the :class SOAPService:
 
     :param url: The URL for the WSDL description of a SOAP service.
     :param headers: A dict containing headers for a HTTP/HTTPS SOAP request
@@ -41,12 +41,12 @@ class SOAPManager(object):
     return getattr(self.client.service, method)(*args)
   
 
-class DOFManager(SOAPManager):
-  """ A 'DOFManager' object that manages connection to the Department of
+class DOFService(SOAPService):
+  """ A 'DOFService' object that manages connection to the Department of
   Fisheries in Iceland's SOAP service
   """
   def __init__(self, credentials, **kwargs):
-    """ Initialize the :class DOFManager: object.
+    """ Initialize the :class DOFService: object.
 
     :param credentials:   A dictionary containing username and password to the
                           DOF's SOAP service.
@@ -138,18 +138,18 @@ class DOFManager(SOAPManager):
     return landings
 
 if __name__ == '__main__':
-  manager = DOFManager(credentials={'Username':'Username',
+  service = DOFService(credentials={'Username':'Username',
                                     'Password':'Password'})
-  print(manager.client)
-  print(manager.get_api_version())
-  print(manager.get_fishing_areas())
-  print(manager.get_fishing_stocks())
-  print(manager.get_fishing_equipment())
-  print(manager.get_species())
-  print(manager.get_states())
-  print(manager.get_storage_methods())
-  print(manager.get_all_landings('2015-02-01', '2015-02-02'))
-  print(manager.get_landings('2015-02-01', '2015-04-02', "4801692989"))
+  print(service.client)
+  print(service.get_api_version())
+  print(service.get_fishing_areas())
+  print(service.get_fishing_stocks())
+  print(service.get_fishing_equipment())
+  print(service.get_species())
+  print(service.get_states())
+  print(service.get_storage_methods())
+  print(service.get_all_landings('2015-02-01', '2015-02-02'))
+  print(service.get_landings('2015-02-01', '2015-04-02', "4801692989"))
 
 __author__      = 'Finnur Smári Torfason'
 __copyright__   = 'Copyright 2015, www.aflafrettir.is'
