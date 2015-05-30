@@ -5,6 +5,37 @@
   Adds support for fetching data from the Department of Fisheries in Iceland and
   calculating the total catch for certain period of time.
 """
+class Aflafrettir(object):
+  """ A collection of functions to configure and fetch data from the SOAP 
+  service of the Department of Fisheries in Iceland
+  """ 
+  def __init__(self, username=None, password=None):
+    """ An initialization function for :class Aflafrettir:
+
+    :param self:      An instance attribute of the :class Aflafrettir:
+    :param username:  Username to pass to the DOFManager.
+    :param password:  Password to pass to the DOFManager.
+    """
+    pass
+
+  def configure(self, username, password):
+    """ 
+    :param self:      An instance attribute of the :class Aflafrettir:
+    :param username:  Username to pass to the DOFManager.
+    :param password:  Password to pass to the DOFManager.
+    """
+    pass
+
+  def make_list(self, date_from, date_to): 
+    """ Takes in two dates, fetches the landings for the period and creates an
+    excel sheet with lists of the landings.
+
+    :param self:        An instance attribute of the :class Aflafrettir:
+    :param date_from:   A start date of the period
+    :param date_to:     An end date of the period.
+    """
+    pass
+
 
 __author__      = 'Finnur Smári Torfason'
 __copyright__   = 'Copyright 2015, www.aflafrettir.is'
