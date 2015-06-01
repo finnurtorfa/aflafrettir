@@ -30,7 +30,11 @@ class Aflafrettir(object):
     :param username:  Username to pass to the DOFManager.
     :param password:  Password to pass to the DOFManager.
     """
-    pass
+    self.username = username
+    self.password = password
+
+    self.service = DOFService(credentials={'Username':username, 
+                                           'Password':password})
 
   def make_list(self, date_from, date_to): 
     """ Takes in two dates, fetches the landings for the period and creates an
