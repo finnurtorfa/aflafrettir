@@ -5,6 +5,8 @@
   Adds support for fetching data from the Department of Fisheries in Iceland and
   calculating the total catch for certain period of time.
 """
+from .soap import DOFService
+
 class Aflafrettir(object):
   """ A collection of functions to configure and fetch data from the SOAP 
   service of the Department of Fisheries in Iceland
@@ -16,7 +18,11 @@ class Aflafrettir(object):
     :param username:  Username to pass to the DOFManager.
     :param password:  Password to pass to the DOFManager.
     """
-    pass
+    self.username = username
+    self.password = password
+    self.service = None 
+
+    self.configure(username, password)
 
   def configure(self, username, password):
     """ 
