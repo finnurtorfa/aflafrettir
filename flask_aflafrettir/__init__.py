@@ -13,20 +13,44 @@ class Aflafrettir(object):
   """ A collection of functions to configure and fetch data from the SOAP 
   service of the Department of Fisheries in Iceland
   """ 
-  def __init__(self, username=None, password=None):
+  def __init__(self, app=None, username=None, password=None):
     """ An initialization function for :class Aflafrettir:
 
     :param self:      An instance attribute of the :class Aflafrettir:
+    :param app:       A Flask applications instance
     :param username:  Username to pass to the DOFManager.
     :param password:  Password to pass to the DOFManager.
     """
     self.username = username
     self.password = password
     self.service = None 
+    self.app = None
 
     if ( username is not None and 
          password is not None ):
       self.configure(username, password)
+
+    if app is not None:
+      self.init_app(app)
+
+  def init_app(self, app, username=None, password=None):
+    """ Initialize the Flask-Aflafrettir extension for the specified app
+
+    :param self:  An instance attribute of the :class Aflafrettir:
+    :param app:   A Flask applications instance
+    """
+    if ( username is not None and
+         password is not None ):
+      self.configure(username, password)
+
+    if not hasattr(app, 'extensions'):
+      app.extension = {}
+
+    if 'aflafrettir' in app.extensions:
+      raise ValueError('Flask-Aflafrettir has already been initialized on this'
+                       'application: {0}'.format(app))
+    else:
+      app.extension['aflafrettir'] = self
 
   def configure(self, username, password):
     """ 
