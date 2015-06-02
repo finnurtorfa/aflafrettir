@@ -22,7 +22,9 @@ class Aflafrettir(object):
     self.password = password
     self.service = None 
 
-    self.configure(username, password)
+    if ( username is not None and 
+         password is not None ):
+      self.configure(username, password)
 
   def configure(self, username, password):
     """ 
@@ -30,11 +32,15 @@ class Aflafrettir(object):
     :param username:  Username to pass to the DOFManager.
     :param password:  Password to pass to the DOFManager.
     """
-    self.username = username
-    self.password = password
+    if ( username is not None and 
+         password is not None ):
+      self.username = username
+      self.password = password
 
-    self.service = DOFService(credentials={'Username':username, 
-                                           'Password':password})
+      self.service = DOFService(credentials={'Username':username, 
+                                             'Password':password})
+    else:
+      self.service = None
 
   def make_list(self, date_from, date_to): 
     """ Takes in two dates, fetches the landings for the period and creates an
@@ -45,7 +51,6 @@ class Aflafrettir(object):
     :param date_to:     An end date of the period.
     """
     pass
-
 
 __author__      = 'Finnur Smári Torfason'
 __copyright__   = 'Copyright 2015, www.aflafrettir.is'
