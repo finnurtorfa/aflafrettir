@@ -6,6 +6,8 @@
   calculating the total catch for certain period of time.
 """
 from .soap import DOFService
+from .landings import Landings
+from .excel import save_excel
 
 class Aflafrettir(object):
   """ A collection of functions to configure and fetch data from the SOAP 
@@ -42,15 +44,33 @@ class Aflafrettir(object):
     else:
       self.service = None
 
-  def make_list(self, date_from, date_to): 
+  def make_list(self, name, date_from, date_to): 
     """ Takes in two dates, fetches the landings for the period and creates an
     excel sheet with lists of the landings.
 
     :param self:        An instance attribute of the :class Aflafrettir:
+    :param name:        A name for the excel file
     :param date_from:   A start date of the period
     :param date_to:     An end date of the period.
     """
-    pass
+    if self.service is None:
+      return
+
+    try: 
+      landings_list = self.service.get_all_landings(date_from, date_to)
+      equipment_list = self.service.get_fishing_equipment()
+      species_list = self.service.get_species()
+    except Exception:
+      pass
+    landings = []
+
+    for l in landings_list:
+      landing = Landings(equipment_list, species_list)
+      landing.insert(l)
+      landings.append(landing)
+
+    landings_sorted = sort(landings)
+    save_excel(name, landings_sorted)
 
 __author__      = 'Finnur Smári Torfason'
 __copyright__   = 'Copyright 2015, www.aflafrettir.is'
