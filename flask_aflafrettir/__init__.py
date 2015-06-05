@@ -39,12 +39,20 @@ class Aflafrettir(object):
     :param self:  An instance attribute of the :class Aflafrettir:
     :param app:   A Flask applications instance
     """
+    self.app = app
+
     if ( username is not None and
          password is not None ):
       self.configure(username, password)
+    else:
+      if ( self.app is not None and
+           'AFLAFRETTIR_USER' in self.app.config and
+           'AFLAFRETTIR_PASS' in self.app.config ):
+        self.configure(self.app.config['AFLAFRETTIR_USER'],
+                       self.app.config['AFLAFRETTIR_PASS'])
 
     if not hasattr(app, 'extensions'):
-      app.extension = {}
+      app.extensions = {}
 
     if 'aflafrettir' in app.extensions:
       raise ValueError('Flask-Aflafrettir has already been initialized on this'
