@@ -50,7 +50,7 @@ class Aflafrettir(object):
       raise ValueError('Flask-Aflafrettir has already been initialized on this'
                        'application: {0}'.format(app))
     else:
-      app.extension['aflafrettir'] = self
+      app.extensions['aflafrettir'] = self
 
   def configure(self, username, password):
     """ 
