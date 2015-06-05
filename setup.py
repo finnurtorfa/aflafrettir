@@ -28,7 +28,9 @@ setup(
     install_requires=[
         'Flask',
         'suds-jurko',
-        'openpyxl'
+        'openpyxl',
+        'python-dateutil',
+        'six'
     ],
     classifiers=[
         'Environment :: Web Environment',
