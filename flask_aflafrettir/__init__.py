@@ -101,8 +101,7 @@ class Aflafrettir(object):
       landing.insert(l)
       landings.append(landing)
 
-    landings_sorted = sort(landings)
-    save_excel(name, landings_sorted)
+    save_excel(name, landings)
 
 __author__      = 'Finnur Smári Torfason'
 __copyright__   = 'Copyright 2015, www.aflafrettir.is'
