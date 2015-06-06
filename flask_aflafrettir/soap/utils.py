@@ -6,7 +6,7 @@
 
 import logging
 
-from datetime import datetime, timedelta
+from datetime import datetime
 from dateutil.relativedelta import relativedelta
 
 fmt = '%Y-%m-%d'
@@ -22,7 +22,8 @@ def check_dates(*args):
 
   for (i, date) in enumerate(args):
     try:
-      d = datetime.strptime(date, fmt)
+      if not isinstance(date, (type(datetime), type(datetime.date))):
+        _ = datetime.strptime(date, fmt)
     except ValueError:
       return False, i
 
@@ -40,11 +41,11 @@ def split_periods(date_from, date_to):
   logging.info('Date from: %s', date_from)
   logging.info('Date to: %s', date_to)
   
-  if type(date_from) is not datetime:
+  if not isinstance(date_from, (type(datetime), type(datetime.date))):
     logging.info('Change date_from string to a datetime object')
     date_from = datetime.strptime(date_from, fmt)
 
-  if type(date_to) is not datetime:
+  if not isinstance(date_to, (type(datetime), type(datetime.date))):
     logging.info('Change date_to string to a datetime object')
     date_to = datetime.strptime(date_to, fmt)
 
