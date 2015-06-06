@@ -6,7 +6,7 @@
   calculating the total catch for certain period of time.
 """
 from .soap import DOFService
-from .landings import Landings
+from .landings import Landings, sort_landings
 from .excel import save_excel
 
 class Aflafrettir(object):
@@ -98,7 +98,8 @@ class Aflafrettir(object):
       landing.insert(l)
       landings.append(landing)
 
-    save_excel(name, landings)
+    sorted_landings = sort_landings(lan)
+    save_excel(name, sorted_landings)
 
 __author__      = 'Finnur Smári Torfason'
 __copyright__   = 'Copyright 2015, www.aflafrettir.is'
