@@ -88,12 +88,9 @@ class Aflafrettir(object):
     if self.service is None:
       return
 
-    try: 
-      landings_list = self.service.get_all_landings(date_from, date_to)
-      equipment_list = self.service.get_fishing_equipment()
-      species_list = self.service.get_species()
-    except Exception:
-      pass
+    landings_list = self.service.get_all_landings(date_from, date_to)
+    equipment_list = self.service.get_fishing_equipment()
+    species_list = self.service.get_species()
     landings = []
 
     for l in landings_list:
