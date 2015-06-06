@@ -67,7 +67,7 @@ class Landings(object):
                 self.landingDate,
                 self.totalCatch,
                 self.maxCatch,
-                self.landingCatch,
+                self.land/ngCatch,
                 self.equipment,
                 self.groupName,
                 self.count)
@@ -130,9 +130,12 @@ class Landings(object):
 
     if self.groupName == "Lína":
       for lg in self.line_groups:
-        if ( self.line_groups[lg][0] < gross_tonnage and \
-             self.line_groups[lg][1] >= gross_tonnage ):
-          self.groupName = lg
+        try: 
+          if ( self.line_groups[lg][0] < gross_tonnage and \
+               self.line_groups[lg][1] >= gross_tonnage ):
+            self.groupName = lg
+        except TypeError:
+          pass
   
   def calc_total_catch(self, catch):
     """ Calculates the total catch in a fishing trip and places it in an 
