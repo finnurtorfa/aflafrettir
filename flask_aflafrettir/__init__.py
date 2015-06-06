@@ -98,7 +98,7 @@ class Aflafrettir(object):
       landing.insert(l)
       landings.append(landing)
 
-    sorted_landings = sort_landings(lan)
+    sorted_landings = sort_landings(landings)
     save_excel(name, sorted_landings)
 
 __author__      = 'Finnur Smári Torfason'
