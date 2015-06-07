@@ -23,7 +23,8 @@ def check_dates(*args):
     try:
       if not isinstance(date, (datetime.datetime, datetime.date)):
         _ = datetime.datetime.strptime(date, fmt)
-    except ValueError:
+    except ValueError as e:
+      logging.warning('Incorrect date format: {}\n{}'.format(date, e))
       return False, i
 
   return True, 0

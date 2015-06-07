@@ -7,6 +7,8 @@ flask.aflafrettir.landings
 
 
 """
+import logging
+
 from suds.client import Client
 from suds.sax.date import Date
 
@@ -87,6 +89,8 @@ class Landings(object):
         val = getattr(landing, k)
         setattr(self, k, val)
       except AttributeError:
+        logging.info('Landing does not have an attribute "{}":\n{}' \
+                     .format(k, landing))
         setattr(self, k, None)
 
     self.get_group(landing.landingCatch[0].equipment, self.shipGrossTonnage)
@@ -135,7 +139,8 @@ class Landings(object):
                self.line_groups[lg][1] >= gross_tonnage ):
             self.groupName = lg
         except TypeError:
-          pass
+          logging.info('Ship with id "{}" does not have gross tonnage' \
+                       .format(self.shipNumber))
   
   def calc_total_catch(self, catch):
     """ Calculates the total catch in a fishing trip and places it in an 

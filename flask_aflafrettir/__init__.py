@@ -5,6 +5,8 @@
   Adds support for fetching data from the Department of Fisheries in Iceland and
   calculating the total catch for certain period of time.
 """
+import logging
+
 from .soap import DOFService
 from .landings import Landings, sort_landings
 from .excel import save_excel
@@ -39,6 +41,8 @@ class Aflafrettir(object):
     :param self:  An instance attribute of the :class Aflafrettir:
     :param app:   A Flask applications instance
     """
+    logging.info('Initializing the Aflafrettir class')
+
     self.app = app
 
     if ( username is not None and
@@ -86,11 +90,20 @@ class Aflafrettir(object):
     :param date_to:     An end date of the period.
     """
     if self.service is None:
+      logging.warning('The DOF service has not been initialized')
+
       return
 
-    landings_list = self.service.get_all_landings(date_from, date_to)
-    equipment_list = self.service.get_fishing_equipment()
-    species_list = self.service.get_species()
+    try:
+      landings_list = self.service.get_all_landings(date_from, date_to)
+      equipment_list = self.service.get_fishing_equipment()
+      species_list = self.service.get_species()
+    except Exception as e:
+      logging.error('Some kind of error happened, most likely incorrect ' \
+                    'username and/or password!\n{}'.format(e))
+
+      return
+
     landings = []
 
     for l in landings_list:
