@@ -92,7 +92,7 @@ class Aflafrettir(object):
     if self.service is None:
       logging.warning('The DOF service has not been initialized')
 
-      return
+      return False
 
     try:
       landings_list = self.service.get_all_landings(date_from, date_to)
@@ -102,7 +102,7 @@ class Aflafrettir(object):
       logging.error('Some kind of error happened, most likely incorrect ' \
                     'username and/or password!\n{}'.format(e))
 
-      return
+      return False
 
     landings = []
 
@@ -113,6 +113,8 @@ class Aflafrettir(object):
 
     sorted_landings = sort_landings(landings)
     save_excel(name, sorted_landings)
+
+    return True
 
 __author__      = 'Finnur Smári Torfason'
 __copyright__   = 'Copyright 2015, www.aflafrettir.is'
