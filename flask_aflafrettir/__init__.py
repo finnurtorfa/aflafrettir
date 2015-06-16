@@ -94,15 +94,9 @@ class Aflafrettir(object):
 
       return False
 
-    try:
-      landings_list = self.service.get_all_landings(date_from, date_to)
-      equipment_list = self.service.get_fishing_equipment()
-      species_list = self.service.get_species()
-    except Exception as e:
-      logging.error('Some kind of error happened, most likely incorrect ' \
-                    'username and/or password!\n{}'.format(e))
-
-      return False
+    landings_list = self.service.get_all_landings(date_from, date_to)
+    equipment_list = self.service.get_fishing_equipment()
+    species_list = self.service.get_species()
 
     landings = []
 
